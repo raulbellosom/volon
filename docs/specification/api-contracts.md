@@ -34,6 +34,11 @@
 | `POST /v1/incidents` | Reportar incidencia | Actor autorizado | Comando |
 | `GET /v1/incidents?deliveryId=...` | Consultar casos permitidos | Scope propio | Lectura |
 
+### Pago de logística en M0 (sin API de comercio electrónico)
+En M0 **el comercio paga a la plataforma solamente el servicio logístico**. La API crea `Delivery(requested)` con cotización congelada, pero **no permite iniciar despacho u ofertar a couriers** mientras no exista confirmación verificable del `Payment` propio de esa entrega. La elegibilidad se deriva de un registro financiero autoritativo, nunca de un campo booleano enviado por el cliente.
+
+El flujo de pago debe disponer de una operación separada, idempotente, con webhooks PSP firmados, reconciliación de timeouts, cancelaciones y reembolsos. El endpoint, proveedor, uso de autorización/captura y respuesta final se definirán **después de DEC-03 y el spike PSP**. No incluir cobro de mercancía, wallet ni split de productos en M0. Ver [modelo operativo de piloto](../product/pilot-operating-model.md).
+
 Los endpoints de catálogo, carrito, Orders y checkout se especificarán al aprobar la fase marketplace. Los endpoints de pagos comerciales dependen de PSP y modelo de cobro legalmente aprobado.
 
 ## Ejemplo ilustrativo de cotización
