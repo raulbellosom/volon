@@ -1,28 +1,29 @@
-# 12 — Próximas acciones después de elegir el diseño del piloto
+# Próximo desarrollo: cortes verticales verificables
 
-**Fecha:** 2026-10-17. Ya elegimos para **diseño** el servicio B2B de entregas para comercios, área inicial reducida en Puerto Vallarta, motocicleta, cobro de logística al comercio y despacho secuencial/manual. Ver [modelo operativo M0](../product/pilot-operating-model.md). **Esto no representa aprobación legal/comercial ni validación técnica.**
+**Cambio de enfoque (17-10-2026):** el usuario autorizó iniciar desarrollo técnico. La investigación comercial y legal continúa **en paralelo**; no convierte tareas de negocio en una barrera para implementar software con datos sintéticos.
 
-## P0: lo único que resta definir antes de pruebas
-| Orden | Actividad y responsable funcional sugerido | Entregable / aceptación | Seguimiento en GitHub |
-| --- | --- | --- | --- |
-| 1 | Producto/Comercial: entrevistas a comercios y couriers | Muestras anonimizadas, demanda/franjas, disposición a pago y disponibilidad | [#1](https://github.com/raulbellosom/volon/issues/1) |
-| 2 | Operaciones: dibujar una microzona de Puerto Vallarta y verificar horarios/capacidad/seguridad | Polígono propuesto, límites por distancia/tamaño, soporte y cobertura real | [#2](https://github.com/raulbellosom/volon/issues/2) |
-| 3 | Finanzas: unit economics, tarifa por tramo y presupuesto | Escenarios y margen por entrega; impuestos y promociones separados | [#3](https://github.com/raulbellosom/volon/issues/3) |
-| 4 | Legal/Fiscal: revisar contratación, IMSS, seguros, facturación y privacidad GPS | Requisitos de operación y conclusión de viabilidad con profesional responsable | [#4](https://github.com/raulbellosom/volon/issues/4) |
-| 5 | Producto+Operación: revisar excepciones desde quote hasta entrega | Aceptación o modificaciones a estados/UC, cambios de custodia y cancelación | [#5](https://github.com/raulbellosom/volon/issues/5) |
-| 6 | Producto+Ingeniería: acordar requisitos funcionales priorizados y contratos v1 | RF/UC/ACC y contratos seleccionados ratificados para P1/P2 | [#5](https://github.com/raulbellosom/volon/issues/5) |
+## Ya iniciado
+- Monorepo `delivery-platform`: pnpm/Turborepo proyectados, TS estricto en código puro, branding central.
+- `packages/pricing`: comisión marketplace configurable, tope de 10% (1000 bps); cálculo logística **separado**, sin tarifas reales.
+- Pruebas unitarias, límite automático de líneas y workflow CI inicial de Node sin dependencias.
+- Comparación oficial: [Uber Eats 25/27/29% y Uber Direct por entrega](../product/business-model.md).
 
-**El estado vivo está en los Issues enlazados**; esta tabla describe objetivos y dependencias, no duplica su progreso. Los ítems anteriores dependen de **evidencia externa o de responsables reales**, no de escribir más documentación. No inventar que se completaron por haber seleccionado una hipótesis.
+## Próximos cortes de desarrollo (no requieren entrevistas previas)
+1. **API modular** con health checks, validación de entorno, DTOs runtime y contratos v1 para cotizaciones. Backend calcula políticas, nunca cliente.
+2. **Persistencia y autorización multi-tenant** en entorno local/sintético; Merchant, Branch, Courier, Delivery, Quote, idempotency y auditoría.
+3. **Portal del comercio** con design system web propio, Tailwind 4 y shadcn selectivo: cotización/simulación/solicitud con estados.
+4. **App courier React Native+Expo** en dev-build: ofertas y flujo de entrega sintético; spike GPS en teléfonos reales previo a usar tracking de personas.
+5. **Dispatch + Realtime** con aceptación atómica, Broadcast privado y API snapshot.
+6. **Pagos/CFDI/contratos reales** solo tras integración sandbox, seguridad y validación legal; no usar el dinero en producción antes.
 
-## P1: secuencia técnica después del gate
-1. Spike React Native/Expo GPS background y batería con teléfonos Android e iPhone reales; gestos/touch targets/A11y.
-2. Spike Supabase Self-Hosted, Auth/RLS, Realtime privado, reconexión, PostGIS y restore.
-3. Prueba de aceptación concurrente, idempotencia, versionado y transactional outbox.
-4. Proveedor de mapas/rutas y PSP México: sandbox, contrato, costos, reembolsos y estados inciertos.
-5. Calibración de carga, privacidad, backup y capacidad de soporte; ratificar ADR y presupuesto.
+## En paralelo (no bloquea el código con datos sintéticos)
+- Validar con comercios, repartidores, distancias/rutas y precio real, y definir cobertura local.
+- Revisar IMSS/STPS, legalidad laboral, SAT/CFDI/IVA/ISR, privacidad GPS, PROFECO y responsabilidad por bienes.
+- Elegir proveedores de rutas y PSP México, costear margen/entrega.
+- Ratificar parámetros operativos (horario, quote validity, número de comercios).
 
-## Habilitación de desarrollo P2
-Exigir: objetivos y límites del MVP definidos, decisiones de negocio y seguridad aprobadas, proveedores seleccionados mediante pruebas, versión de contratos documentada, responsables asignados y presupuesto estimado. No requerir éxito comercial del piloto para crear prototipos de P1; sí requerir revisión de seguridad y de datos si se hacen pruebas con personas.
+## Bloqueantes de *lanzamiento*, no de *programación*
+Contratación/seguros/seguridad social; uso de datos personales y GPS real; reglas fiscales/cobros; pruebas GPS, privacidad cross-tenant, restauración DB y soporte operativo. Estos controles se deben implementar o probar antes de admitir usuarios reales.
 
-## No hacer todavía
-No inventar tarifas MXN ni zonas; no activar servicio comercial remunerado, no implementar wallet, catálogo, customer-mobile o fleet-web; no generar apps productivas a partir de ejemplos. No cerrar DEC-02/03/05/06 por inferencia. Seguir [open-decisions](../specification/open-decisions.md) en lugar de mantener varias listas rivales.
+## Alcance
+No abrir decenas de Issues para entrevistas si no se requiere; construir cada corte con tests, documentación actualizada y revisión de seguridad. [Master Plan](../../MASTER_PLAN.md) guía horizonte general, [requisitos](../product/requirements.md) definen comportamiento, [política de documentos vivos](../conventions/documentation-lifecycle.md) evita duplicados.

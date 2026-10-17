@@ -1,8 +1,8 @@
 # Secuencia de implementación por cortes verticales
 
-**Estado:** propuesta posterior a Fase 0. **No autoriza generar código aún**.
+**Estado:** desarrollo incremental autorizado por el usuario desde el 17-10-2026. Los límites comerciales y legales condicionan **el despliegue real**, no componentes simulados y pruebas locales. Pricing/branding + checks ya comenzaron.
 
-## Preparación antes de desarrollo
+## Investigación paralela al desarrollo
 - Revisar [open-decisions.md](open-decisions.md) con negocio/operaciones.
 - Aprobar alcance del piloto, modo de cobro, responsables y criterios de cumplimiento.
 - Realizar spikes de GPS/gestos, Supabase Realtime, auth y mapas/pagos según riesgos.

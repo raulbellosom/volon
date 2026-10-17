@@ -1,6 +1,6 @@
 # Hoja de ruta — Fase 0 y puertas de decisión
 
-**Objetivo actual:** dejar una base de producto y arquitectura verificable. Sin escribir aún aplicaciones productivas.
+**Estado:** el usuario autorizó **comenzar desarrollo técnico desde el 17-10-2026**; el checklist aquí guarda pendientes de descubrimiento sin bloquear código con datos sintéticos. No hay apps productivas ni cobros reales.
 
 > **El estado de ejecución y responsables reales se consulta en [GitHub Issues](https://github.com/raulbellosom/volon/issues)**. El checklist aquí es un hito de planeación y no debe duplicar cada tarea viva.
 >
@@ -19,7 +19,8 @@
 - [ ] Ratificar RF/UC de M0 con comercios, repartidores y operación; definir prioridades y excepciones reales.
 - [ ] Revisión y aprobación expresa del alcance/orden del Plan Maestro con responsables.
 - [ ] Ratificar con operación y negocio las [decisiones abiertas](../specification/open-decisions.md) y ejemplos de contratos.
-- [ ] Automatizar límites de líneas, lint, typecheck y pruebas en CI al iniciar Fase 1 (no están activos todavía).
+- [x] Iniciar monorepo, código puro de `pricing`, pruebas ejecutadas, branding configurable y CI inicial de tests/longitud.
+- [ ] Completar lockfile, instalación reproducible, lint, typecheck y builds integrados a CI (aún pendientes).
 - [x] Elegir **dirección de diseño** del primer servicio B2B y límites M0: [modelo operativo](../product/pilot-operating-model.md).
 - [ ] Validar con negocios/couriers y presupuesto la modalidad elegida, antes de ratificarla comercialmente.
 - [x] Definir actor pagador y problema inicial **como hipótesis de negocio**: el comercio contrata logística externa.

@@ -1,6 +1,6 @@
 # Instrucciones de proyecto para Claude Code
 
-Volón es una **marca provisional** de una plataforma de entregas locales. El repositorio se encuentra en Fase 0 (solo documentación). **No implementar código ni desplegar nada** sin instrucción explícita.
+Volón es una **marca provisional** de una plataforma de entregas locales. **El usuario autorizó desarrollo incremental el 17-10-2026.** Se puede implementar paquetes, pruebas, apps e infraestructura de desarrollo con datos sintéticos. No activar dinero real, GPS personal, repartos reales ni despliegues productivos sin seguridad/revisión correspondiente. Los asuntos comerciales y legales **no bloquean el inicio del código**.
 
 Este archivo es un punto de entrada, NO una segunda normativa independiente. Antes de editar leer [MASTER_PLAN.md](MASTER_PLAN.md) y [docs/master-plan/README.md](docs/master-plan/README.md) (programa, fases, WBS y bloqueadores, aún borrador). Aplicar además en orden:
 1. [docs/README.md](docs/README.md): situación y alcance.
@@ -21,8 +21,9 @@ Este archivo es un punto de entrada, NO una segunda normativa independiente. Ant
 - No asumir tests ejecutados ni servicios existentes. No datos reales, contraseñas, claves ni credenciales en Git.
 - Código y nombres técnicos en inglés; contenido visible/documentación en español México.
 - Mantener neutralidad frente a cambios de marca.
-- **Alcance controlado:** toda propuesta de trabajo identifica WBS/fase del Plan Maestro; no implementar fases futuras sin instrucción explícita.
+- **Alcance controlado:** construir cortes pequeños e integrados, no planificaciones interminables ni despliegues comerciales. WBS ayuda a priorizar, pero no exige entrevistar negocios antes de implementar software seguro con datos sintéticos.
 - **Documentación viva:** seguir [docs/conventions/documentation-lifecycle.md](docs/conventions/documentation-lifecycle.md), modificar la fuente propietaria del cambio y evitar duplicados.
+- **Tarifas:** comisión de marketplace no superior a 10% del subtotal de artículos; logística cobrada aparte y nunca supuesta gratis. No codificar montos comerciales reales hasta contar con datos.
 - **Contract-first:** antes de agregar endpoints, estados, tablas o eventos, revisar el dossier docs/specification, resolver decisiones abiertas y actualizar contratos/propuestas pertinentes.
 - Antes de editar: inspeccionar los archivos pertinentes, diseñar cambio mínimo, identificar pruebas y riesgos. Después: verificar, explicar lo comprobado y lo pendiente.
 - No hacer push de cambios no relacionados, reescribir historial, borrar datos ni desplegar sin indicación.

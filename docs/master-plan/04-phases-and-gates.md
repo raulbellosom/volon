@@ -1,6 +1,6 @@
 # 04 — Fases, dependencias y puertas de aprobación
 
-**Estado:** mapa de ejecución por evidencia, sin calendario inventado. Una fase puede durar lo que requieran sus riesgos, presupuesto y equipo. No declarar «lista» por tener documentos o pantallas.
+**Estado:** mapa de ejecución por evidencia, sin calendario inventado. El usuario autorizó desarrollo incremental con datos sintéticos antes de cerrar todos los estudios de negocio. Las puertas de cumplimiento y pruebas se aplican a uso real/despliegue. Una fase puede durar lo que requieran sus riesgos, presupuesto y equipo. No declarar «lista» por tener documentos o pantallas.
 
 **Dirección de producto seleccionada para diseño:** [M0 B2B de entregas](../product/pilot-operating-model.md). No cambia la exigencia de legalidad, entrevistas, presupuesto, pruebas y gates.
 
@@ -8,6 +8,9 @@
 **Objetivo:** elegir el primer producto vendible, asegurar viabilidad y cerrar contradicciones de contratos.
 **Trabajo:** entrevistas; segmentación; flujos comerciales; zonas; modo de cobro, tarifario, impuestos, contratos y laborales; política de datos y términos; MVP ratificado; ADR; modelo de datos, estados y API candidata; matriz de riesgos; estimaciones iniciales.
 **Salida:** product brief aprobado, [open decisions](../specification/open-decisions.md) con dueños, riesgos bloqueantes resueltos, presupuesto preliminar y go/no-go para spikes y plataforma. **Hoy la documentación es borrador; P0 NO está terminada.**
+
+## Código inicial y pruebas antes de operar
+Se inició `packages/pricing`, `packages/branding` y CI básico de dominio. Continuar API/UX/mock locales en paralelo a validaciones, sin conectar dinero real o rastrear personas reales. La investigación P0 no bloquea programación.
 
 ## P1 — Spikes de arquitectura críticos
 **Objetivo:** demostrar viabilidad móvil/infra/finanzas antes de comprometer stack.

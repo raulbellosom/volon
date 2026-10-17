@@ -1,6 +1,6 @@
 # Instrucciones para Codex y otros agentes compatibles con AGENTS.md
 
-Este repositorio está en **Fase 0: documentación y planificación**. No crear aplicaciones, dependencias, scripts ejecutables, migraciones, infraestructura ni servicios a menos que el usuario autorice expresamente iniciar implementación o una prueba técnica.
+**Desarrollo incremental autorizado por el usuario a partir del 17-10-2026**: dejar de tratar entrevistas, tarifas finales o contrataciones como prerequisitos del código. Se permiten scaffolding, pruebas, paquetes y apps aisladas con **datos sintéticos**. **No** habilitar repartos reales, dinero real, tracking de personas, producción o tratamientos personales sin controles y revisión aplicable.
 
 **Leer antes de actuar**, en este orden:
 0. [MASTER_PLAN.md](MASTER_PLAN.md) y [docs/master-plan/README.md](docs/master-plan/README.md) — plan rector de programa, fases y WBS (borrador, no aprobación de ejecución).
@@ -24,8 +24,9 @@ Este repositorio está en **Fase 0: documentación y planificación**. No crear 
 - **Volón es nombre provisional:** no acoplar identifiers internos, contratos, tablas o paquetes a la marca.
 - No subir claves, tokens, datos reales ni rutas GPS de personas.
 - Respetar convenciones y ADR; documentar conflicto, no cambiar arquitectura silenciosamente.
-- **Trabajo por fase/WBS:** vincular cambios a un entregable del Plan Maestro y respetar el alcance aprobado; no iniciar apps o features futuros solo porque estén planeados.
+- **Trabajo incremental:** priorizar cortes verticales funcionales y pruebas, sin convertir entrevistas/Issues de negocio en condiciones para escribir código. Mantener WBS como referencia de alcance y no desarrollar todos los productos a la vez.
 - **Documentación viva:** aplicar [docs/conventions/documentation-lifecycle.md](docs/conventions/documentation-lifecycle.md); cada comportamiento nuevo/modificado actualiza solo los documentos propietarios vinculados, sin duplicación.
+- **Economía comercial:** marketplace máximo 1000 bps (10%) del subtotal de productos; delivery fee independiente y configurable, nunca asumir que comisión paga al courier. Toda liquidación/cobro requiere PSP y reglas jurídicas confirmadas.
 - **Contrato primero:** no crear endpoints, tablas, enums de estado o eventos nuevos sin revisar y actualizar docs/specification y su decisión pendiente; no interpretar ejemplos como implementación aprobada.
 - No ejecutar acciones destructivas ni publicar/desplegar sin aprobación explícita.
 

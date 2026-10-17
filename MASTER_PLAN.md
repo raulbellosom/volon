@@ -1,6 +1,6 @@
 # PLAN MAESTRO — Proyecto «Volón» (nombre provisional)
 
-> **Documento rector del programa.** Versión 0.1, 17 de octubre de 2026. **Estado: borrador para revisión, no plan aprobado ni software desarrollado.**
+> **Documento rector del programa.** Versión 0.1, 17 de octubre de 2026. **Estado: plan de producto en revisión, pero desarrollo técnico iniciado en paquetes aislados; no hay aplicaciones ni operación productiva.**
 >
 > La marca «Volón» podrá sustituirse; nombres técnicos, API, contratos, aplicaciones y datos no deben depender de ella. Piloto de diseño inicial dentro de Puerto Vallarta, Jalisco; Bahía de Banderas queda para expansión posterior.
 
@@ -20,7 +20,7 @@ El plan cubre el **negocio entero y su evolución**, no únicamente la API o el 
 ## Secuencia principal
 `P0 Investigación y decisiones → P1 Spikes críticos → P2 Fundaciones → P3 Operación de envíos → P4 Piloto controlado → P5 Marketplace → P6 Flotas/escala local → P7 Expansión`.
 
-**No hay fechas, tarifas ni promesas de capacidad inventadas**. Cada paso se libera por evidencias y criterios de salida, no solo porque termine la programación.
+**Comisión objetivo marketplace: máximo 10% del subtotal de productos, sin reparto ni impuestos; fuente de mercado y matices en [modelo comercial](docs/product/business-model.md). No hay tarifas logísticas finales. No hay fechas ni promesas de capacidad inventadas**. Cada paso se libera por evidencias y criterios de salida, no solo porque termine la programación.
 
 ## Regla para agentes y desarrolladores
-Leer primero este archivo, [docs/master-plan](docs/master-plan/README.md), [docs/specification](docs/specification/README.md), [docs/decisions](docs/decisions/README.md) y [docs/conventions](docs/conventions/development.md). No convertir hipótesis del plan en funcionalidad sin resolver bloqueadores y aprobar el corte de trabajo. Durante Fase 0 **solo documentación**, salvo orden explícita de realizar un spike.
+Leer primero este archivo, [docs/master-plan](docs/master-plan/README.md), [docs/specification](docs/specification/README.md), [docs/decisions](docs/decisions/README.md) y [docs/conventions](docs/conventions/development.md). No convertir hipótesis del plan en funcionalidad sin resolver bloqueadores y aprobar el corte de trabajo. **Autorizado iniciar código incremental**, pruebas y CI con datos sintéticos; no exige completar entrevistas como condición para programar. Seguridad, legalidad, pruebas de GPS y fiscalidad son bloqueantes de **operación comercial**, no del desarrollo experimental.

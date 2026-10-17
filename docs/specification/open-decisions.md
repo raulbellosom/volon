@@ -1,6 +1,6 @@
 # Registro de decisiones de producto y validaciones pendientes
 
-**Corte:** 2026-10-17. Las siguientes son **elecciones internas de diseño** tomadas para avanzar por delegación del fundador, **no** comprobaciones de factibilidad comercial, cumplimiento legal o pruebas técnicas. **Reglas operativas M0:** [piloto-operating-model](../product/pilot-operating-model.md).
+**Corte:** 2026-10-17. **El desarrollo técnico ya está autorizado; los asuntos pendientes bloquean uso comercial, datos reales o integraciones críticas según corresponda, NO escribir código de prueba/contratos/UI.** Las siguientes son **elecciones internas de diseño** tomadas para avanzar por delegación del fundador, **no** comprobaciones de factibilidad comercial, cumplimiento legal o pruebas técnicas. **Reglas operativas M0:** [piloto-operating-model](../product/pilot-operating-model.md).
 
 ## Estado por decisión
 
@@ -9,7 +9,7 @@
 | DEC-01 | Primera modalidad | **Definido para diseño** | Empezar por **envíos B2B** para ventas propias de comercios, luego marketplace. Validar demanda y costo unitario antes de operar. | P0 comercial |
 | DEC-02 | Contratación de couriers y seguridad social | **Bloqueante externo** | Repartidores en motocicleta; relación legal/IMSS, seguros, compensación y contrato requieren dictamen jurídico/fiscal. | Piloto remunerado |
 | DEC-03 | Quién cobra y cómo | **Parcialmente definido** | Comercio paga a plataforma **solo logística**, no productos; PSP directo por servicio, sin split/wallet/efectivo. Validar PSP México, facturación, reglas tributarias, conciliación, cobro/remuneración courier. | Cobros |
-| DEC-04 | Tarifas, cancelación, compensación | **Parcialmente definido** | Base + tramo de ruta/zona, no tarifa dinámica en M0. Pendientes montos MXN, costo laboral, retenciones, IVA/CFDI, reembolsos y daños. | Publicar tarifas |
+| DEC-04 | Tarifas, cancelación, compensación | **Parcialmente definido** | Marketplace futuro: comisión comercial máxima de **10% del subtotal de productos**, sin reparto ni otros cargos; M0: base + tramo de ruta/zona, sin tarifa dinámica. Montos reales, impuestos, reembolsos y costos siguen abiertos. | Publicar tarifas |
 | DEC-05 | React Native/Expo + background GPS | **Propuesta condicionada** | Pruebas Android/iOS con pantalla bloqueada, ahorro de batería, cierre, permisos y conectividad. | App courier |
 | DEC-06 | Supabase Self-Hosted | **Propuesta condicionada** | Licencias/versiones exactas, Auth/RLS, Broadcast, backup/restore y capacidad real. | Infra |
 | DEC-07 | Mapas, rutas y ETA | **Pendiente** | Proveedor y costos con trayectos locales; geocoding/zonas/servicio degradado. | Tarifario |

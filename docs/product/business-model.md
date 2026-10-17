@@ -13,6 +13,19 @@ La única fuente detallada del flujo comercial del primer servicio es el [modelo
 
 Esta modalidad simplifica el arranque al **no** manejar fondos de mercancía, pero **no elimina** obligaciones laborales, fiscales, de consumo, seguros ni privacidad.
 
+## Investigación comparativa (17-10-2026): fuentes oficiales
+| Servicio | Comisiones/cargos publicados | Lectura para Volón |
+| --- | --- | --- |
+| [Uber Eats México — Lite](https://merchants.ubereats.com/mx/es/pricing/) | 25% tarifa publicada; puede haber inversión marketing y extras Uber One | El porcentaje de marketplace combina visibilidad, pagos y entrega |
+| [Uber Eats México — Plus](https://merchants.ubereats.com/mx/es/pricing/) | 27% tarifa publicada | No extrapolar el porcentaje al costo real del repartidor |
+| [Uber Eats México — Premium](https://merchants.ubereats.com/mx/es/pricing/) | 29% tarifa publicada | Los términos y región pueden variar |
+| [Rappi Partners México](https://merchants.rappi.com/es-mx/que-costo-tiene-registrar-mi-negocio-en-rappi) | Comisión + impuestos, **tasa exacta no pública/universal** | No inventar porcentaje de Rappi |
+| [Uber Direct México](https://merchants.ubereats.com/mx/es/services/uber-direct/) | Cargo **por entrega**, no comisión sobre compra | Un servicio de última milla puede facturarse separado del marketplace |
+
+**Hipótesis de posicionamiento de Volón**: comisión marketplace configurable **entre 0% y 10% máximo del subtotal de mercancías**; tarifa de entrega desglosada de forma independiente al comercio o usuario según producto y contrato, más impuestos/cargos de procesamiento declarados conforme aplique. El 10% es **máximo comercial objetivo**, no garantía de que cubra logística, adquisición de clientes, PSP o obligaciones fiscales. No decir «10% total» si existen más cargos. Para una compra de MXN 300, la comisión sola al 10% sería MXN 30 frente a MXN 75 al 25% o MXN 87 al 29%, antes de demás cargos.
+
+**Implementación iniciada:** [pricing domain](../../packages/pricing/README.md) mantiene dos fórmulas independientes, utiliza importes enteros en centavos y rechaza comisión >10%. La tarifa logística real se cargará desde políticas aprobadas en el servidor, **no** desde valores cliente. Ningún PSP, pago real o facturación están conectados.
+
 ## Modelos futuros, no incluidos en M0
 1. Marketplace: comisión comercial, delivery fee y pago de compra conforme a PSP/ley aplicable.
 2. Flotas de terceros / comercio con flota: suscripción o uso, con reglas de autorización y liquidación según contratos.

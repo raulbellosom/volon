@@ -1,6 +1,6 @@
 # Documentación del proyecto
 
-**Corte inicial:** 17 de octubre de 2026. **Fase:** 0 (planeación). **Nombre de trabajo:** Volón.
+**Corte inicial:** 17 de octubre de 2026. **Fase:** transición de planeación a desarrollo técnico incremental autorizado. **Nombre de trabajo:** Volón.
 
 ## Cómo interpretar este repositorio
 - **Requisito:** condición expresada para el producto (p. ej., cambio sencillo de marca, tracking en tiempo real).
@@ -10,11 +10,11 @@
 - **ADR aceptado:** decisión expresamente ratificada, con contexto, alternativas y consecuencias.
 - **Validado:** respaldado por una prueba registrada con evidencias y fecha.
 
-No existe aplicación, infraestructura ni servicio desplegado a partir de esta documentación.
+Existe código real de [pricing](../packages/pricing/README.md), [branding](../packages/branding/src/index.ts), monorepo inicial y CI ligero. **Todavía no hay apps ni servicios desplegados**. La fase de validación comercial/legal se sigue trabajando en paralelo.
 
-## Trabajo de Fase 0 en GitHub
+## Desarrollo y pendientes no bloqueantes
 
-Los pendientes que requieren evidencias y responsables reales están en [Issues abiertos del repositorio](https://github.com/raulbellosom/volon/issues). El [Plan Maestro: próximas acciones](master-plan/12-next-actions.md) enlaza únicamente los tickets de la fase actual; evitar duplicar su estado manualmente.
+Ya comenzó código incremental verificable. [Economía y comisiones del mercado](product/business-model.md) y [código de pricing](../packages/pricing/README.md). Las entrevistas, cobertura y requisitos jurídicos se conservan como investigación que debe resolverse **antes de actividad comercial**, no como barrera para crear apps, pruebas y módulos con datos sintéticos.
 
 ## Plan Maestro: punto de entrada
 
@@ -73,4 +73,4 @@ El dossier [docs/specification](specification/README.md) documenta módulos y ow
 - Todo cambio arquitectónico sustancial debe registrar una decisión en docs/decisions.
 
 ## Instrucciones para agentes de IA
-En la raíz existen [AGENTS.md](../AGENTS.md) para Codex y [CLAUDE.md](../CLAUDE.md) para Claude Code. Ambos remiten a las mismas normas canónicas en [docs/conventions/](conventions/development.md). Durante Fase 0 no hay implementación ni pipeline configurado; los límites y checks están documentados para su futura automatización.
+En la raíz existen [AGENTS.md](../AGENTS.md) para Codex y [CLAUDE.md](../CLAUDE.md) para Claude Code. Ambos remiten a las mismas normas canónicas en [docs/conventions/](conventions/development.md). Ya existe un primer paquete de código y CI para pruebas de pricing y longitud; siguen pendientes lint, typecheck en CI e instalación reproducible. Codex/Claude pueden comenzar a implementar en pequeños cortes verificados.

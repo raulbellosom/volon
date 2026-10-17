@@ -1,31 +1,35 @@
-# Volón — Plataforma de comercio y entregas locales
+# Volón — plataforma local de comercio y reparto
 
-> **Estado:** Fase 0 — arquitectura, producto y planificación. **No existe aún una implementación funcional.**
->
-> **Marca provisional:** «Volón» es un nombre de trabajo, no una denominación definitiva. Identificadores técnicos y contratos deberán mantenerse independientes de la marca.
+**Estado actual: desarrollo técnico iniciado.** El nombre «Volón» es **provisional** y la identidad de dominio interna debe seguir siendo neutral.
 
-Volón es el nombre de trabajo de una plataforma de pedidos, entregas locales y coordinación de repartidores y flotas, concebida para iniciar con un piloto en Puerto Vallarta y Bahía de Banderas, México. Se propone facilitar herramientas accesibles para pequeños negocios, clientes y repartidores sin asumir aún tarifas, relaciones jurídicas o tecnologías no validadas.
+Queremos construir una alternativa local en Puerto Vallarta y, posteriormente, Bahía de Banderas y otras ciudades. Ofreceremos (1) envíos solicitados por comercios desde sus canales de venta, (2) marketplace con comisión comercial objetivo **máxima de 10%** y costo de reparto desglosado, y (3) gestión de flotas en una etapa posterior. Tarifas efectivas, régimen legal y operación real aún requieren comprobación; no hay servicios desplegados.
 
-## Documento rector
+## Código ya existente
+- [`packages/pricing`](packages/pricing/README.md): **cálculo de comisiones y cotización logística**, en TypeScript. Comisión marketplace configurable **0%–10% del subtotal de productos**, excluye reparto, impuestos y PSP.
+- [`packages/branding`](packages/branding/src/index.ts): punto central para reemplazar nombre comercial y configuración visible.
+- [`pnpm-workspace.yaml`](pnpm-workspace.yaml), [`turbo.json`](turbo.json), [`tsconfig.base.json`](tsconfig.base.json): fundamentos del monorepo.
+- [`scripts/check-source-lengths.mjs`](scripts/check-source-lengths.mjs): límite automático de tamaño para archivos fuente.
+- [CI básico](.github/workflows/pricing-checks.yml): ejecuta pruebas del dominio y límite de líneas sin instalar dependencias.
 
-- **[PLAN MAESTRO — programa completo](MASTER_PLAN.md)**: ruta integral, fases, work breakdown, decisiones, riesgos, costos, operación, calidad, expansión y condiciones de aprobación. Actualmente es un **borrador**, no software ni plan autorizado para desplegar.
-- [Capítulos del Plan Maestro](docs/master-plan/README.md)
+**Sin apps web/móviles, Supabase, pagos o GPS implementados todavía**. No tomar valores de ejemplo de las pruebas como tarifas comerciales.
 
-## Comenzar por la documentación
+## Ejecutar pruebas ahora
+Node.js >=22.16 (sin instalar nada):
 
-- [Índice y estado de decisiones](docs/README.md)
-- [Visión del producto](docs/product/vision.md)
-- **[Requerimientos del producto](docs/product/requirements.md)** y **[casos de uso](docs/product/use-cases.md)** (fuentes vivas de comportamiento)
-- [Reglas de documentación mantenible](docs/conventions/documentation-lifecycle.md)
-- [Arquitectura candidata](docs/architecture/overview.md)
-- [Mapa del monorepo previsto](docs/architecture/repository-structure.md)
-- [Plan de validaciones técnicas](docs/validation/technical-spikes.md)
-- [Hoja de ruta](docs/roadmap/phase-0.md)
+```bash
+npm test
+npm run check:lines
+```
 
-## Alcance de este repositorio en Fase 0
+El `typecheck` necesita TypeScript 5.8.3; el monorepo usa `pnpm@10.15.1`. **Falta generar el lockfile y ampliar CI con instalación reproducible, typecheck y builds** cuando se habilite instalación de dependencias. No reportar estas validaciones como ya integradas.
 
-Documentación y planificación de aplicaciones, dominios de negocio, identidad de marca, UI web y móvil, GPS, eventos en tiempo real, infraestructura, riesgos, seguridad y criterios para el MVP.
+## Qué desarrollaremos a continuación
+Fundamento de API y contratos de cotización, autenticación/multiempresa, portal de comercios, app de repartidores React Native/Expo (con pruebas GPS reales) y panel de despacho. **Podemos desarrollar con datos sintéticos mientras revisamos el cumplimiento para operar comercialmente.** El marco legal es un requisito para lanzar, no motivo para impedir codificar.
 
-**No instalar dependencias, generar aplicaciones, desplegar servidores ni comprometer un stack como definitivo hasta cerrar las validaciones correspondientes.**
-
-La nomenclatura técnica interna se mantendrá neutral para facilitar un futuro cambio de nombre comercial.
+## Guías del proyecto
+- [Plan Maestro](MASTER_PLAN.md) y [requisitos/casos](docs/product/requirements.md).
+- [Modelo operativo inicial](docs/product/pilot-operating-model.md).
+- [Modelo comercial y referencias del mercado](docs/product/business-model.md).
+- [Marco regulatorio](docs/legal/risks.md).
+- [Especificación de arquitectura](docs/specification/README.md).
+- [AGENTS.md](AGENTS.md) y [CLAUDE.md](CLAUDE.md): reglas compartidas de calidad, modularidad y tests.
