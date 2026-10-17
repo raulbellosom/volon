@@ -1,0 +1,38 @@
+# Pruebas técnicas previas al MVP (spikes)
+
+**Estado:** PLAN; ninguna prueba ha sido ejecutada aún. Un spike consiste en una pequeña implementación temporal para responder una duda de arquitectura, NO en construir toda la plataforma.
+
+## Spike A — GPS real en Android e iOS (prioridad máxima)
+**Montaje futuro:** mini-app courier-mobile con React Native/Expo Development Build; API temporal autenticada, almacenamiento temporal y mapa web para observar un teléfono moviéndose.
+
+**Casos:** primer plano; pantalla bloqueada; Maps/Waze sobre la app; background prolongado; pausa voluntaria; cierre de app y cierre forzado; ahorro de batería; permisos reducidos/revocados; red intermitente, Wi-Fi/datos; reinicio de teléfono; GPS impreciso; viajes de prueba con ambos sistemas operativos.
+
+**Medir:** edad de la última coordenada, tasa de puntos válidos, intervalos efectivos, recuperación, consumo de batería, cierres de app y degradación por fabricante/versión. Registrar límites inevitables (p. ej., forced stop) sin falsear continuidad.
+
+**Resultado:** evidencias de video/log con datos anonimizados, lista de dispositivos/OS, tasas observadas y decisión React Native/Expo vs módulo nativo vs alternativa.
+
+## Spike B — Realtime / permisos
+**Montaje:** dos clientes con roles distintos, canal privado, publicación controlada por servidor.
+**Casos:** 10/100/500 conexiones sintéticas según presupuesto; duplicación, retraso, reconexión, expiración de credencial, suscripción no autorizada y canal revocado.
+**Métricas:** latencia p50/p95, tasa de reconexión, error, CPU/RAM y throughput. Elegir umbrales con expectativas del piloto antes de medir.
+
+## Spike C — Atomicidad del despacho
+Dos repartidores aceptan simultáneamente una oferta; solo una asignación debe ser válida. Desconexión y reintento con misma clave idempotente no generan doble asignación. Documentar resolución manual.
+
+## Spike D — Mobile UX y gestos
+Bottom sheets, mapa, aceptar/rechazar, listas, gestos con lector de pantalla, Touch target, reduce motion, teclado, fuentes grandes, Android gama baja y iPhone.
+
+## Spike E — Supabase Self-Hosted
+Auth/RLS, Broadcast, PostGIS, Storage, operaciones de respaldo/restauración, uso de memoria en VPS de prueba, dependencias/licencias.
+
+## Spike F — Push
+Android, iOS, navegador soportado; app cerrada/background; autorización; tokens caducados; deduplicación; aceptación explícita independiente del push.
+
+## Spike G — Rutas, costos y pagos
+Comparar mapas y precios con muestras de trayectos locales; validar PSP para México, pagos, reembolsos, comisiones, tiempos de liquidación y conciliación.
+
+## Formato de reporte de prueba
+Fecha, versión, hardware/OS, hipótesis, entorno, pasos reproducibles, datos usados, resultados medidos, evidencia (sin secretos), fallas, impacto, recomendación, responsable y ADR afectado.
+
+## Criterio de avance
+No aprobar componentes por apariencia ni proveedores por documentación únicamente. Registrar pruebas antes de comenzar el MVP remunerado.

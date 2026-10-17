@@ -1,0 +1,49 @@
+# Documentación del proyecto
+
+**Corte inicial:** 17 de octubre de 2026. **Fase:** 0 (planeación). **Nombre de trabajo:** Volón.
+
+## Cómo interpretar este repositorio
+- **Requisito:** condición expresada para el producto (p. ej., cambio sencillo de marca, tracking en tiempo real).
+- **Propuesta:** elección técnica razonable aún no adoptada por pruebas.
+- **Hipótesis:** supuesto comercial u operativo pendiente de entrevistas o datos.
+- **Decisión candidata:** dirección aceptada conceptualmente, pero no validada en producción.
+- **ADR aceptado:** decisión expresamente ratificada, con contexto, alternativas y consecuencias.
+- **Validado:** respaldado por una prueba registrada con evidencias y fecha.
+
+No existe aplicación, infraestructura ni servicio desplegado a partir de esta documentación.
+
+## Lectura sugerida
+1. [Visión y principios](product/vision.md)
+2. [Audiencias y aplicaciones](product/personas-and-apps.md)
+3. [Modelos de negocio](product/business-model.md)
+4. [Alcance del MVP](product/mvp-scope.md) y [flujos operativos](product/flows.md)
+5. [Arquitectura](architecture/overview.md) y [estructura de repositorio](architecture/repository-structure.md)
+6. [Modelo de dominios](architecture/domain-model.md), [GPS y Realtime](architecture/realtime-and-gps.md)
+7. [Supabase](architecture/supabase-selfhosted.md), [UI y móvil](architecture/mobile-and-ui.md), [notificaciones](architecture/notifications.md)
+8. [Seguridad](architecture/security-and-privacy.md), [finanzas](architecture/finance.md), [operación](operations/hosting.md)
+9. [Reglas de cambio de marca](brand/rename-policy.md)
+10. [Decisiones](decisions/README.md), [pruebas de arquitectura](validation/technical-spikes.md), [plan Fase 0](roadmap/phase-0.md)
+
+## Resumen de estado
+| Tema | Estado | Dirección actual |
+| --- | --- | --- |
+| Producto multiactor, comercio local y repartos | Requisito | Marketplace + envíos + flotas |
+| Repositorio único | Decisión candidata | pnpm Workspaces + Turborepo |
+| Aplicaciones web | Decisión candidata | React / Next.js; marketing Astro |
+| App de repartidor | Decisión candidata | React Native + Expo, condicionada a pruebas reales |
+| Componentes web | Decisión candidata | UI propia con shadcn/ui selectivo + Tailwind CSS 4 |
+| Componentes nativos | Decisión candidata | UI nativa propia + tokens compartidos |
+| Backend | Decisión candidata | Monolito modular TypeScript |
+| Datos y servicios comunes | Decisión candidata | Supabase Self-Hosted, PostgreSQL/PostGIS |
+| Cache y jobs | Decisión candidata | Redis + colas persistentes |
+| GPS en tiempo real | Requisito | API de ingestión + ubicación reciente + Broadcast |
+| Web/mobile push | Requisito | FCM/APNs/Web Push mediante proveedor apropiado |
+| Tarifas y pagos | Por diseñar | Simulación antes de comprometer precios |
+| Nombre Volón | Provisional | Marca reemplazable, identificadores técnicos neutros |
+
+## Reglas editoriales
+- Markdown en español de México (UTF-8); identificadores de código/tablas en inglés cuando se definan.
+- No inventar cumplimiento legal, disponibilidad de dominios, capacidades de proveedores ni métricas de carga.
+- Indicar supuestos, fecha, responsable, evidencia, dependencias y decisión pendiente.
+- Las guías de terceros son referencias; verificar versiones y licencias en el momento de implementarlas.
+- Todo cambio arquitectónico sustancial debe registrar una decisión en docs/decisions.
