@@ -2,7 +2,7 @@
 
 **Estado:** hipótesis de secuencia. El piloto podría comenzar con envíos para comercios; validar con entrevistas antes de fijar prioridades.
 
-> Especificación más detallada y vigente para futuro desarrollo: [alcance y releases](../specification/release-scope.md), [módulos](../specification/domain-boundaries.md), [estados](../specification/state-machines.md) y [aceptación](../specification/acceptance-matrix.md). Este documento es el resumen de negocio.
+> Especificación más detallada y vigente para futuro desarrollo: [alcance y releases](../specification/release-scope.md), [módulos](../specification/domain-boundaries.md), [estados](../specification/state-machines.md) y [aceptación](../specification/acceptance-matrix.md). Este documento es el resumen de negocio. Para requisitos concretos y casos por actor usar [requirements.md](requirements.md) y [use-cases.md](use-cases.md), sin duplicarlos aquí.
 
 ## MVP orientado a entregas locales
 - Alta básica de comercio y sucursal; horarios, zonas y contacto.

@@ -9,8 +9,9 @@ Este repositorio está en **Fase 0: documentación y planificación**. No crear 
 3. [docs/conventions/ui-components.md](docs/conventions/ui-components.md) — reutilización, web, móvil y gestos.
 4. [docs/conventions/testing-and-quality.md](docs/conventions/testing-and-quality.md) — pruebas y puertas de calidad.
 5. [docs/conventions/ai-agent-workflow.md](docs/conventions/ai-agent-workflow.md) — proceso para toda IA.
-6. [docs/specification/README.md](docs/specification/README.md) — **contratos candidatos** de módulos, API, eventos, estados, permisos y aceptación.
-7. [docs/decisions/README.md](docs/decisions/README.md) — ADR, decisiones aún candidatas.
+6. [docs/product/requirements.md](docs/product/requirements.md) y [docs/product/use-cases.md](docs/product/use-cases.md) — requisitos RF/RNF, actores UC y escenarios propuestos.
+7. [docs/specification/README.md](docs/specification/README.md) — **contratos candidatos** de módulos, API, eventos, estados, permisos y aceptación.
+8. [docs/decisions/README.md](docs/decisions/README.md) — ADR, decisiones aún candidatas.
 
 ## Mandatos operativos
 - Priorizar arquitectura mantenible, módulos pequeños, DRY con criterio, separación de responsabilidades y tipos estrictos. No copiar/pegar lógica entre apps.
@@ -24,6 +25,7 @@ Este repositorio está en **Fase 0: documentación y planificación**. No crear 
 - No subir claves, tokens, datos reales ni rutas GPS de personas.
 - Respetar convenciones y ADR; documentar conflicto, no cambiar arquitectura silenciosamente.
 - **Trabajo por fase/WBS:** vincular cambios a un entregable del Plan Maestro y respetar el alcance aprobado; no iniciar apps o features futuros solo porque estén planeados.
+- **Documentación viva:** aplicar [docs/conventions/documentation-lifecycle.md](docs/conventions/documentation-lifecycle.md); cada comportamiento nuevo/modificado actualiza solo los documentos propietarios vinculados, sin duplicación.
 - **Contrato primero:** no crear endpoints, tablas, enums de estado o eventos nuevos sin revisar y actualizar docs/specification y su decisión pendiente; no interpretar ejemplos como implementación aprobada.
 - No ejecutar acciones destructivas ni publicar/desplegar sin aprobación explícita.
 

@@ -16,6 +16,13 @@ No existe aplicación, infraestructura ni servicio desplegado a partir de esta d
 
 **[MASTER_PLAN.md](../MASTER_PLAN.md)** es la orientación central del programa y **[docs/master-plan/](master-plan/README.md)** contiene la estrategia, todo el desglose de trabajo por IDs WBS, fases P0–P7, criterios de salida, presupuesto, operaciones, riesgos y lanzamiento. Mantener los contratos funcionales detallados en [specification](specification/README.md) y las decisiones de tecnología en ADR. **Plan Maestro en borrador:** no reemplaza aprobaciones, entrevistas ni pruebas.
 
+## Requerimientos y casos de uso
+
+- **[Catálogo vivo de requerimientos RF/RNF](product/requirements.md)**: qué debe cumplir cada capacidad y a qué fase pertenece.
+- **[Casos de uso UC](product/use-cases.md)**: actores, precondiciones, flujos, excepciones y resultados.
+- [Política de documentación viva](conventions/documentation-lifecycle.md): fuente única por tema, disparadores de actualización y cómo evitar duplicación.
+- [Pruebas ACC](specification/acceptance-matrix.md): cómo verificaremos lo exigido, sin confundir un plan de pruebas con pruebas realizadas.
+
 ## Lectura sugerida
 1. [Visión y principios](product/vision.md)
 2. [Audiencias y aplicaciones](product/personas-and-apps.md)
@@ -27,7 +34,7 @@ No existe aplicación, infraestructura ni servicio desplegado a partir de esta d
 8. [Supabase](architecture/supabase-selfhosted.md), [UI y móvil](architecture/mobile-and-ui.md), [notificaciones](architecture/notifications.md)
 9. [Seguridad](architecture/security-and-privacy.md), [finanzas](architecture/finance.md), [operación](operations/hosting.md)
 10. [Reglas de cambio de marca](brand/rename-policy.md)
-10. [Normas de ingeniería para IA y humanos](conventions/development.md), [componentes reutilizables](conventions/ui-components.md) y [pruebas/CI](conventions/testing-and-quality.md)
+11. [Normas de ingeniería para IA y humanos](conventions/development.md), [componentes reutilizables](conventions/ui-components.md) y [pruebas/CI](conventions/testing-and-quality.md)
 12. [Decisiones](decisions/README.md), [pruebas de arquitectura](validation/technical-spikes.md), [plan Fase 0](roadmap/phase-0.md)
 
 ## Base de especificación de escala

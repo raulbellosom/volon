@@ -26,13 +26,14 @@ La plataforma deberá poder brindar envíos solicitados por negocios, pedidos re
 
 ## 3. Jerarquía de fuentes (evita contradicciones)
 1. **Objetivo, fases, priorización y dueños del programa:** este Plan Maestro.
-2. **Comportamiento detallado, máquinas de estados, módulos, API/eventos/aceptación:** [docs/specification](../specification/README.md).
-3. **Decisiones arquitectónicas oficialmente adoptadas:** [ADR aceptados](../decisions/README.md), no los borradores.
-4. **Reglas obligatorias de código y agentes:** [docs/conventions](../conventions/development.md), [AGENTS.md](../../AGENTS.md) y [CLAUDE.md](../../CLAUDE.md).
-5. **Investigaciones y pruebas de stack:** [spikes](../validation/technical-spikes.md).
-6. **Riesgos jurídicos/fiscales:** [inventario legal](../legal/risks.md); se resolverán mediante revisión profesional competente.
+2. **Requerimientos y experiencia de actor:** [RF/RNF](../product/requirements.md) y [UC](../product/use-cases.md). 
+3. **Comportamiento técnico detallado, máquinas de estados, módulos, API/eventos/aceptación:** [docs/specification](../specification/README.md).
+4. **Decisiones arquitectónicas oficialmente adoptadas:** [ADR aceptados](../decisions/README.md), no los borradores.
+5. **Reglas obligatorias de código y agentes:** [docs/conventions](../conventions/development.md), [AGENTS.md](../../AGENTS.md) y [CLAUDE.md](../../CLAUDE.md).
+6. **Investigaciones y pruebas de stack:** [spikes](../validation/technical-spikes.md).
+7. **Riesgos jurídicos/fiscales:** [inventario legal](../legal/risks.md); se resolverán mediante revisión profesional competente.
 
-Ante conflicto: **registrar y resolver**, no elegir tácitamente la versión más conveniente. El plan puede priorizar, pero **no reemplaza** evidencia ni firma legal.
+La [política de documentación viva](../conventions/documentation-lifecycle.md) asigna un documento propietario por tipo de cambio. Ante conflicto: **registrar y resolver**, no elegir tácitamente la versión más conveniente. El plan puede priorizar, pero **no reemplaza** evidencia ni firma legal.
 
 ## 4. Gobierno del alcance
 - **Requisito decidido conceptualmente:** operar comercio local, repartos, GPS y eventos; marca provisional y arquitectura evolutiva.

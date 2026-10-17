@@ -2,6 +2,8 @@
 
 **Estado:** casos de prueba esperados; no ejecutados. Todos son candidatos de criterios de aceptación al ratificar el MVP.
 
+> Trazabilidad: [requerimientos RF/RNF](../product/requirements.md) → [casos UC](../product/use-cases.md) → [entregables WBS](../master-plan/05-work-breakdown.md) → **ACC** → pruebas ejecutables (futuras). Este archivo es el dueño de los criterios de prueba; los catálogos RF y UC solo los referencian.
+
 | ID | Escenario | Resultado esperado | Tipo |
 | --- | --- | --- | --- |
 | ACC-001 | Staff de Branch A crea entrega con quote vigente | persiste exactamente una Delivery con desglose y scope correcto | Integración/E2E |
@@ -14,7 +16,7 @@
 | ACC-008 | Courier pierde señal GPS | UI muestra última ubicación y antigüedad, no coordenada ficticia | Mobile/E2E |
 | ACC-009 | Courier envía GPS atrasado | no sobrescribe punto más nuevo | Integración |
 | ACC-010 | Exmiembro de Merchant A intenta consultar Merchant B | 403/404 seguro; sin datos cruzados | Seguridad |
-| ACC-011 | Usuario copia nombre del canal de otro reparto | no puede suscribirse ni ver GPS | Seguridad/Realtme |
+| ACC-011 | Usuario copia nombre del canal de otro reparto | no puede suscribirse ni ver GPS | Seguridad/Realtime |
 | ACC-012 | Desconexión Realtime con eventos omitidos | al reconectar lee snapshot/version y se corrige | Integración/E2E |
 | ACC-013 | Worker procesa evento dos veces | notificación/cargo/side effects idempotentes | Integración |
 | ACC-014 | PSP envía webhook inválido/duplicado | se rechaza o deduplica sin movimiento duplicado | Seguridad/finanzas |

@@ -7,7 +7,7 @@
 ## Qué contiene
 El plan cubre el **negocio entero y su evolución**, no únicamente la API o el MVP: descubrimiento comercial, alcance de producto, experiencia de clientes/comercios/repartidores/flotas/operadores, infraestructura, arquitectura, diseño UI, datos, tiempo real, seguridad, legal, pagos, operación real, métricas, marketing, soporte, calidad, piloto, marketplace, expansión, presupuesto y gestión.
 
-**Punto de entrada:** [Plan Maestro completo](docs/master-plan/README.md).
+**Punto de entrada:** [Plan Maestro completo](docs/master-plan/README.md). **Requisitos verificables:** [RF/RNF](docs/product/requirements.md) y [casos de uso](docs/product/use-cases.md). El [ciclo de vida documental](docs/conventions/documentation-lifecycle.md) impide mantener catálogos duplicados.
 
 ## Alcance ejecutivo
 - **Servicio A — Envíos para comercios:** solicitar logística sin vender necesariamente dentro de la plataforma.

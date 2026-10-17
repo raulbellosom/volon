@@ -12,6 +12,9 @@
 - [x] Reglas base compartidas para Codex y Claude (documentación, código mantenible, componentes, pruebas y límites de líneas).
 - [x] Borrador integral de [especificación del MVP y contratos](../specification/README.md) con módulos, estados, permisos, API, eventos, fallos y aceptación.
 - [x] [Plan Maestro](../../MASTER_PLAN.md) integral redactado en **estado borrador**, con fases, WBS, producto completo, riesgos, economía y gates.
+- [x] Catálogos **borrador** de [requisitos RF/RNF](../product/requirements.md) y [casos de uso UC](../product/use-cases.md), enlazados a WBS y ACC.
+- [x] Política de [documentación viva](../conventions/documentation-lifecycle.md) y eliminación de flujos duplicados.
+- [ ] Ratificar RF/UC de M0 con comercios, repartidores y operación; definir prioridades y excepciones reales.
 - [ ] Revisión y aprobación expresa del alcance/orden del Plan Maestro con responsables.
 - [ ] Ratificar con operación y negocio las [decisiones abiertas](../specification/open-decisions.md) y ejemplos de contratos.
 - [ ] Automatizar límites de líneas, lint, typecheck y pruebas en CI al iniciar Fase 1 (no están activos todavía).

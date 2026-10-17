@@ -1,33 +1,11 @@
-# Flujos operativos principales
+# Flujos operativos: índice (sin duplicados)
 
-**Estado:** propuesta de procesos a desglosar en diagramas de secuencia y criterios de aceptación.
+**Estado:** índice de consulta. Los flujos originalmente descritos aquí fueron incorporados a los [casos de uso](use-cases.md) y a los contratos técnicos correspondientes.
 
-## A. Pedido marketplace
-1. Cliente consulta disponibilidad y precios vigentes de sucursal.
-2. Backend vuelve a calcular importe antes de confirmar.
-3. Se registra pedido y resultado de pago, o estado pendiente según proveedor.
-4. Negocio recibe evento y confirma preparación.
-5. Se crea solicitud de entrega vinculada al pedido.
-6. Motor de despacho ofrece el trabajo a un repartidor elegible.
-7. Repartidor acepta; el backend decide la asignación transaccionalmente.
-8. Se captura recogida, trayecto y prueba de entrega.
-9. Se reconcilian cargos, devoluciones e ingresos con trazabilidad.
+- **Solicitar reparto sin marketplace:** [casos UC-03 y UC-04](use-cases.md) (cotizar y crear entrega).
+- **Asignación, recogida y entrega:** [casos UC-05 a UC-07](use-cases.md); [máquinas de estados](../specification/state-machines.md).
+- **Seguimiento, cancelación e incidentes:** [casos UC-08 a UC-10](use-cases.md); [GPS y despacho](../specification/dispatch-and-tracking.md).
+- **Marketplace futuro:** [casos UC-12 y UC-13](use-cases.md); [release scope](../specification/release-scope.md).
+- **Errores, reconexión, pagos, seguridad:** [fallos/recuperación](../specification/failure-and-recovery.md), [permisos](../specification/access-control.md) y [matriz ACC](../specification/acceptance-matrix.md).
 
-## B. Solo entrega
-1. Comercio crea una Delivery sin Order marketplace.
-2. Valida cobertura, tarifa y condiciones.
-3. Selecciona repartidor propio, tercero o despacho de Volón conforme al contrato.
-4. Se siguen los mismos estados logísticos y controles de evidencia.
-5. Cobro y liquidación siguen el modelo acordado para este servicio.
-
-## C. Excepciones
-- No hay repartidor: reintentar, ofrecer en otra zona o escalar a operador, nunca garantizar ETA inventado.
-- Repartidor desconectado: última ubicación con edad visible, estado de entrega persistido y protocolo de apoyo.
-- Doble aceptación: aceptación atómica; solo una asignación ganadora.
-- Cliente no localizado: llamada/canal de soporte, tiempo de espera y desenlace registrado.
-- Pedido cancelado: política por etapa y consecuencias monetarias diferenciadas.
-- Push no recibido: app sincroniza vía API al abrirse o reconectar.
-- Incidencia de pago: mantener estado del dinero separado de entrega.
-
-## Semántica de estados
-Definir una máquina de estados versionada por Order, Delivery, Assignment y Payment. Cada transición requiere actor autorizado, versión/condiciones previas, marca temporal, idempotencia, auditoría y posibles compensaciones.
+**Este archivo no debe convertirse en una segunda versión editable de los flujos.** Agregar o modificar un caso de uso en [use-cases.md](use-cases.md), con sus requerimientos y pruebas asociados. El nombre de trabajo «Volón» es provisional.

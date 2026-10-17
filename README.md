@@ -15,6 +15,8 @@ Volón es el nombre de trabajo de una plataforma de pedidos, entregas locales y 
 
 - [Índice y estado de decisiones](docs/README.md)
 - [Visión del producto](docs/product/vision.md)
+- **[Requerimientos del producto](docs/product/requirements.md)** y **[casos de uso](docs/product/use-cases.md)** (fuentes vivas de comportamiento)
+- [Reglas de documentación mantenible](docs/conventions/documentation-lifecycle.md)
 - [Arquitectura candidata](docs/architecture/overview.md)
 - [Mapa del monorepo previsto](docs/architecture/repository-structure.md)
 - [Plan de validaciones técnicas](docs/validation/technical-spikes.md)

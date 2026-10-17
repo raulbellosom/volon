@@ -1,6 +1,12 @@
 ## Objetivo y alcance
 ¿Qué problema resuelve? ¿Qué dominios/apps cambia? Enlazar issue o ADR si aplica.
 
+## Trazabilidad y documentación viva
+Requisitos: RF-/RNF- | Casos: UC- | Entregables WBS: | Aceptación: ACC-
+
+- Documentos propietarios impactados: ...
+- Docs sin cambios (motivo), si no se modifican: ...
+
 ## Diseño
 ¿Se buscó reutilizar componentes, hooks y lógica existentes antes de crear más código? ¿Mantiene separación por capas y contratos tipados? ¿Cambia la marca provisional o alguna interfaz pública?
 
@@ -20,4 +26,5 @@ Permisos/GPS, pagos, concurrencia, datos, migraciones, compatibilidad móvil y p
 - [ ] Sin credenciales, GPS de personas ni información sensible en diff o logs.
 - [ ] Seguridad, idempotencia y permisos por tenant considerados donde corresponde.
 - [ ] Arquitectura y contratos documentados; ADR actualizado cuando corresponde.
+- [ ] RF/UC/ACC/WBS actualizados y vinculados si cambió comportamiento; sin catálogos duplicados.
 - [ ] Cambios riesgosos/destructivos requieren aprobación explícita.

@@ -8,6 +8,10 @@ Este conjunto de documentos define **cómo debería funcionar** un MVP de últim
 
 El [Plan Maestro](../../MASTER_PLAN.md) prioriza el programa y su secuencia; esta especificación define comportamiento y contratos detallados. Ambas piezas son **borradores** pendientes de validación comercial y técnica. Ante contradicción, registrar decisión, no cambiar contratos silenciosamente.
 
+## Insumos funcionales sin duplicación
+
+Este dossier especifica *cómo* deben mantenerse las invariantes y contratos. Para *qué debe hacer* el producto y *cómo lo usa cada actor*, consultar [RF/RNF](../product/requirements.md) y [UC](../product/use-cases.md). Los tests se alinean con [ACC](acceptance-matrix.md); la [política de documentación viva](../conventions/documentation-lifecycle.md) explica cuándo actualizar cada fuente.
+
 ## Recorrido recomendado
 1. [Alcance, releases y decisiones de producto](release-scope.md)
 2. [Módulos y dependencias](domain-boundaries.md)
