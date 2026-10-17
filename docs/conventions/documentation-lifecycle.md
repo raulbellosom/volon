@@ -60,6 +60,9 @@ No hay necesidad de un «traceability.csv» manual adicional. La evidencia real 
 - **Responsable de cambio:** prepara actualización documental en **su mismo PR**; reviewer valida coherencia.
 - **IA:** propone modificaciones y señala conflictos; no ratifica por sí sola requisitos de negocio, acuerdos legales ni pruebas no realizadas.
 
+## Estado vivo de actividades
+Los objetivos de Fase 0 están enlazados desde [próximas acciones](../master-plan/12-next-actions.md), pero avance, asignación y evidencias **viven en GitHub Issues/PR**, no en casillas duplicadas del Plan Maestro. Abrir nuevos Issues solo para la fase activa o trabajo con responsable y aceptación definidos.
+
 ## Revisión y caducidad
 - **En cada PR relevante:** checklist `Docs impactados`, `RF/UC/ACC`, `ADR` y evidencia.
 - **Al terminar una fase:** revisar solo documentos afectados por esa fase, enlaces rotos y decisiones abiertas; archivar o marcar reemplazados.

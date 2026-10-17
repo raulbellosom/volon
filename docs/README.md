@@ -12,6 +12,10 @@
 
 No existe aplicación, infraestructura ni servicio desplegado a partir de esta documentación.
 
+## Trabajo de Fase 0 en GitHub
+
+Los pendientes que requieren evidencias y responsables reales están en [Issues abiertos del repositorio](https://github.com/raulbellosom/volon/issues). El [Plan Maestro: próximas acciones](master-plan/12-next-actions.md) enlaza únicamente los tickets de la fase actual; evitar duplicar su estado manualmente.
+
 ## Plan Maestro: punto de entrada
 
 **[MASTER_PLAN.md](../MASTER_PLAN.md)** es la orientación central del programa y **[docs/master-plan/](master-plan/README.md)** contiene la estrategia, todo el desglose de trabajo por IDs WBS, fases P0–P7, criterios de salida, presupuesto, operaciones, riesgos y lanzamiento. Mantener los contratos funcionales detallados en [specification](specification/README.md) y las decisiones de tecnología en ADR. **Plan Maestro en borrador:** no reemplaza aprobaciones, entrevistas ni pruebas.

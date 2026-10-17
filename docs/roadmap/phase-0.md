@@ -2,6 +2,8 @@
 
 **Objetivo actual:** dejar una base de producto y arquitectura verificable. Sin escribir aún aplicaciones productivas.
 
+> **El estado de ejecución y responsables reales se consulta en [GitHub Issues](https://github.com/raulbellosom/volon/issues)**. El checklist aquí es un hito de planeación y no debe duplicar cada tarea viva.
+>
 > Este documento conserva el checklist **solo para la Fase 0**. Para todas las etapas del programa, entregables, riesgos y gates consultar el [Plan Maestro](../../MASTER_PLAN.md), sus [fases P0–P7](../master-plan/04-phases-and-gates.md) y [WBS](../master-plan/05-work-breakdown.md).
 
 ## Etapa 0A — Fundamentos (documentación inicial)
