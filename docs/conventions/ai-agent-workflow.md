@@ -3,7 +3,7 @@
 **Objetivo:** usar agentes como desarrolladores disciplinados y auditables, no como generadores de grandes parches opacos.
 
 ## Antes de editar
-1. Leer README, AGENTS.md/CLAUDE.md según herramienta, normativa común y ADR relacionados.
+1. Leer [Plan Maestro](../../MASTER_PLAN.md), README, AGENTS.md/CLAUDE.md según herramienta, normativa común, especificación y ADR relacionados. Identificar fase, WBS ID y dependencias.
 2. Confirmar fase del proyecto: **durante Fase 0 únicamente documentación**, salvo solicitud explícita de spike.
 3. Inspeccionar árbol real, APIs y componentes existentes antes de agregar archivos nuevos.
 4. Expresar objetivo, contrato esperado, archivos previstos, riesgos, pruebas y posible ADR.

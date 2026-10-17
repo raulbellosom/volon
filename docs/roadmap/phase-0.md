@@ -2,6 +2,8 @@
 
 **Objetivo actual:** dejar una base de producto y arquitectura verificable. Sin escribir aún aplicaciones productivas.
 
+> Este documento conserva el checklist **solo para la Fase 0**. Para todas las etapas del programa, entregables, riesgos y gates consultar el [Plan Maestro](../../MASTER_PLAN.md), sus [fases P0–P7](../master-plan/04-phases-and-gates.md) y [WBS](../master-plan/05-work-breakdown.md).
+
 ## Etapa 0A — Fundamentos (documentación inicial)
 - [x] Repositorio GitHub iniciado con README de propósito.
 - [x] Documentación base de actores, flujos, servicios y módulos.
@@ -9,6 +11,8 @@
 - [x] Plan de validaciones técnicas.
 - [x] Reglas base compartidas para Codex y Claude (documentación, código mantenible, componentes, pruebas y límites de líneas).
 - [x] Borrador integral de [especificación del MVP y contratos](../specification/README.md) con módulos, estados, permisos, API, eventos, fallos y aceptación.
+- [x] [Plan Maestro](../../MASTER_PLAN.md) integral redactado en **estado borrador**, con fases, WBS, producto completo, riesgos, economía y gates.
+- [ ] Revisión y aprobación expresa del alcance/orden del Plan Maestro con responsables.
 - [ ] Ratificar con operación y negocio las [decisiones abiertas](../specification/open-decisions.md) y ejemplos de contratos.
 - [ ] Automatizar límites de líneas, lint, typecheck y pruebas en CI al iniciar Fase 1 (no están activos todavía).
 - [ ] Revisar y ratificar prioridades de negocio con responsables reales.

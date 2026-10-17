@@ -12,6 +12,10 @@
 
 No existe aplicación, infraestructura ni servicio desplegado a partir de esta documentación.
 
+## Plan Maestro: punto de entrada
+
+**[MASTER_PLAN.md](../MASTER_PLAN.md)** es la orientación central del programa y **[docs/master-plan/](master-plan/README.md)** contiene la estrategia, todo el desglose de trabajo por IDs WBS, fases P0–P7, criterios de salida, presupuesto, operaciones, riesgos y lanzamiento. Mantener los contratos funcionales detallados en [specification](specification/README.md) y las decisiones de tecnología en ADR. **Plan Maestro en borrador:** no reemplaza aprobaciones, entrevistas ni pruebas.
+
 ## Lectura sugerida
 1. [Visión y principios](product/vision.md)
 2. [Audiencias y aplicaciones](product/personas-and-apps.md)

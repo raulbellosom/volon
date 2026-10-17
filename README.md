@@ -6,6 +6,11 @@
 
 Volón es el nombre de trabajo de una plataforma de pedidos, entregas locales y coordinación de repartidores y flotas, concebida para iniciar con un piloto en Puerto Vallarta y Bahía de Banderas, México. Se propone facilitar herramientas accesibles para pequeños negocios, clientes y repartidores sin asumir aún tarifas, relaciones jurídicas o tecnologías no validadas.
 
+## Documento rector
+
+- **[PLAN MAESTRO — programa completo](MASTER_PLAN.md)**: ruta integral, fases, work breakdown, decisiones, riesgos, costos, operación, calidad, expansión y condiciones de aprobación. Actualmente es un **borrador**, no software ni plan autorizado para desplegar.
+- [Capítulos del Plan Maestro](docs/master-plan/README.md)
+
 ## Comenzar por la documentación
 
 - [Índice y estado de decisiones](docs/README.md)

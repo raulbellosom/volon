@@ -2,7 +2,7 @@
 
 Volón es una **marca provisional** de una plataforma de entregas locales. El repositorio se encuentra en Fase 0 (solo documentación). **No implementar código ni desplegar nada** sin instrucción explícita.
 
-Este archivo es un punto de entrada, NO una segunda normativa independiente. Aplicar en orden:
+Este archivo es un punto de entrada, NO una segunda normativa independiente. Antes de editar leer [MASTER_PLAN.md](MASTER_PLAN.md) y [docs/master-plan/README.md](docs/master-plan/README.md) (programa, fases, WBS y bloqueadores, aún borrador). Aplicar además en orden:
 1. [docs/README.md](docs/README.md): situación y alcance.
 2. [docs/conventions/engineering-standards.md](docs/conventions/engineering-standards.md): arquitectura limpia, DRY, tamaños máximos y tipos.
 3. [docs/conventions/ui-components.md](docs/conventions/ui-components.md): componentes reutilizables web y React Native.
@@ -20,6 +20,7 @@ Este archivo es un punto de entrada, NO una segunda normativa independiente. Apl
 - No asumir tests ejecutados ni servicios existentes. No datos reales, contraseñas, claves ni credenciales en Git.
 - Código y nombres técnicos en inglés; contenido visible/documentación en español México.
 - Mantener neutralidad frente a cambios de marca.
+- **Alcance controlado:** toda propuesta de trabajo identifica WBS/fase del Plan Maestro; no implementar fases futuras sin instrucción explícita.
 - **Contract-first:** antes de agregar endpoints, estados, tablas o eventos, revisar el dossier docs/specification, resolver decisiones abiertas y actualizar contratos/propuestas pertinentes.
 - Antes de editar: inspeccionar los archivos pertinentes, diseñar cambio mínimo, identificar pruebas y riesgos. Después: verificar, explicar lo comprobado y lo pendiente.
 - No hacer push de cambios no relacionados, reescribir historial, borrar datos ni desplegar sin indicación.

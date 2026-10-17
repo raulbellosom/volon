@@ -4,6 +4,10 @@
 
 Este conjunto de documentos define **cómo debería funcionar** un MVP de última milla y cómo conservar capacidad de evolución hacia marketplace, flotas y nuevas ciudades. No confirma aún viabilidad comercial, jurídica ni operativa. El nombre comercial «Volón» es provisional y reemplazable.
 
+## Relación con el Plan Maestro
+
+El [Plan Maestro](../../MASTER_PLAN.md) prioriza el programa y su secuencia; esta especificación define comportamiento y contratos detallados. Ambas piezas son **borradores** pendientes de validación comercial y técnica. Ante contradicción, registrar decisión, no cambiar contratos silenciosamente.
+
 ## Recorrido recomendado
 1. [Alcance, releases y decisiones de producto](release-scope.md)
 2. [Módulos y dependencias](domain-boundaries.md)

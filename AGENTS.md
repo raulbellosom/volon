@@ -3,6 +3,7 @@
 Este repositorio está en **Fase 0: documentación y planificación**. No crear aplicaciones, dependencias, scripts ejecutables, migraciones, infraestructura ni servicios a menos que el usuario autorice expresamente iniciar implementación o una prueba técnica.
 
 **Leer antes de actuar**, en este orden:
+0. [MASTER_PLAN.md](MASTER_PLAN.md) y [docs/master-plan/README.md](docs/master-plan/README.md) — plan rector de programa, fases y WBS (borrador, no aprobación de ejecución).
 1. [docs/README.md](docs/README.md) — alcance, estados y fuentes de verdad.
 2. [docs/conventions/engineering-standards.md](docs/conventions/engineering-standards.md) — reglas obligatorias de calidad y límites.
 3. [docs/conventions/ui-components.md](docs/conventions/ui-components.md) — reutilización, web, móvil y gestos.
@@ -22,6 +23,7 @@ Este repositorio está en **Fase 0: documentación y planificación**. No crear 
 - **Volón es nombre provisional:** no acoplar identifiers internos, contratos, tablas o paquetes a la marca.
 - No subir claves, tokens, datos reales ni rutas GPS de personas.
 - Respetar convenciones y ADR; documentar conflicto, no cambiar arquitectura silenciosamente.
+- **Trabajo por fase/WBS:** vincular cambios a un entregable del Plan Maestro y respetar el alcance aprobado; no iniciar apps o features futuros solo porque estén planeados.
 - **Contrato primero:** no crear endpoints, tablas, enums de estado o eventos nuevos sin revisar y actualizar docs/specification y su decisión pendiente; no interpretar ejemplos como implementación aprobada.
 - No ejecutar acciones destructivas ni publicar/desplegar sin aprobación explícita.
 
