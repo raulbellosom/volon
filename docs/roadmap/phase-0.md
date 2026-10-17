@@ -7,6 +7,8 @@
 - [x] Documentación base de actores, flujos, servicios y módulos.
 - [x] Propuestas ADR con estados correctos.
 - [x] Plan de validaciones técnicas.
+- [x] Reglas base compartidas para Codex y Claude (documentación, código mantenible, componentes, pruebas y límites de líneas).
+- [ ] Automatizar límites de líneas, lint, typecheck y pruebas en CI al iniciar Fase 1 (no están activos todavía).
 - [ ] Revisar y ratificar prioridades de negocio con responsables reales.
 - [ ] Definir quién usará primero Volón y qué problema exacto pagará por resolver.
 

@@ -22,7 +22,8 @@ No existe aplicación, infraestructura ni servicio desplegado a partir de esta d
 7. [Supabase](architecture/supabase-selfhosted.md), [UI y móvil](architecture/mobile-and-ui.md), [notificaciones](architecture/notifications.md)
 8. [Seguridad](architecture/security-and-privacy.md), [finanzas](architecture/finance.md), [operación](operations/hosting.md)
 9. [Reglas de cambio de marca](brand/rename-policy.md)
-10. [Decisiones](decisions/README.md), [pruebas de arquitectura](validation/technical-spikes.md), [plan Fase 0](roadmap/phase-0.md)
+10. [Normas de ingeniería para IA y humanos](conventions/development.md), [componentes reutilizables](conventions/ui-components.md) y [pruebas/CI](conventions/testing-and-quality.md)
+11. [Decisiones](decisions/README.md), [pruebas de arquitectura](validation/technical-spikes.md), [plan Fase 0](roadmap/phase-0.md)
 
 ## Resumen de estado
 | Tema | Estado | Dirección actual |
@@ -47,3 +48,6 @@ No existe aplicación, infraestructura ni servicio desplegado a partir de esta d
 - Indicar supuestos, fecha, responsable, evidencia, dependencias y decisión pendiente.
 - Las guías de terceros son referencias; verificar versiones y licencias en el momento de implementarlas.
 - Todo cambio arquitectónico sustancial debe registrar una decisión en docs/decisions.
+
+## Instrucciones para agentes de IA
+En la raíz existen [AGENTS.md](../AGENTS.md) para Codex y [CLAUDE.md](../CLAUDE.md) para Claude Code. Ambos remiten a las mismas normas canónicas en [docs/conventions/](conventions/development.md). Durante Fase 0 no hay implementación ni pipeline configurado; los límites y checks están documentados para su futura automatización.
