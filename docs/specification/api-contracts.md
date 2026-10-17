@@ -68,7 +68,7 @@ No devolver promesas de ETA sin datos/algoritmos fiables. La validación de cobe
   "dropoffInstructions": "Dejar con recepción"
 }
 ```
-Respuesta conceptual `201` con `deliveryId`, `status: requested`, `version: 1`, precios congelados y URLs de seguimiento **protegidas**, nunca permisos implícitos.
+Respuesta conceptual `201` con `deliveryId`, `status: requested`, `version: 1`, precios congelados, **eligibilidad de despacho derivada de pago real** y URLs de seguimiento **protegidas**, nunca permisos implícitos.
 
 ## Errores
 Adoptar `application/problem+json` inspirado en RFC 9457, con `type`, `title`, `status`, `detail` segura y `instance` (correlation ID), más `code` estable para clientes. Ejemplos: `QUOTE_EXPIRED` (409/422 según semántica), `DELIVERY_STATE_CONFLICT` (409), `ACCESS_DENIED` (403), `RATE_LIMITED` (429).

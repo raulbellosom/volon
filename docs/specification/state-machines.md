@@ -15,6 +15,8 @@ Estados propuestos:
 - `cancelled`: terminación por cancelación con causa y actor autorizado.
 - `failed`: intento sin resolución/entrega, sujeto a soporte y reglas comerciales.
 
+**Gating M0 del despacho (decisión de diseño):** la Delivery puede estar `requested` mientras el PSP procesa `Payment` del servicio logístico pagado por el comercio. Solo puede avanzar a `dispatching` cuando el backend verifique la elegibilidad financiera; `Payment` sigue siendo entidad/estado independiente, no un simple booleano enviado por el cliente. Si pago es incierto, denegado o reembolsado antes de asignar, no ofertar. Expiración/limpieza y reembolsos siguen política contractual pendiente; nunca asumir pago confirmado por un timeout. [Modelo M0](../product/pilot-operating-model.md).
+
 Propuesta de transiciones principales:
 `requested → dispatching → assigned → en_route_pickup → at_pickup → picked_up → in_transit → delivered`.
 

@@ -1,38 +1,28 @@
-# 12 — Próximas acciones priorizadas
+# 12 — Próximas acciones después de elegir el diseño del piloto
 
-**Estado observado al 17-10-2026:** monorepo previsto pero sin código; docs de arquitectura, especificación y reglas para IA publicados. Este master plan es **borrador**, no aprobado. No se han ejecutado spikes, entrevistas ni despliegues.
+**Fecha:** 2026-10-17. Ya elegimos para **diseño** el servicio B2B de entregas para comercios, área inicial reducida en Puerto Vallarta, motocicleta, cobro de logística al comercio y despacho secuencial/manual. Ver [modelo operativo M0](../product/pilot-operating-model.md). **Esto no representa aprobación legal/comercial ni validación técnica.**
 
-## Orden concreto recomendado
-1. **Acordar el primer negocio:** envíos para negocios, marketplace o lanzamiento híbrido; elegir un flujo principal y responsables.
-2. **Elegir cobertura piloto y horario:** zonas, radios, transporte, volumen mínimo y límites comerciales.
-3. **Mapear quién cobra a quién:** sin suponer split/payout legal; preparar flujo completo de factura, reembolso y liquidación.
-4. **Revisar modelo jurídico mexicano:** modalidad laboral, contratación, seguridad social/seguros, privacidad GPS, manejo de efectivo y documentos.
-5. **Obtener insumos de comercios y couriers reales:** sin ellos precios, ETA, suposiciones de demanda y prioridades no se pueden validar.
-6. **Aprobar journey completo y máquina de estados de Delivery y Assignment:** eventos de excepción, custodia, cancelación y reasignación.
-7. **Hacer lista mínima de pantallas por rol M0:** comercio, courier nativo, admin, tracking destinatario; preparar prototipos.
-8. **Diseñar contrato OpenAPI/eventos y modelos lógicos versionados:** no producir tablas indiscriminadamente.
-9. **Ejecutar spikes de Expo GPS/gestos y Supabase Realtime/RLS:** priorizar condiciones que pueden forzar un cambio de stack.
-10. **Probar selección de proveedor de mapas y PSP** con sandbox/costos/matriz mexicana.
-11. **Definir baseline NFR y presupuesto**, sobre datos y pruebas, no aproximaciones arbitrarias.
-12. **Ratificar ADR/plan de releases y dar permiso de implementación P2** tras superar condiciones.
+## P0: lo único que resta definir antes de pruebas
+| Orden | Actividad y responsable funcional sugerido | Entregable / aceptación | Estado |
+| --- | --- | --- | --- |
+| 1 | Producto/Comercial: entrevistas a comercios y couriers | Muestras anonimizadas, demanda/franjas, disposición a pago y disponibilidad | Pendiente |
+| 2 | Operaciones: dibujar una microzona de Puerto Vallarta y verificar horarios/capacidad/seguridad | Polígono propuesto, límites por distancia/tamaño, soporte y cobertura real | Pendiente |
+| 3 | Finanzas: unit economics, tarifa por tramo y presupuesto | Escenarios y margen por entrega; impuestos y promociones separados | Pendiente |
+| 4 | Legal/Fiscal: revisar contratación, IMSS, seguros, facturación y privacidad GPS | Requisitos de operación y conclusión de viabilidad con profesional responsable | Pendiente |
+| 5 | Producto+Operación: revisar excepciones desde quote hasta entrega | Aceptación o modificaciones a estados/UC, cambios de custodia y cancelación | Pendiente |
+| 6 | Producto+Ingeniería: acordar requisitos funcionales priorizados y contratos v1 | RF/UC/ACC y contratos seleccionados ratificados para P1/P2 | Pendiente |
 
-## Tres decisiones para una revisión de producto
-- ¿Primera comercialización: mensajería/reparto para comercios con ventas propias?
-- ¿Quién es responsable de la flota (plataforma, tercero o comercio) y cómo cambia tarifa y relación jurídica?
-- ¿A través de quién fluye el dinero en el primer servicio, con o sin cobro al destinatario?
+Los ítems anteriores dependen de **evidencia externa o de responsables reales**, no de escribir más documentación. No inventar que se completaron por haber seleccionado una hipótesis.
 
-No es necesario elegir stack móvil o completar diseño final para responder estas tres preguntas de negocio.
+## P1: secuencia técnica después del gate
+1. Spike React Native/Expo GPS background y batería con teléfonos Android e iPhone reales; gestos/touch targets/A11y.
+2. Spike Supabase Self-Hosted, Auth/RLS, Realtime privado, reconexión, PostGIS y restore.
+3. Prueba de aceptación concurrente, idempotencia, versionado y transactional outbox.
+4. Proveedor de mapas/rutas y PSP México: sandbox, contrato, costos, reembolsos y estados inciertos.
+5. Calibración de carga, privacidad, backup y capacidad de soporte; ratificar ADR y presupuesto.
 
-## Artefactos para la próxima revisión
-- `product-brief-v1` ratificado: qué problema/actor se atiende, qué no incluye, criterios de éxito.
-- `pilot-zone-v1`: geografía de prueba, horario, categorías y capacidad (sin datos personales).
-- `money-flow-v1`: dinero por actor, factura y pasarela, revisado fiscal/legalmente.
-- `delivery-state-v1`: transiciones y excepciones revisadas por operación.
-- `spike-report-expo` y `spike-report-realtime`: resultados técnicos medidos, no predicciones.
-- `go-no-go-F1`: aprobación explícita con responsables.
+## Habilitación de desarrollo P2
+Exigir: objetivos y límites del MVP definidos, decisiones de negocio y seguridad aprobadas, proveedores seleccionados mediante pruebas, versión de contratos documentada, responsables asignados y presupuesto estimado. No requerir éxito comercial del piloto para crear prototipos de P1; sí requerir revisión de seguridad y de datos si se hacen pruebas con personas.
 
-## Qué NO voy a asumir
-No dar por aprobada comisión, contratación o distribución de fondos; no imponer Expo, Supabase, Next.js o shadcn como inamovibles; no anunciar «app terminada», «servidor listo», pruebas verdes ni permisos legales por el hecho de que exista documentación.
-
-## Próxima decisión controlada
-Propuesta: cerrar `STR-005` (modalidad de primer servicio), `STR-003` (cobertura) y `STR-007` (economía por entrega), después preparar la matriz de flujos y contratos de negocio. Si el usuario aprueba otra secuencia, registrar su motivación y dependencias.
+## No hacer todavía
+No inventar tarifas MXN ni zonas; no activar servicio comercial remunerado, no implementar wallet, catálogo, customer-mobile o fleet-web; no generar apps productivas a partir de ejemplos. No cerrar DEC-02/03/05/06 por inferencia. Seguir [open-decisions](../specification/open-decisions.md) en lugar de mantener varias listas rivales.

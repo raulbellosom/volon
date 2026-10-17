@@ -18,8 +18,10 @@
 - [ ] Revisión y aprobación expresa del alcance/orden del Plan Maestro con responsables.
 - [ ] Ratificar con operación y negocio las [decisiones abiertas](../specification/open-decisions.md) y ejemplos de contratos.
 - [ ] Automatizar límites de líneas, lint, typecheck y pruebas en CI al iniciar Fase 1 (no están activos todavía).
-- [ ] Revisar y ratificar prioridades de negocio con responsables reales.
-- [ ] Definir quién usará primero Volón y qué problema exacto pagará por resolver.
+- [x] Elegir **dirección de diseño** del primer servicio B2B y límites M0: [modelo operativo](../product/pilot-operating-model.md).
+- [ ] Validar con negocios/couriers y presupuesto la modalidad elegida, antes de ratificarla comercialmente.
+- [x] Definir actor pagador y problema inicial **como hipótesis de negocio**: el comercio contrata logística externa.
+- [ ] Confirmar comercialmente la disposición a pagar y condiciones legales/operativas.
 
 ## Etapa 0B — Investigación y definiciones
 - [ ] Entrevistas con comercios y repartidores piloto.

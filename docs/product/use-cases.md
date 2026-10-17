@@ -1,6 +1,6 @@
 # Catálogo vivo de casos de uso
 
-**Fecha:** 2026-10-17 · **Estado:** propuestas funcionales por validar con comercios, repartidores y operaciones. **No implica UI ni API ejecutable.**
+**Fecha:** 2026-10-17 · **Estado:** propuestas funcionales por validar con comercios, repartidores y operaciones. El [modelo M0 elegido para diseño](pilot-operating-model.md) establece comercio pagador de logística, sin recaudar mercancías, motocicleta y una microzona de Puerto Vallarta. **No implica UI ni API ejecutable.**
 
 ## Convenciones
 - `UC-XX`: interacción con objetivo de actor y resultado verificable. Se describe **qué sucede**, no nombres de pantallas, tablas o funciones.
@@ -35,15 +35,15 @@
 ## UC-04 — Solicitar una entrega independiente (M0)
 - **Actor:** empleado autorizado del comercio.
 - **Precondición:** quote válida y condiciones de cobro/servicio aplicables aceptadas.
-- **Flujo:** proporciona destinatario y referencias necesarias → confirma solicitud → backend revalida scope/quote → crea una Delivery → devuelve ID y estado real.
+- **Flujo:** proporciona destinatario y referencias necesarias → confirma solicitud → backend revalida scope/quote → crea una Delivery `requested` → inicia/consulta pago del **servicio logístico al comercio** → conserva estado no despachable mientras no exista verificación PSP → devuelve ID y estado real.
 - **Alternativas:** doble envío por timeout o clic repetido, key reused con cuerpo distinto, quote vencida, DB caída → no duplicar ni reportar confirmación inexistente.
-- **Resultado:** Delivery persistida exactamente una vez, sin necesidad de Order del marketplace.
+- **Resultado:** Delivery persistida exactamente una vez, sin necesidad de Order del marketplace; despacho bloqueado hasta pago verificado del servicio, sin confundir `Payment.status` con `Delivery.status`.
 - **Trazabilidad:** RF-007/008/021 · DEL-004 · ACC-001/002/003/020.
 
 ## UC-05 — Recibir y aceptar/rechazar oferta (M0)
 - **Actor:** repartidor elegible.
 - **Precondición:** disponible y oferta dirigida vigente.
-- **Flujo:** recibe notificación/consulta ofertas → revisa ruta/costo/condiciones → acepta o declina → API confirma resultado → se actualiza vista.
+- **Flujo:** recibe notificación/consulta ofertas → revisa ruta/costo/condiciones → acepta o declina → API confirma resultado → se actualiza vista; en M0 las ofertas siguen despacho secuencial, con intervención manual.
 - **Alternativas:** segundo repartidor aceptó primero, oferta expirada, falla de push, app sin red, doble toque → backend confirma solo un ganador; perdedor ve conflicto y estado vigente.
 - **Resultado:** como máximo una Assignment activa compatible y trazabilidad de intentos.
 - **Trazabilidad:** RF-009/010/018 · DEL-005/008 · ACC-004/005.
@@ -90,8 +90,8 @@
 
 ## UC-11 — Conciliar cobro asociado al reparto (M0 condicionado)
 - **Actor:** responsable financiero/autorizado y proveedor PSP.
-- **Precondición:** modelo legal, facturación y PSP validados; reglas de reembolso aprobadas.
-- **Flujo:** registra operación de cobro legalmente permitida → espera confirmación verificable → recibe/reconcilia eventos → genera ledger y liquidaciones según contrato.
+- **Precondición:** modelo legal, facturación y PSP validados; reglas de reembolso aprobadas. En M0 paga el comercio **únicamente la logística**, no el valor de mercancía.
+- **Flujo:** registra operación de cobro legalmente permitida → espera confirmación verificable → recibe/reconcilia eventos → registra ledger del cobro logístico y obligaciones/remuneración del courier de forma separada según contrato. Solo habilita despacho con pago confirmado y conciliado.
 - **Alternativas:** webhook falso o duplicado, timeout, pago pendiente, reembolso parcial, contracargo → deduplica y conserva estado incierto hasta reconciliar.
 - **Resultado:** no hay doble cargo/liquidación ni confusión entre Delivery y Payment.
 - **Trazabilidad:** RF-022 · DEL-015 · ACC-014.

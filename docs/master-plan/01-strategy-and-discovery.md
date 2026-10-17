@@ -12,10 +12,10 @@ Pequeños comercios requieren reparto económicamente predecible y una relación
 4. Usuarios finales interesados en descubrir negocios locales.
 5. Comercios con repartidores propios que requieren software pero no logística externa.
 
-El piloto se considera en **Puerto Vallarta y Bahía de Banderas**. Investigar jurisdicciones operativas, distancias reales, horarios, temporadas y variaciones climáticas; no inferir cobertura garantizada.
+**Diseño seleccionado:** una microzona compacta dentro de Puerto Vallarta, Jalisco, con máximo inicial de 10 comercios invitados y motocicleta; Bahía de Banderas se reserva para expansión. Investigar polígono, distancias reales, horarios, temporada y capacidad antes de activar; no inferir cobertura garantizada. Ver [modelo operativo M0](../product/pilot-operating-model.md).
 
 ## Hipótesis (no hechos)
-- H1. Un comercio pagará por entrega independiente del marketplace.
+- H1. Un comercio pagará por entrega independiente del marketplace (**modalidad elegida para investigar**, aún no probada).
 - H2. Existe suficiente densidad de pedidos/repartidores en zonas y franjas elegidas.
 - H3. Un costo transparente resulta atractivo sin depender de subsidios permanentes.
 - H4. El repartidor aceptará la propuesta por ingresos y condiciones previsibles.

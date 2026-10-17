@@ -2,6 +2,8 @@
 
 **Estado:** mapa de ejecución por evidencia, sin calendario inventado. Una fase puede durar lo que requieran sus riesgos, presupuesto y equipo. No declarar «lista» por tener documentos o pantallas.
 
+**Dirección de producto seleccionada para diseño:** [M0 B2B de entregas](../product/pilot-operating-model.md). No cambia la exigencia de legalidad, entrevistas, presupuesto, pruebas y gates.
+
 ## P0 — Descubrimiento, definición y gobierno (Fase actual)
 **Objetivo:** elegir el primer producto vendible, asegurar viabilidad y cerrar contradicciones de contratos.
 **Trabajo:** entrevistas; segmentación; flujos comerciales; zonas; modo de cobro, tarifario, impuestos, contratos y laborales; política de datos y términos; MVP ratificado; ADR; modelo de datos, estados y API candidata; matriz de riesgos; estimaciones iniciales.

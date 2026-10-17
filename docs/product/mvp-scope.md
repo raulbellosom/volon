@@ -1,8 +1,11 @@
 # Alcance candidato del MVP
 
-**Estado:** hipótesis de secuencia. El piloto podría comenzar con envíos para comercios; validar con entrevistas antes de fijar prioridades.
+**Estado:** envíos para comercios **seleccionado para diseño del piloto M0**; no está comercial/legal/técnicamente validado. [Modelo operativo propietario](pilot-operating-model.md).
 
 > Especificación más detallada y vigente para futuro desarrollo: [alcance y releases](../specification/release-scope.md), [módulos](../specification/domain-boundaries.md), [estados](../specification/state-machines.md) y [aceptación](../specification/acceptance-matrix.md). Este documento es el resumen de negocio. Para requisitos concretos y casos por actor usar [requirements.md](requirements.md) y [use-cases.md](use-cases.md), sin duplicarlos aquí.
+
+## Condiciones comerciales elegidas para diseñar M0
+Comercio paga solamente servicio logístico, sin cobro de mercancía; motocicletas y una microzona compacta de Puerto Vallarta; ofertas secuenciales con operador de respaldo; pago verificado antes de despacho. Tarifas, PSP, capacidades y régimen laboral siguen pendientes. Las aplicaciones iniciales serán portal comercio, repartidor nativo, consola admin y seguimiento web limitado.
 
 ## MVP orientado a entregas locales
 - Alta básica de comercio y sucursal; horarios, zonas y contacto.

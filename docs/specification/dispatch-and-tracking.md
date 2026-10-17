@@ -3,10 +3,10 @@
 **Estado:** algoritmo inicial por confirmar con operaciones de repartidores. Diseñar primero seguridad y corrección, luego optimización.
 
 ## Despacho del piloto
-1. Delivery solicitada y cotización validada pasa a `dispatching`.
+1. En M0, Delivery `requested` con cotización aceptada **y pago del servicio logístico verificado** pasa a `dispatching`. Si el pago es incierto o fallido no se genera ninguna oferta. [Modelo operativo M0](../product/pilot-operating-model.md).
 2. Obtener candidaturas elegibles por turno disponible, tipo vehículo, zona, política contractual, situación de entregas activas y frescura GPS.
 3. Calcular score **explicable** y configurable: distancia/ETA fiable, disponibilidad, tipo de servicio, carga, capacidad, restricciones. No usar factores discriminatorios ni puntuaciones opacas sin evaluación jurídica/operativa.
-4. Ofrecer a candidato(s) según estrategia aprobada (secuencial inicialmente) con vencimiento de servidor, `offerId` y `expiresAt`.
+4. Ofrecer a un candidato por vez en M0, según estrategia elegida (secuencial con operador manual) con vencimiento de servidor, `offerId` y `expiresAt`.
 5. Aceptación: confirmar dentro de transacción, comprobar courier, offer vigente, Delivery apta, que no exista Assignment activa incompatible; asegurar exclusión.
 6. Ganador se registra, ofertas restantes se retiran/expiran, eventos del commit van a outbox, UI recupera la versión nueva.
 7. Si nadie acepta: reintentar con políticas y límites, escalar a dispatcher, notificar comercio sin ETA inventado.

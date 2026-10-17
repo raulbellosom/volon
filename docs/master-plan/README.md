@@ -35,6 +35,9 @@ La plataforma deberá poder brindar envíos solicitados por negocios, pedidos re
 
 La [política de documentación viva](../conventions/documentation-lifecycle.md) asigna un documento propietario por tipo de cambio. Ante conflicto: **registrar y resolver**, no elegir tácitamente la versión más conveniente. El plan puede priorizar, pero **no reemplaza** evidencia ni firma legal.
 
+## Dirección de producto M0 (decisión de diseño)
+El [modelo operativo del piloto](../product/pilot-operating-model.md) fija para planificación un reparto B2B pagado por el comercio (solo logística, no valor de productos), en microzona de Puerto Vallarta con despacho secuencial y motocicletas. En [DEC](../specification/open-decisions.md) se indican validaciones externas y técnicas que siguen bloqueando su operación comercial. **No confundir dirección elegida con viabilidad confirmada.**
+
 ## 4. Gobierno del alcance
 - **Requisito decidido conceptualmente:** operar comercio local, repartos, GPS y eventos; marca provisional y arquitectura evolutiva.
 - **Dirección preferida pendiente de validación:** monorepo, React Native+Expo, Supabase self-hosted, shadcn selectivo, backend modular.

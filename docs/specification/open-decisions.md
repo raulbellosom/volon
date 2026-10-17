@@ -1,30 +1,44 @@
-# Decisiones abiertas y evidencia necesaria
+# Registro de decisiones de producto y validaciones pendientes
 
-**Estado:** lista explícita de interrogantes y dueños por asignar. Nadie debe responderlas inventando supuestos como hechos.
+**Corte:** 2026-10-17. Las siguientes son **elecciones internas de diseño** tomadas para avanzar por delegación del fundador, **no** comprobaciones de factibilidad comercial, cumplimiento legal o pruebas técnicas. **Reglas operativas M0:** [piloto-operating-model](../product/pilot-operating-model.md).
 
-| ID | Decisión abierta | Dueño sugerido | Evidencia requerida | Bloquea |
+## Estado por decisión
+
+| ID | Tema | Estado | Elección o evidencia que falta | Gate afectado |
 | --- | --- | --- | --- | --- |
-| DEC-01 | ¿Primer negocio: envíos de comercios o marketplace? | Producto / fundador | entrevistas y costos unitarios | MVP |
-| DEC-02 | Modelo de reparto, relación contractual y cobertura | Legal + Operación | revisión legislación mexicana y contratos | piloto |
-| DEC-03 | Quién cobra al cliente, cuándo y cómo se liquida | Finanzas + Legal | flujos de dinero y PSP en sandbox | cobros |
-| DEC-04 | Tarifas, política de cancelación y compensación | Producto + Finanzas | simulaciones de margen y riesgo | publicación de precios |
-| DEC-05 | React Native/Expo y módulo de GPS background | Ingeniería móvil | pruebas en teléfonos Android/iOS reales | app courier |
-| DEC-06 | Supabase self-hosted: licencias, auth, realtime, RLS, restore | Plataforma + Seguridad | PoC, licencias y recovery test | infra productiva |
-| DEC-07 | Proveedor de mapas, rutas, ETA y cobertura | Operación + Ingeniería | coste/trayectos reales y SLA | cotizador |
-| DEC-08 | UI mobile: estilos, gestos, lector de pantalla | Frontend móvil | PoC visual/accesibilidad y estabilidad dependencias | design system mobile |
-| DEC-09 | Cobertura piloto, zonas, horarios y elegibilidad | Operaciones | puntos/zonas reales y capacidad courier | despacho |
-| DEC-10 | Datos GPS: base legal, retención, precisión, enlace de tracking | Legal/Privacidad + Ingeniería | matriz de datos y amenaza | tracking público |
-| DEC-11 | Estados, transición y excepciones concretas | Producto + Operaciones | workshop de flujos y casos difíciles | contratos API |
-| DEC-12 | Semántica de quote y límites de validez | Finanzas + Producto | reglas de precio, cancelaciones y PSP | creación delivery |
-| DEC-13 | SLO, RPO/RTO, cargas pico y costo | Plataforma + Operación | benchmarks, presupuesto, contrato | piloto remunerado |
-| DEC-14 | Customer web / courier mobile vs otras apps iniciales | Producto | estudio de uso y presupuesto | alcance de apps |
-| DEC-15 | Nombre comercial, marca y dominios finales | Producto + Legal | comprobación marcaria/dominios | lanzamiento marca |
-| DEC-16 | Framework backend, ORM y esquema DB inicial | Ingeniería | PoC consultas espaciales + transacciones | implementación |
-| DEC-17 | Estrategia eventos: exacto envelope y persistencia | Arquitectura | tests de outbox, compatibilidad y consumidores | integraciones |
-| DEC-18 | Quién gestiona cuentas de flotas múltiples y autorizaciones | Producto + Legal | políticas de roles, relaciones y casos reales | fleet advanced |
+| DEC-01 | Primera modalidad | **Definido para diseño** | Empezar por **envíos B2B** para ventas propias de comercios, luego marketplace. Validar demanda y costo unitario antes de operar. | P0 comercial |
+| DEC-02 | Contratación de couriers y seguridad social | **Bloqueante externo** | Repartidores en motocicleta; relación legal/IMSS, seguros, compensación y contrato requieren dictamen jurídico/fiscal. | Piloto remunerado |
+| DEC-03 | Quién cobra y cómo | **Parcialmente definido** | Comercio paga a plataforma **solo logística**, no productos; PSP directo por servicio, sin split/wallet/efectivo. Validar PSP México, facturación, reglas tributarias, conciliación, cobro/remuneración courier. | Cobros |
+| DEC-04 | Tarifas, cancelación, compensación | **Parcialmente definido** | Base + tramo de ruta/zona, no tarifa dinámica en M0. Pendientes montos MXN, costo laboral, retenciones, IVA/CFDI, reembolsos y daños. | Publicar tarifas |
+| DEC-05 | React Native/Expo + background GPS | **Propuesta condicionada** | Pruebas Android/iOS con pantalla bloqueada, ahorro de batería, cierre, permisos y conectividad. | App courier |
+| DEC-06 | Supabase Self-Hosted | **Propuesta condicionada** | Licencias/versiones exactas, Auth/RLS, Broadcast, backup/restore y capacidad real. | Infra |
+| DEC-07 | Mapas, rutas y ETA | **Pendiente** | Proveedor y costos con trayectos locales; geocoding/zonas/servicio degradado. | Tarifario |
+| DEC-08 | UI nativa/gestos | **Propuesta condicionada** | UI native propia/tokens; tests accesibles de gestos, mapas y estilo Android/iOS. | Design system |
+| DEC-09 | Zona y cobertura piloto | **Parcialmente definido** | Una microzona urbana dentro de **Puerto Vallarta (Jalisco)**, hasta 10 comercios invitados, tentativo 12–20 h, moto. Falta polígono, distancias, capacidad y horarios reales. Bahía de Banderas después. | Piloto |
+| DEC-10 | GPS/privacidad | **Bloqueante externo+técnico** | Base jurídica, permisos, avisos, retención, minimización, tokens/canales y revisión de threat model. | Tracking |
+| DEC-11 | Flujos y estados | **Definido para diseño, revisión pendiente** | `Delivery` independiente de `Order`; secuencia estándar/estados y despacho secuencial; cancelación posterior a pickup bajo custodia e intervención. Validar taller con operación. | Contratos |
+| DEC-12 | Quote y caducidad | **Definido para diseño** | Precio desglosado `PricingQuote` por zona/distancia; **10 min configurables** hasta confirmar solicitud; snapshot al crear Delivery. Confirmar PSP y excepciones. | Cotizador |
+| DEC-13 | SLO, RPO/RTO, costos | **Pendiente con medición** | Carga sintética, GPS battery, p95, outbox y gasto variable/infra, baseline y presupuesto. | Piloto remunerado |
+| DEC-14 | Aplicaciones iniciales | **Definido para diseño** | `merchant-web`, `courier-mobile`, `admin-web`, tracking web mínimo, `marketing`, `api`, `worker`; **sin app nativa comprador ni fleet-web M0**. | P2 |
+| DEC-15 | Marca final | **Provisional explícito** | «Volón» reemplazable; disponibilidad registral, marca, dominios y activos quedan por revisar. | Lanzamiento |
+| DEC-16 | Backend, ORM y DB físico | **Propuesta condicionada** | TypeScript monolito modular y PostgreSQL/PostGIS; framework/ORM/índices/migraciones tras prueba. | P2 |
+| DEC-17 | Eventos y outbox | **Definido conceptualmente, prueba pendiente** | Backend autoridad; outbox para hechos durables; Broadcast privado efímero, snapshot tras reconexión. Test de versionado, permisos y consistencia. | Integraciones |
+| DEC-18 | Gestión de flotas múltiples | **Diferido a M2** | Modelo compatible con roles/tenants; no construir fleet-web ni split payouts en M0. Definir contratos/roles en M2. | Flotas |
 
-## Modo de resolución
-Una DEC se cierra registrando fecha, responsable, decisión y evidencia, actualizando las especificaciones afectadas y un ADR cuando la arquitectura cambia sustancialmente. No considerar cerrada una decisión solo porque aparezca un valor de ejemplo en JSON.
+## Interpretación obligatoria
+- **Definido para diseño:** permite preparar casos, APIs candidatas, mockups y estimaciones. **No permite desplegar servicio real ni marcar validado**.
+- **Parcialmente definido:** conservar el diseño seleccionado, pero no implementar dependencias críticas sin la evidencia indicada.
+- **Bloqueante externo:** se necesita revisión humana profesional en el ámbito legal/fiscal/operativo, que no podemos sustituir con una suposición.
+- **Propuesta condicionada:** requiere spike y ADR ratificado; no impone proveedor o framework definitivo.
+- **Diferido:** solo preparar contratos extensibles sin construir features futuras.
 
-## Revisión recomendada antes de escribir código
-Resolver al menos DEC-01/02/03/05/06/07/09/10/11/13/16, priorizando lo que bloquearía al usuario o la seguridad. Lo demás puede planificarse con reservas y evolucionar.
+## Próximo conjunto de cierres reales
+1. **P0 negocio/operación:** conversaciones con comercios, couriers, volumen/cobertura y costos (DEC-01, DEC-09, DEC-04).
+2. **P0 legal/finanzas:** figura y obligaciones courier, riesgos, custodia y flujo de fondos/CFDI/PSP (DEC-02, DEC-03, DEC-10).
+3. **P1 pruebas técnicas:** Expo background, Supabase, mapas, PSP sandbox, atomicidad y backups (DEC-05..08, DEC-13, DEC-16/17).
+4. **P2 entrada:** ratificación explícita de contratos y presupuesto; no confundir este registro con un go-live.
+
+## Regla de cambios
+Actualiza la **fila DEC correspondiente**, enlaza evidencia/actor/fecha y ajusta únicamente los documentos propietarios afectados. Las ADR técnicas quedan en [decisions](../decisions/README.md). No crear una segunda matriz. Una decisión de negocio validada reemplaza este diseño elegido si lo justifican datos.
+
+**Fuentes oficiales a verificar para el gate legal**: [IMSS/STPS 2026](https://www.imss.gob.mx/node/111772), [IMSS plataformas digitales](https://www.imss.gob.mx/empresas-personas-trabajadoras-plataformas-digitales), [SAT complemento](https://wwwmat.sat.gob.mx/consulta/52846/complemento-servicios-de-plataformas-tecnologicas). No sustituyen el dictamen del caso.

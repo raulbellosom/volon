@@ -10,6 +10,7 @@
 | Pregunta | Documento propietario | Evitar duplicar en |
 | --- | --- | --- |
 | ¿Por qué hacemos el producto, qué fases y quién lo prioriza? | [Plan Maestro](../../MASTER_PLAN.md) + capítulos | Casos de uso/ADR |
+| ¿Cómo opera comercialmente el primer piloto, quién paga y dónde? | [Modelo operativo M0](../product/pilot-operating-model.md) y [registro DEC](../specification/open-decisions.md) | Copias en cada capítulo del Plan Maestro |
 | ¿Qué debe lograr el sistema y en qué release? | [Requerimientos RF/RNF](../product/requirements.md) | WBS/README |
 | ¿Cómo interactúan actores y qué excepciones hay? | [Casos UC](../product/use-cases.md) | Flujos/resúmenes paralelos |
 | ¿Qué tablas/estados/APIs/eventos rigen? | [Especificación](../specification/README.md) | Casos de uso/Plan Maestro |
@@ -22,6 +23,7 @@
 ## Cambios obligatorios en el mismo PR
 | Tipo de cambio | Actualizar |
 | --- | --- |
+| Cambio del pagador, zona, reglas comerciales o despacho M0 | modelo operativo M0 + DEC afectada + RF/UC y API si cambian |
 | Nuevo requisito, alcance, prioridad o fase | RF/RNF + UC si afecta interacción + WBS/issue |
 | Cambio en flujo de usuario o manejo de error | UC correspondiente + RF impactados + ACC/tests |
 | Cambio de estados, validaciones o invariantes | `docs/specification/state-machines.md` + contratos/test asociados; ADR si es arquitectónico |

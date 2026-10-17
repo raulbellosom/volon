@@ -16,6 +16,10 @@ No existe aplicación, infraestructura ni servicio desplegado a partir de esta d
 
 **[MASTER_PLAN.md](../MASTER_PLAN.md)** es la orientación central del programa y **[docs/master-plan/](master-plan/README.md)** contiene la estrategia, todo el desglose de trabajo por IDs WBS, fases P0–P7, criterios de salida, presupuesto, operaciones, riesgos y lanzamiento. Mantener los contratos funcionales detallados en [specification](specification/README.md) y las decisiones de tecnología en ADR. **Plan Maestro en borrador:** no reemplaza aprobaciones, entrevistas ni pruebas.
 
+## Diseño operativo M0 elegido
+
+**[Modelo del piloto M0](product/pilot-operating-model.md):** envíos para comercios, cobro de logística al comercio, cobertura inicial solo en una microzona de Puerto Vallarta, ofertas secuenciales y requisitos de seguridad. Son **elecciones de diseño**, no cumplimiento o demanda validados; revisar [DEC](specification/open-decisions.md).
+
 ## Requerimientos y casos de uso
 
 - **[Catálogo vivo de requerimientos RF/RNF](product/requirements.md)**: qué debe cumplir cada capacidad y a qué fase pertenece.

@@ -6,7 +6,7 @@
 
 Este documento es **la fuente de verdad para requisitos de comportamiento**, no un listado de tareas. No repite estados técnicos, rutas API, tablas ni flujos completos. Cada requisito debe poder enlazarse con un caso de uso (`UC`), un entregable del [WBS](../master-plan/05-work-breakdown.md) y una comprobación del [catálogo ACC](../specification/acceptance-matrix.md).
 
-**M0** = piloto de entregas externas (modalidad **candidata**); **M1** = marketplace; **M2** = flotas avanzadas y escala. `Must` significa indispensable **si esa fase y modalidad se aprueban**, no desarrollo inmediato. `Should` se puede diferir justificadamente. El requisito de GPS y realtime es explícito; la selección exacta del proveedor sigue en evaluación.
+**M0** = piloto de entregas externas (**elegido para diseño**, aún pendiente de validación comercial/legal); **M1** = marketplace; **M2** = flotas avanzadas y escala. `Must` significa indispensable **si esa fase y modalidad se aprueban**, no desarrollo inmediato. `Should` se puede diferir justificadamente. El requisito de GPS y realtime es explícito; la selección exacta del proveedor sigue en evaluación. **[Reglas M0 y restricciones](pilot-operating-model.md):** comercio paga únicamente logística, zona compacta en Puerto Vallarta, motocicletas y solo entrega de venta externa; no suponer importes ni contratos aprobados.
 
 ## Requisitos funcionales — M0
 
@@ -20,7 +20,7 @@ Este documento es **la fuente de verdad para requisitos de comportamiento**, no 
 | RF-006 | La cotización presentada deberá desglosar cargos y vigencia; el sistema rechazará cotizaciones vencidas o inválidas. | Must | UC-03 | DEL-003 / ACC-015 |
 | RF-007 | El comercio autorizado podrá confirmar una solicitud de entrega **sin crear un pedido marketplace**. | Must | UC-04 | DEL-004 / ACC-001 |
 | RF-008 | Repetir el mismo comando con una clave de idempotencia válida no duplicará la solicitud. | Must | UC-04 | ENG-010 / ACC-002, ACC-003 |
-| RF-009 | La plataforma ofrecerá entregas a repartidores elegibles con plazo de respuesta determinado por el servidor. | Must | UC-05 | DEL-005 / ACC-005 |
+| RF-009 | La plataforma ofrecerá **secuencialmente en M0** entregas pagadas y elegibles a repartidores elegibles, con plazo de respuesta determinado por el servidor. | Must | UC-05 | DEL-005 / ACC-005 |
 | RF-010 | Solo una asignación compatible podrá quedar activa para una entrega/unidad de trabajo; rechazos, expiraciones y conflictos serán explícitos. | Must | UC-05 | DEL-005 / ACC-004 |
 | RF-011 | Un operador autorizado podrá reasignar con historial y motivo, sin ocultar el estado de custodia del envío. | Must | UC-06 | DEL-006 / ACC-006, ACC-007 |
 | RF-012 | El repartidor asignado podrá reportar llegada, recogida, traslado y entrega, sujetos a transiciones autorizadas. | Must | UC-07 | DEL-004, DEL-008 |
@@ -33,7 +33,7 @@ Este documento es **la fuente de verdad para requisitos de comportamiento**, no 
 | RF-019 | Las personas autorizadas podrán cancelar/reportar incidencias según etapa, política aprobada, motivos y trazabilidad. | Must | UC-09 | DEL-010 / ACC-016 |
 | RF-020 | El operador podrá intervenir ante falta de repartidor, señal, mapa, push o conectividad sin inventar operaciones exitosas. | Must | UC-06, UC-10 | DEL-006, DEL-010 / ACC-020 |
 | RF-021 | Toda acción crítica dejará historial de actor, fecha, estado y correlación sin exponer PII innecesaria. | Must | UC-04..UC-10 | ENG-006, DEL-010 / ACC-022 |
-| RF-022 | Los registros de cobro, devolución y liquidación corresponderán al **modelo legal y PSP aprobado**, con conciliación e idempotencia. | Must condicionado | UC-11 | DEL-015 / ACC-014 |
+| RF-022 | En M0 el **comercio será el pagador** de la logística; el despacho se habilitará solo tras confirmar su pago mediante PSP autorizado. Cobro, reembolso y remuneración del courier se conciliarán de manera separada y conforme al modelo legal aprobado. | Must condicionado | UC-11 | DEL-015 / ACC-014 |
 | RF-023 | Personal autorizado podrá consultar un tablero operativo de entregas, pendientes e incidencias por su zona/scope. | Must | UC-06, UC-10 | DEL-014 |
 | RF-024 | Un destinatario recibirá seguimiento protegido sin obtener acceso a pedidos o coordenadas de terceros. | Must | UC-08 | DEL-012 / ACC-011 |
 

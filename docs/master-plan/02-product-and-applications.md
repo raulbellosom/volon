@@ -1,9 +1,9 @@
 # 02 — Producto completo y aplicaciones
 
-**Estado:** catálogo de producto a largo plazo, no backlog comprometido. Etiquetas: **M0** = piloto esencial propuesto; **M1** = marketplace; **M2** = flotas/crecimiento; **E** = exploración posterior.
+**Estado:** catálogo de producto a largo plazo, no backlog comprometido. [Modelo M0 elegido para diseño](../product/pilot-operating-model.md): entrega externa B2B, logística pagada por comercio, PSP confirmado antes de despacho, una zona en Puerto Vallarta. Etiquetas: **M0** = piloto esencial propuesto; **M1** = marketplace; **M2** = flotas/crecimiento; **E** = exploración posterior.
 
 ## Journey A — Envío sin marketplace (M0)
-Comercio inicia sesión → elige sucursal → indica recogida/destino/ventana y referencias → recibe cotización → confirma solicitud → plataforma valida condiciones → despacho ofrece a repartidor → repartidor acepta → seguimiento privado → recoge y entrega con evidencia → soporte/conciliación. Todo paso crítico debe reflejar un estado backend auditable.
+Comercio inicia sesión → elige sucursal → indica recogida/destino/ventana y referencias → recibe cotización → confirma solicitud → plataforma verifica el cobro del servicio logístico al comercio → despacho ofrece secuencialmente a repartidor → repartidor acepta → seguimiento privado → recoge y entrega con evidencia → soporte/conciliación. Todo paso crítico debe reflejar un estado backend auditable.
 
 ## Journey B — Pedido dentro del marketplace (M1)
 Cliente encuentra comercio disponible → explora catálogo/variantes → arma carrito → valida dirección, horario, subtotal, envío, comisión e impuestos → confirma pago según flujo autorizado → comercio acepta/prepara → entrega usando el mismo motor logístico → seguimiento → recibo, calificación y soporte. **Order, Delivery y Payment son procesos distintos.**

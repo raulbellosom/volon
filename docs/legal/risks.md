@@ -1,6 +1,6 @@
 # Cuestiones legales y regulatorias por verificar
 
-**No constituye asesoría jurídica ni fiscal.** Revisión por profesionales competentes antes de comercializar.
+**No constituye asesoría jurídica ni fiscal.** Revisión por profesionales competentes antes de comercializar. La modalidad de diseño elegida para M0 está en el [modelo operativo de entregas B2B](../product/pilot-operating-model.md); simplificar los pagos de mercancía **no** elimina obligaciones de plataformas.
 
 ## México
 - Naturaleza de cada modalidad: marketplace, entrega independiente, flota tercerizada o reparto propio de comercios.
@@ -14,3 +14,10 @@
 
 ## Entregables
 Mapa de roles y obligaciones por tipo de transacción; flujos de facturación y custodia de fondos; privacidad por tipo de dato; requisitos para onboarding; criterios de conservación de evidencia.
+
+## Referencias oficiales de contexto (revisadas en octubre de 2026)
+- [IMSS/STPS, comunicado 002/2026](https://www.imss.gob.mx/node/111772): explica que tras concluir prueba piloto al 31-dic-2025 las reglas continúan aplicándose mientras no se emitan nuevas directrices.
+- [IMSS, información para empresas de plataformas](https://www.imss.gob.mx/empresas-personas-trabajadoras-plataformas-digitales): registro patronal, obligaciones y recursos para empresas/repartidores; revisar vigencia exacta al iniciar actividades.
+- [SAT, complemento de servicios de plataformas tecnológicas](https://wwwmat.sat.gob.mx/consulta/52846/complemento-servicios-de-plataformas-tecnologicas): información fiscal contextual; confirmar cómo aplica al modelo concreto.
+
+La aplicación específica a Volón, los costos y los pasos administrativos deben ser dictaminados por especialistas; ningún texto de esta carpeta es aprobación jurídica.

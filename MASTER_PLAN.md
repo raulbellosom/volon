@@ -2,7 +2,7 @@
 
 > **Documento rector del programa.** Versión 0.1, 17 de octubre de 2026. **Estado: borrador para revisión, no plan aprobado ni software desarrollado.**
 >
-> La marca «Volón» podrá sustituirse; nombres técnicos, API, contratos, aplicaciones y datos no deben depender de ella. Mercado inicial previsto: Puerto Vallarta y Bahía de Banderas.
+> La marca «Volón» podrá sustituirse; nombres técnicos, API, contratos, aplicaciones y datos no deben depender de ella. Piloto de diseño inicial dentro de Puerto Vallarta, Jalisco; Bahía de Banderas queda para expansión posterior.
 
 ## Qué contiene
 El plan cubre el **negocio entero y su evolución**, no únicamente la API o el MVP: descubrimiento comercial, alcance de producto, experiencia de clientes/comercios/repartidores/flotas/operadores, infraestructura, arquitectura, diseño UI, datos, tiempo real, seguridad, legal, pagos, operación real, métricas, marketing, soporte, calidad, piloto, marketplace, expansión, presupuesto y gestión.
@@ -15,7 +15,7 @@ El plan cubre el **negocio entero y su evolución**, no únicamente la API o el 
 - **Servicio C — Flotas:** administración de repartidores, disponibilidad, asignaciones e integraciones.
 - **Canales:** web para consumidor/comercio/administración/marketing; app nativa Android+iOS para repartidores; app cliente nativa futura condicionada por evidencia.
 - **Propuesta técnica, todavía no ratificada:** monorepo, TypeScript, pnpm/Turborepo, Next.js/React, Astro, React Native/Expo, UI propia basada selectivamente en shadcn/ui con Tailwind 4 web, backend modular, Supabase Self-Hosted, PostgreSQL/PostGIS, Redis, trabajadores y Broadcast.
-- **Punto de partida comercial a validar:** un piloto de envíos para negocios, seguido de marketplace y flotas avanzadas.
+- **Modelo M0 elegido para diseño, no validado:** [envíos B2B solicitados por comercios](docs/product/pilot-operating-model.md) con cobro exclusivo del servicio logístico al comercio, zona piloto compacta en Puerto Vallarta y repartidores en motocicleta. Después marketplace y flotas. No equivale a autorización comercial/legal.
 
 ## Secuencia principal
 `P0 Investigación y decisiones → P1 Spikes críticos → P2 Fundaciones → P3 Operación de envíos → P4 Piloto controlado → P5 Marketplace → P6 Flotas/escala local → P7 Expansión`.

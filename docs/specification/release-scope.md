@@ -1,9 +1,9 @@
 # MVP y evolución por capacidades
 
-**Estado:** hipótesis prioritaria: iniciar con **Delivery-as-a-Service** (solicitudes de entrega para comercios con ventas por canales propios). Validar antes de declararlo la primera línea comercial.
+**Estado:** **Delivery-as-a-Service elegido para diseño de M0** (ventas por canales propios), sujeto a demanda/finanzas/compliance. [Modelo operativo único del piloto](../product/pilot-operating-model.md). No implementar marketplace ni flotas avanzadas en M0.
 
 ## Propuesta de valor por etapa
-- **Piloto controlado:** negocios registrados solicitan recogida y entrega; operadores controlan excepciones y repartidores utilizan app nativa.
+- **Piloto controlado:** comercios invitados dentro de una microzona urbana de Puerto Vallarta solicitan recogida y entrega; el comercio paga solo la logística, con PSP verificado antes del despacho; operadores controlan excepciones y couriers de motocicleta utilizan app nativa.
 - **Marketplace:** clientes exploran productos, compran y pagan dentro de la plataforma; crea Order y normalmente Delivery.
 - **Flotas:** operadores terceros, múltiples repartidores/vehículos, políticas de asignación y conciliaciones más complejas.
 - **Expansión:** ciudades/zonas, reglas fiscales/operativas locales, integraciones y automatización.

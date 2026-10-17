@@ -1,6 +1,6 @@
 # 09 — Economía de unidad, presupuesto y dimensionamiento
 
-**Estado:** modelo para preparar; **no tenemos cifras reales, comisiones, servidor dimensionado ni proveedor de pago elegido**.
+**Estado:** modelo para preparar; **no tenemos cifras reales, comisiones, servidor dimensionado ni proveedor de pago elegido**. Para M0 se eligió **cobro exclusivo de logística al comercio por servicio vía PSP**, sin recaudar valor de mercancías ni abrir wallet. Ver [modelo M0](../product/pilot-operating-model.md); revisar legalidad, costes de cobro, fiscalidad y margen antes de operar.
 
 ## Modelo económico por transacción
 Separar valores de flujo y contabilidad:
