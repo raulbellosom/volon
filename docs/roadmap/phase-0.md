@@ -8,6 +8,8 @@
 - [x] Propuestas ADR con estados correctos.
 - [x] Plan de validaciones técnicas.
 - [x] Reglas base compartidas para Codex y Claude (documentación, código mantenible, componentes, pruebas y límites de líneas).
+- [x] Borrador integral de [especificación del MVP y contratos](../specification/README.md) con módulos, estados, permisos, API, eventos, fallos y aceptación.
+- [ ] Ratificar con operación y negocio las [decisiones abiertas](../specification/open-decisions.md) y ejemplos de contratos.
 - [ ] Automatizar límites de líneas, lint, typecheck y pruebas en CI al iniciar Fase 1 (no están activos todavía).
 - [ ] Revisar y ratificar prioridades de negocio con responsables reales.
 - [ ] Definir quién usará primero Volón y qué problema exacto pagará por resolver.
@@ -18,7 +20,8 @@
 - [ ] Evaluación laboral, fiscal, privacidad y condiciones de servicio en México.
 - [ ] Revisión legal/marcaria de denominación final.
 - [ ] Selección comparada de mapas y proveedor de pagos.
-- [ ] Definir catálogo de eventos, estados de Order/Delivery/Payment y permisos por rol.
+- [x] Redactar catálogo **propuesto** de eventos, estados de Delivery/Assignment/Payment y permisos por rol.
+- [ ] Ratificar catálogo, casos límite y estados de Order antes de generar contratos ejecutables.
 - [ ] Cerrar objetivos medibles, presupuesto y alcance del MVP.
 
 ## Etapa 0C — Spikes técnicos (código descartable y aislado)

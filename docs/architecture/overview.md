@@ -2,6 +2,8 @@
 
 **Estado:** dirección de arquitectura, no implementación.
 
+> Desglose detallado propuesto: [especificación integral](../specification/README.md). Consultar límites modulares, API, eventos, seguridad, fallos y escalabilidad antes de abrir tareas técnicas.
+
 ## Topología lógica
 Apps web y móviles → API de negocio (monolito modular) → PostgreSQL/PostGIS y servicios → workers. Canal auxiliar de Broadcast/Presence para experiencia en vivo. GPS se ingiere mediante endpoint autenticado propio. Notificaciones push por servicio de entrega de mensajes externo.
 

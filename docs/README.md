@@ -16,14 +16,18 @@ No existe aplicación, infraestructura ni servicio desplegado a partir de esta d
 1. [Visión y principios](product/vision.md)
 2. [Audiencias y aplicaciones](product/personas-and-apps.md)
 3. [Modelos de negocio](product/business-model.md)
-4. [Alcance del MVP](product/mvp-scope.md) y [flujos operativos](product/flows.md)
-5. [Arquitectura](architecture/overview.md) y [estructura de repositorio](architecture/repository-structure.md)
-6. [Modelo de dominios](architecture/domain-model.md), [GPS y Realtime](architecture/realtime-and-gps.md)
-7. [Supabase](architecture/supabase-selfhosted.md), [UI y móvil](architecture/mobile-and-ui.md), [notificaciones](architecture/notifications.md)
-8. [Seguridad](architecture/security-and-privacy.md), [finanzas](architecture/finance.md), [operación](operations/hosting.md)
-9. [Reglas de cambio de marca](brand/rename-policy.md)
+4. **[Especificación detallada del producto, módulos, contratos y MVP](specification/README.md)** (lectura principal para comenzar el desarrollo)
+5. [Alcance del MVP resumido](product/mvp-scope.md) y [flujos operativos](product/flows.md)
+6. [Arquitectura](architecture/overview.md) y [estructura de repositorio](architecture/repository-structure.md)
+7. [Modelo de dominios](architecture/domain-model.md), [GPS y Realtime](architecture/realtime-and-gps.md)
+8. [Supabase](architecture/supabase-selfhosted.md), [UI y móvil](architecture/mobile-and-ui.md), [notificaciones](architecture/notifications.md)
+9. [Seguridad](architecture/security-and-privacy.md), [finanzas](architecture/finance.md), [operación](operations/hosting.md)
+10. [Reglas de cambio de marca](brand/rename-policy.md)
 10. [Normas de ingeniería para IA y humanos](conventions/development.md), [componentes reutilizables](conventions/ui-components.md) y [pruebas/CI](conventions/testing-and-quality.md)
-11. [Decisiones](decisions/README.md), [pruebas de arquitectura](validation/technical-spikes.md), [plan Fase 0](roadmap/phase-0.md)
+12. [Decisiones](decisions/README.md), [pruebas de arquitectura](validation/technical-spikes.md), [plan Fase 0](roadmap/phase-0.md)
+
+## Base de especificación de escala
+El dossier [docs/specification](specification/README.md) documenta módulos y ownership, modelo lógico, estados, API v1 ilustrativa, contratos de eventos, permisos por tenant, GPS/dispatch, fallos, NFR, aceptación, cortes de implementación y [decisiones pendientes](specification/open-decisions.md). **Son propuestas contract-first, no endpoints, tablas o funcionalidades ya construidas.** Codex y Claude deben consultarlo antes de implementar.
 
 ## Resumen de estado
 | Tema | Estado | Dirección actual |

@@ -2,6 +2,8 @@
 
 **Estado:** mapa conceptual, NO esquema SQL aprobado.
 
+> Profundización: [relaciones, claves y ownership](../specification/data-relationships.md), [bounded contexts](../specification/domain-boundaries.md) y [máquinas de estados](../specification/state-machines.md).
+
 ## Entidades candidatas (identificadores en inglés)
 - Identity: User, OrganizationMembership, Role, Permission, Session.
 - Comercio: Merchant, Branch, OperatingHours, ServiceArea.
