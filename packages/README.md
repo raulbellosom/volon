@@ -1,6 +1,6 @@
-# Paquetes compartidos — estructura reservada
+# Paquetes compartidos
 
-En Fase 0 no hay paquetes npm reales. El diseño contempla design-tokens, branding, ui-web, ui-native, ui-commerce, ui-logistics, contracts, domain, api-client y config.
+Existen `pricing` (cálculos puros), `branding` (marca visible) y `contracts` (DTO y validación runtime de cotización, con JSON Schema). Los demás paquetes del [mapa del monorepo](../docs/architecture/repository-structure.md) se crearán cuando un corte los necesite.
 
 Cada paquete tendrá responsabilidad clara, imports controlados, contrato y política de versionado. El branding Volón es provisional; identificadores técnicos permanecerán neutrales.
 

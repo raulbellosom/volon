@@ -5,10 +5,10 @@
   "packageManager": "pnpm@10.15.1",
   "engines": { "node": ">=22.16.0" },
   "scripts": {
-    "test": "node --experimental-strip-types --test packages/pricing/tests/*.test.ts",
+    "test": "node --experimental-strip-types --test packages/pricing/tests/*.test.ts packages/contracts/tests/*.test.ts apps/api/tests/*.test.ts",
     "check:lines": "node scripts/check-source-lengths.mjs",
-    "check": "npm run check:lines && npm test",
-    "typecheck": "tsc --project packages/pricing/tsconfig.json"
+    "check": "npm run check:lines && npm run typecheck && npm test",
+    "typecheck": "tsc --project tsconfig.json"
   },
   "devDependencies": { "typescript": "5.8.3", "turbo": "2.5.6" }
 }

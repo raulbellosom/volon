@@ -1,6 +1,6 @@
-# Aplicaciones — estructura reservada
+# Aplicaciones — desarrollo incremental
 
-En Fase 0 no hay código de apps. Las carpetas planeadas están documentadas en [el mapa del monorepo](../docs/architecture/repository-structure.md).
+`api` contiene el primer handler Fetch modular de cotización, sin listener ni adaptadores reales. Su contrato y restricciones están en [API](../docs/specification/api-contracts.md). Pruebas locales con dependencias sintéticas: `pnpm check` desde la raíz.
 
 Cuando iniciemos implementación, se crearán solo las apps activas por fase: marketing, customer-web, merchant-web, courier-mobile, admin-web, api y worker. customer-mobile queda diferida hasta validar demanda.
 

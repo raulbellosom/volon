@@ -1,6 +1,19 @@
 # API HTTP — contrato candidato de versión 1
 
-**Estado:** rutas y payloads ilustrativos; **no existe OpenAPI ni endpoint ejecutable**. Se deberá generar contrato formal OpenAPI/JSON Schema antes de escribir handlers. El backend es la autoridad de negocio, aunque use Supabase Auth y Postgres.
+**Estado:** superficie general candidata. Existe un primer contrato JSON Schema y handler Fetch experimental de `POST /v1/delivery-quotes`, sin servidor expuesto ni integraciones reales. El resto de las rutas sigue siendo ilustrativo. El backend es la autoridad de negocio.
+
+## Corte experimental de cotización (RF-001/005/006, UC-03, DEL-003)
+
+Contrato formal: [`delivery-quote.schema.json`](../../packages/contracts/delivery-quote.schema.json); solicitud en la raíz y respuesta en `#/$defs/response`. Validación runtime compartida en `@delivery/contracts`. El handler en `apps/api/src/app.ts` recibe adaptadores explícitos de identidad, autorización vigente por sucursal, cobertura/rutas/tarifa versionada y almacenamiento confirmado. No hay adaptadores productivos, fallback de autenticación, base de datos ni listener HTTP.
+
+- Solicitud cerrada: `branchId` opaco (1–128 caracteres ASCII alfanuméricos, `_` o `-`), `pickup` y `dropoff` con únicamente `lat`/`lng` finitos dentro de rangos geográficos, y `serviceType: local_delivery`. Se rechazan campos extra, incluidos etiquetas/direcciones del ejemplo conceptual, precio, distancia, tarifa e identidad. No se recopilan destinatarios.
+- El adaptador de rutas debe verificar recogida contra la sucursal, cobertura de ambos puntos, modalidad y política vigente; la distancia y versión tarifaria proceden del servidor. Coordenadas válidas por sí solas no acreditan cobertura.
+- `201` solo después de confirmar almacenamiento del snapshot con sujeto, sucursal, solicitud, versión tarifaria y respuesta. ID generado por dependencia del servidor. TTL obligatorio, positivo y configurable; los fixtures usan 600000 ms conforme a DEC-12. El almacenamiento debe garantizar unicidad del ID.
+- Respuesta MXN en enteros seguros, suma de líneas `base_delivery` y `distance_delivery` (incluye cero), `quoteId`, `expiresAt` UTC y `coverage: eligible`. No incluye ETA, productos, impuestos ni cobros. `Cache-Control: no-store` en éxito y error.
+- `400 INVALID_JSON`, `401 UNAUTHENTICATED`, `403 ACCESS_DENIED`, `404 NOT_FOUND`, `405 METHOD_NOT_ALLOWED` con `Allow: POST`, `415 UNSUPPORTED_MEDIA_TYPE`, `422 INVALID_QUOTE_REQUEST`/`OUTSIDE_COVERAGE`, `503 ROUTING_UNAVAILABLE`/`SERVICE_UNAVAILABLE`. Errores `application/problem+json` con `type`, `title`, `status`, `code` y texto seguro, sin detalles del proveedor.
+- Cotizar no crea Delivery ni cobra. Cada POST puede crear una quote nueva; no se promete idempotencia en este corte. Confirmar entregas, rechazar quotes vencidas al consumo, auditoría durable, rate limiting, límites de payload y trazas correlacionadas quedan para los siguientes cortes antes de exponer el servicio.
+
+Los ejemplos siguientes conservan su carácter conceptual; el esquema formal gobierna exclusivamente este corte experimental. No se declara completado ACC-015 (congelación al crear Delivery).
 
 ## Convenciones horizontales
 - Prefijo propuesto `/v1`; HTTPS obligatorio fuera de entornos aislados.

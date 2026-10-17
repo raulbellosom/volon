@@ -8,3 +8,9 @@
 - **Consecuencias:** disciplina para separar dominios y garantizar modularidad real; no bloquear la API con tareas largas.
 - **Validación:** pruebas de doble aceptación, idempotencia, caída de worker y reconexión.
 - **Pendiente:** framework específico, ORM, estrategia de pruebas y umbrales de separación.
+
+## Alcance experimental autorizado — 17-10-2026
+
+La solicitud de desarrollo incremental autoriza fundamentos verificables, sin ratificar el stack productivo. `apps/api` incorpora una composición Fetch y un módulo Pricing que reutiliza `@delivery/pricing` y `@delivery/contracts`. Autenticación, permisos, rutas/cobertura, reloj, IDs y almacenamiento son dependencias explícitas; los tests proporcionan adaptadores sintéticos. No hay listener, DB ni proveedores reales.
+
+Se conserva abierto framework/ORM; Fetch permite probar HTTP sin elegirlos ni introducir dependencias de runtime. Pruebas en `apps/api/tests` cubren contratos HTTP, aislamiento de sucursal y fallos sin confirmación ficticia. Esto no valida concurrencia de asignaciones, outbox ni idempotencia de entregas.

@@ -11,7 +11,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Source length policy
-        run: node scripts/check-source-lengths.mjs
-      - name: Unit tests (dependency-free)
-        run: node --experimental-strip-types --test packages/pricing/tests/*.test.ts
+      - uses: pnpm/action-setup@v4
+      - name: Install pinned dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Length, strict TypeScript, domain and API tests
+        run: pnpm check

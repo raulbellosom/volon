@@ -1,0 +1,10 @@
+{
+  "name": "@delivery/api",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@delivery/contracts": "workspace:*",
+    "@delivery/pricing": "workspace:*"
+  }
+}

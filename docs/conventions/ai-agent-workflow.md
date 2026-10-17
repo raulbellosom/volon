@@ -4,7 +4,7 @@
 
 ## Antes de editar
 1. Leer [Plan Maestro](../../MASTER_PLAN.md), README, AGENTS.md/CLAUDE.md según herramienta, [requisitos RF/RNF](../product/requirements.md), [casos UC](../product/use-cases.md), normativa común, especificación y ADR relacionados. Identificar fase, WBS ID, requisitos afectados y dependencias.
-2. Confirmar fase del proyecto: **durante Fase 0 únicamente documentación**, salvo solicitud explícita de spike.
+2. Confirmar fase y autorización: desde el 17-10-2026 se permite desarrollo incremental aislado con datos sintéticos. Las validaciones comerciales y jurídicas siguen condicionando operación real, datos personales y producción; no impiden implementar contratos y pruebas locales autorizadas.
 3. Inspeccionar árbol real, APIs y componentes existentes antes de agregar archivos nuevos.
 4. Expresar objetivo, contrato esperado, archivos previstos, riesgos, pruebas y posible ADR.
 5. Preferir cambios pequeños y cohesivos, evitando reescrituras masivas o reestructuraciones oportunistas.

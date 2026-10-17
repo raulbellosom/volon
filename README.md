@@ -9,19 +9,20 @@ Queremos construir una alternativa local en Puerto Vallarta y, posteriormente, B
 - [`packages/branding`](packages/branding/src/index.ts): punto central para reemplazar nombre comercial y configuración visible.
 - [`pnpm-workspace.yaml`](pnpm-workspace.yaml), [`turbo.json`](turbo.json), [`tsconfig.base.json`](tsconfig.base.json): fundamentos del monorepo.
 - [`scripts/check-source-lengths.mjs`](scripts/check-source-lengths.mjs): límite automático de tamaño para archivos fuente.
-- [CI básico](.github/workflows/pricing-checks.yml): ejecuta pruebas del dominio y límite de líneas sin instalar dependencias.
+- [`packages/contracts`](packages/contracts/src/index.ts) y [`apps/api`](apps/api/src/app.ts): contrato de cotización y handler HTTP modular aislado; [alcance y pendientes](docs/specification/api-contracts.md).
+- [CI](.github/workflows/pricing-checks.yml): instalación con lockfile, TypeScript estricto, límite de líneas y pruebas de dominio, contratos y API.
 
 **Sin apps web/móviles, Supabase, pagos o GPS implementados todavía**. No tomar valores de ejemplo de las pruebas como tarifas comerciales.
 
 ## Ejecutar pruebas ahora
-Node.js >=22.16 (sin instalar nada):
+Node.js >=22.16 y pnpm 10.15.1:
 
 ```bash
-npm test
-npm run check:lines
+pnpm install --frozen-lockfile
+pnpm check
 ```
 
-El `typecheck` necesita TypeScript 5.8.3; el monorepo usa `pnpm@10.15.1`. **Falta generar el lockfile y ampliar CI con instalación reproducible, typecheck y builds** cuando se habilite instalación de dependencias. No reportar estas validaciones como ya integradas.
+`pnpm check` ejecuta longitudes, TypeScript 5.8.3 y pruebas automatizadas. No hay lint ni build configurados; los paquetes privados exponen TypeScript fuente y la API no inicia un servidor.
 
 ## Qué desarrollaremos a continuación
 Fundamento de API y contratos de cotización, autenticación/multiempresa, portal de comercios, app de repartidores React Native/Expo (con pruebas GPS reales) y panel de despacho. **Podemos desarrollar con datos sintéticos mientras revisamos el cumplimiento para operar comercialmente.** El marco legal es un requisito para lanzar, no motivo para impedir codificar.
