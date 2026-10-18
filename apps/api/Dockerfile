@@ -8,6 +8,7 @@ COPY apps/api/package.json apps/api/package.json
 COPY packages/contracts/package.json packages/contracts/package.json
 COPY packages/pricing/package.json packages/pricing/package.json
 COPY packages/branding/package.json packages/branding/package.json
+COPY packages/design-tokens/package.json packages/design-tokens/package.json
 RUN pnpm install --frozen-lockfile
 COPY prisma.config.ts ./
 COPY prisma ./prisma
