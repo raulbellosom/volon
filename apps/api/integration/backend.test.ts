@@ -155,23 +155,24 @@ test('local backend: RLS rejects a cross-merchant insert even when application c
 
 test('local PostGIS: server-owned synthetic polygon and tenant-scoped branch pickup', async () => {
   const a = await login('a');
+  const routeRequest = { ...payload('a'), serviceType: 'local_delivery' as const };
   const b = await login('b');
   const inspect = createPostgisCoverageInspector(db, [
     { lat: -0.05, lng: -0.05 }, { lat: -0.05, lng: 0.05 },
     { lat: 0.05, lng: 0.05 }, { lat: 0.05, lng: -0.05 },
   ]);
-  const own = await inspect(payload('a'), a);
+  const own = await inspect(routeRequest, a);
   assert.deepEqual(own.trustedPickup, { lat: 0, lng: 0 });
   assert.equal(own.pickupMatches, true);
   assert.equal(own.pickupCovered, true);
   assert.equal(own.dropoffCovered, true);
 
-  const forged = await inspect({ ...payload('a'), pickup: { lat: 0.02, lng: 0.02 } }, a);
+  const forged = await inspect({ ...routeRequest, pickup: { lat: 0.02, lng: 0.02 } }, a);
   assert.equal(forged.pickupMatches, false);
-  const outside = await inspect({ ...payload('a'), dropoff: { lat: 0.1, lng: 0.1 } }, a);
+  const outside = await inspect({ ...routeRequest, dropoff: { lat: 0.1, lng: 0.1 } }, a);
   assert.equal(outside.dropoffCovered, false);
 
-  await assert.rejects(inspect(payload('a'), b), (error: unknown) =>
+  await assert.rejects(inspect(routeRequest, b), (error: unknown) =>
     error instanceof QuoteFailure && error.code === 'ACCESS_DENIED');
   assert.throws(() => createPostgisCoverageInspector(db, [{ lat: 0, lng: 0 }]), RangeError);
 });
