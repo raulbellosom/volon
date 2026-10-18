@@ -3,7 +3,7 @@ import path from 'node:path';
 import { evaluateSourceFile, sourceLineLimit } from './source-file-policy.mjs';
 
 const ROOTS = ['apps', 'packages', 'scripts'];
-const IGNORED = new Set(['.git', 'node_modules', '.next', '.turbo', 'dist', 'coverage', 'build']);
+const IGNORED = new Set(['.git', 'node_modules', '.next', '.turbo', 'dist', 'coverage', 'build', 'storybook-static']);
 const violations = [];
 
 async function checkTree(directory) {

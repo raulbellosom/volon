@@ -1,0 +1,87 @@
+/* Volon UI entry stylesheet. Apps import `@delivery/ui-web/styles.css` once. */
+@import 'tailwindcss';
+@import '@fontsource-variable/plus-jakarta-sans';
+@import './tokens.css';
+
+/* Scan the library so apps get every class the components use. */
+@source '../';
+
+/* Prefer semantic tokens; `dark:` exists only for rare art-direction cases. */
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
+@theme {
+  --animate-overlay-in: vl-fade-in var(--duration-base) var(--ease-enter);
+  --animate-overlay-out: vl-fade-out var(--duration-fast) var(--ease-exit) forwards;
+  --animate-modal-in: vl-modal-in var(--duration-slow) var(--ease-spring);
+  --animate-modal-out: vl-modal-out var(--duration-fast) var(--ease-exit) forwards;
+  --animate-popover-in: vl-popover-in var(--duration-fast) var(--ease-enter);
+  --animate-popover-out: vl-fade-out var(--duration-instant) var(--ease-exit) forwards;
+  --animate-toast-in: vl-toast-in var(--duration-slow) var(--ease-spring);
+  --animate-spin: spin 0.75s linear infinite;
+  --animate-shimmer: vl-shimmer 1.6s var(--ease-standard) infinite;
+
+  @keyframes vl-fade-in { from { opacity: 0; } }
+  @keyframes vl-fade-out { to { opacity: 0; } }
+  @keyframes vl-modal-in { from { opacity: 0; transform: translateY(8px) scale(0.97); } }
+  @keyframes vl-modal-out { to { opacity: 0; transform: translateY(4px) scale(0.98); } }
+  @keyframes vl-popover-in { from { opacity: 0; transform: translateY(-4px) scale(0.98); } }
+  @keyframes vl-toast-in { from { opacity: 0; transform: translateY(12px) scale(0.96); } }
+  @keyframes vl-shimmer { from { background-position: 150% 0; } to { background-position: -50% 0; } }
+  @keyframes spin { to { transform: rotate(360deg); } }
+}
+
+/* Shared focus indicator: 2 px ring with offset, blue on light and lime on dark. */
+@utility focus-ring {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 2px;
+}
+
+/* «Ribbon fold»: the darker underside of the logo ribbon, applied to solid actions. */
+@utility ribbon-fold {
+  box-shadow: inset 0 -3px 0 0 rgb(0 0 0 / 0.16);
+}
+
+@utility ribbon-fold-pressed {
+  box-shadow: inset 0 -1px 0 0 rgb(0 0 0 / 0.16);
+}
+
+/* Field halo shown around a focused or invalid control. */
+@utility field-halo {
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-focus-ring) 22%, transparent);
+}
+
+@utility field-halo-danger {
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-feedback-danger-fg) 22%, transparent);
+}
+
+@layer base {
+  html {
+    font-family: var(--font-sans);
+    background-color: var(--color-background);
+    color: var(--color-text-primary);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background-color: var(--color-surface-selected);
+    color: var(--color-text-primary);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    ::before,
+    ::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}

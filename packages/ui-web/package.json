@@ -1,0 +1,50 @@
+{
+  "name": "@delivery/ui-web",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "sideEffects": ["*.css"],
+  "exports": {
+    ".": "./src/index.ts",
+    "./styles.css": "./src/styles/volon.css"
+  },
+  "scripts": {
+    "tokens": "node --experimental-strip-types scripts/generate-tokens-css.ts",
+    "typecheck": "tsc --project tsconfig.json",
+    "test": "vitest run",
+    "gallery": "storybook dev --port 6006",
+    "gallery:build": "storybook build --output-dir storybook-static"
+  },
+  "dependencies": {
+    "@delivery/branding": "workspace:*",
+    "@delivery/design-tokens": "workspace:*",
+    "@fontsource-variable/plus-jakarta-sans": "5.3.0",
+    "lucide-react": "1.51.0",
+    "react-aria-components": "1.21.1"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@storybook/addon-a11y": "10.6.1",
+    "@storybook/addon-docs": "10.6.1",
+    "@storybook/addon-themes": "10.6.1",
+    "@storybook/react-vite": "10.6.1",
+    "@tailwindcss/vite": "4.3.3",
+    "@testing-library/jest-dom": "7.0.1",
+    "@testing-library/react": "16.3.3",
+    "@testing-library/user-event": "14.6.7",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@vitejs/plugin-react": "6.1.1",
+    "axe-core": "4.13.0",
+    "jsdom": "30.1.1",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "storybook": "10.6.1",
+    "tailwindcss": "4.3.3",
+    "vite": "8.3.2",
+    "vitest": "5.0.3"
+  }
+}

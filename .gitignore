@@ -11,3 +11,4 @@ coverage/
 .local/
 .superpowers/
 .claude/settings.local.json
+storybook-static/

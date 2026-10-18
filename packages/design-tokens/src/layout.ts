@@ -10,7 +10,7 @@ export const spacing = Object.freeze({
  * containers are larger so nested corners stay concentric (outer = inner + padding).
  */
 export const radius = Object.freeze({
-  xs: 4, sm: 8, md: 12, lg: 16, xl: 20, '2xl': 28, full: 9999,
+  xs: 6, sm: 8, md: 12, lg: 16, xl: 20, '2xl': 28, full: 9999,
 });
 
 /** Interactive heights in px. `md` meets the 44 px touch target recommendation. */

@@ -8,5 +8,8 @@
     "packages/*/tests/**/*.ts",
     "scripts/local/**/*.ts",
     "prisma.config.ts"
+  ],
+  "exclude": [
+    "packages/ui-web/**"
   ]
 }

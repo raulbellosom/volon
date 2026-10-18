@@ -7,10 +7,10 @@
     "node": ">=22.16.0"
   },
   "scripts": {
-    "test": "node --experimental-strip-types --test packages/pricing/tests/*.test.ts packages/contracts/tests/*.test.ts packages/branding/tests/*.test.ts packages/design-tokens/tests/*.test.ts apps/api/tests/*.test.ts scripts/tests/*.test.mjs",
+    "test": "node --experimental-strip-types --test packages/pricing/tests/*.test.ts packages/contracts/tests/*.test.ts packages/branding/tests/*.test.ts packages/design-tokens/tests/*.test.ts apps/api/tests/*.test.ts scripts/tests/*.test.mjs && pnpm --filter @delivery/ui-web test",
     "check:lines": "node scripts/check-source-lengths.mjs",
     "check": "pnpm run db:generate && pnpm run db:validate && pnpm run check:lines && pnpm run typecheck && pnpm run test",
-    "typecheck": "tsc --project tsconfig.json",
+    "typecheck": "tsc --project tsconfig.json && pnpm --filter @delivery/ui-web typecheck",
     "db:generate": "prisma generate",
     "db:validate": "prisma validate",
     "db:status": "node --env-file=.env.local node_modules/prisma/build/index.js migrate status",
@@ -19,7 +19,8 @@
     "local:quote": "node --experimental-strip-types scripts/local/quote.ts",
     "local:status": "node scripts/local/operations.mjs status",
     "local:stop": "node scripts/local/operations.mjs stop",
-    "test:integration": "node --experimental-strip-types --test --test-concurrency=1 apps/api/integration/*.test.ts"
+    "test:integration": "node --experimental-strip-types --test --test-concurrency=1 apps/api/integration/*.test.ts",
+    "gallery": "pnpm --filter @delivery/ui-web gallery"
   },
   "devDependencies": {
     "@prisma/client": "7.10.1",
