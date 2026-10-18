@@ -67,7 +67,7 @@ export const coverage: readonly ComponentCoverage[] = [
   tested('DatePicker', 'Formularios', { source: 'forms/DatePicker.tsx', tests: ['forms/DateTime.test.tsx'], renders: ['DatePicker'] }),
   tested('TimeField', 'Formularios', { source: 'forms/TimeField.tsx', tests: ['forms/DateTime.test.tsx'], renders: ['TimeField'] }),
   tested('Slider', 'Formularios', { source: 'forms/Slider.tsx', tests: ['forms/Slider.test.tsx'], renders: ['Slider'], notes: 'Valor único o rango.' }),
-  pending('OTPField', 'Formularios', 'Sin primitiva en React Aria; evaluar antes de construir.'),
+  tested('OTPField', 'Formularios', { source: 'forms/OTPField.tsx', tests: ['forms/OTPField.test.tsx'], renders: ['OTPField'], notes: 'Un solo input real con casillas visuales; SMS autofill.' }),
   tested('Card', 'Contenido', { source: 'content/Card.tsx', tests: [CONTENT], renders: ['Card'] }),
   tested('Badge', 'Contenido', { source: 'content/Badge.tsx', tests: [CONTENT], renders: ['Badge'] }),
   tested('IconChip', 'Contenido', { source: 'content/IconChip.tsx', tests: [CONTENT], renders: ['IconChip'] }),
@@ -99,8 +99,8 @@ export const coverage: readonly ComponentCoverage[] = [
   tested('Progress', 'Retroalimentación', { source: 'feedback/Progress.tsx', tests: ['content/Display.test.tsx'], renders: ['Progress'], notes: 'Determinado e indeterminado.' }),
 
   tested('Logo', 'Marca', { source: 'brand/Logo.tsx', tests: ['brand/Logo.test.tsx'], renders: ['Logo'], notes: 'PNG oficiales; SVG pendiente de diseño.' }),
-  pending('Timeline', 'Logística', 'Eventos de una entrega con datos sintéticos.'),
-  pending('PriceBreakdown', 'Logística', 'Desglose monetario; sin tarifas reales.'),
-  pending('RouteSummary', 'Logística'),
-  pending('ConnectionStatus', 'Logística'),
+  tested('Timeline', 'Logística', { source: 'logistics/Timeline.tsx', tests: ['logistics/Logistics.test.tsx'], renders: ['Timeline'], notes: 'Presentacional; los estados vienen del servidor.' }),
+  tested('PriceBreakdown', 'Logística', { source: 'logistics/PriceBreakdown.tsx', tests: ['logistics/Logistics.test.tsx'], renders: ['PriceBreakdown'], notes: 'Muestra el total del servidor; no suma montos.' }),
+  tested('RouteSummary', 'Logística', { source: 'logistics/RouteSummary.tsx', tests: ['logistics/Logistics.test.tsx'], renders: ['RouteSummary'], notes: 'Sin ETA inventada.' }),
+  tested('ConnectionStatus', 'Logística', { source: 'logistics/ConnectionStatus.tsx', tests: ['logistics/Logistics.test.tsx'], renders: ['ConnectionStatus'], notes: 'Frescura GPS/realtime (RF-016).' }),
 ];

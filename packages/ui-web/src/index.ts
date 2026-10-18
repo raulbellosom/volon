@@ -23,6 +23,7 @@ export { Calendar, type CalendarProps } from './components/forms/Calendar.tsx';
 export { DatePicker, type DatePickerProps } from './components/forms/DatePicker.tsx';
 export { TimeField, type TimeFieldProps } from './components/forms/TimeField.tsx';
 export { Slider, type SliderProps } from './components/forms/Slider.tsx';
+export { OTPField, type OTPFieldProps } from './components/forms/OTPField.tsx';
 export type { ControlSize } from './components/forms/field-styles.ts';
 
 export { Card, CardContent, CardFooter, CardHeader, type CardFooterProps, type CardProps, type CardVariant } from './components/content/Card.tsx';
@@ -63,6 +64,12 @@ export { ToastRegion, dismissToast, toast, type ToastContent, type ToastOptions 
 export { ThemeToggle, type ThemeToggleProps } from './theme/ThemeToggle.tsx';
 export { useTheme, type UseThemeResult } from './theme/useTheme.ts';
 export { THEME_STORAGE_KEY, themeInitScript, type ResolvedTheme, type ThemePreference } from './theme/theme-store.ts';
+
+export { Timeline, type TimelineEvent, type TimelineProps, type TimelineState } from './components/logistics/Timeline.tsx';
+export { PriceBreakdown, type PriceBreakdownProps, type PriceLine } from './components/logistics/PriceBreakdown.tsx';
+export { RouteSummary, type RouteStop, type RouteSummaryProps } from './components/logistics/RouteSummary.tsx';
+export { ConnectionStatus, type ConnectionState, type ConnectionStatusProps } from './components/logistics/ConnectionStatus.tsx';
+export { formatDistance, formatDuration, formatMXN } from './utils/format.ts';
 
 export { cx } from './utils/cx.ts';
 export { coverage, type ComponentCoverage, type CoverageStatus } from './coverage.ts';
