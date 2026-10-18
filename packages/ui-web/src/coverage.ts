@@ -4,7 +4,7 @@
  */
 export type CoverageStatus = 'pending' | 'implemented' | 'documented' | 'tested' | 'reviewed';
 
-export type ComponentFamily = 'Acciones' | 'Formularios' | 'Contenido' | 'Navegación' | 'Overlays' | 'Retroalimentación' | 'Dominio';
+export type ComponentFamily = 'Acciones' | 'Formularios' | 'Contenido' | 'Datos' | 'Navegación' | 'Overlays' | 'Retroalimentación' | 'Marca' | 'Dominio';
 
 export interface ComponentCoverage {
   readonly name: string;
@@ -52,24 +52,27 @@ export const coverage: readonly ComponentCoverage[] = [
   pending('Tooltip', 'Contenido'),
   pending('Progress', 'Contenido'),
   pending('DescriptionList', 'Contenido'),
-  pending('Table / DataTable', 'Contenido'),
   pending('Stat', 'Contenido'),
-  pending('Tabs', 'Navegación'),
+  done('Table + TableFooter', 'Datos', 'data/Table.tsx', 'Orden, selección, fila de totales y estado vacío.'),
+  done('Tabs', 'Navegación', 'navigation/Tabs.tsx'),
+  done('Navbar', 'Navegación', 'navigation/Navbar.tsx', 'Responsiva con menú lateral en teléfono.'),
+  done('SiteFooter', 'Navegación', 'navigation/SiteFooter.tsx'),
   pending('Breadcrumbs', 'Navegación'),
-  pending('DropdownMenu', 'Navegación'),
-  pending('Pagination', 'Navegación'),
+  done('Menu (DropdownMenu)', 'Navegación', 'navigation/Menu.tsx'),
+  done('Pagination', 'Navegación', 'navigation/Pagination.tsx'),
   pending('Stepper', 'Navegación'),
   pending('Sidebar primitives', 'Navegación'),
   done('Dialog', 'Overlays', 'overlays/Dialog.tsx'),
   done('AlertDialog', 'Overlays', 'overlays/AlertDialog.tsx'),
   done('Popover', 'Overlays', 'overlays/Popover.tsx'),
   done('Toast', 'Overlays', 'overlays/Toast.tsx', 'Envuelve la API UNSTABLE de React Aria.'),
-  pending('Drawer / Sheet', 'Overlays'),
+  done('Drawer / Sheet', 'Overlays', 'overlays/Drawer.tsx'),
   done('Alert', 'Retroalimentación', 'feedback/Alert.tsx'),
   done('Spinner', 'Retroalimentación', 'feedback/Spinner.tsx', 'Animación de marca pendiente para una iteración posterior.'),
   done('Skeleton', 'Retroalimentación', 'feedback/Skeleton.tsx'),
-  pending('EmptyState / ErrorState', 'Retroalimentación'),
+  done('EmptyState / ErrorState', 'Retroalimentación', 'feedback/EmptyState.tsx'),
   pending('Accordion', 'Retroalimentación'),
+  done('Logo', 'Marca', 'brand/Logo.tsx', 'PNG oficiales; SVG pendiente de diseño.'),
   pending('Timeline', 'Dominio', 'Eventos de una entrega con datos sintéticos.'),
   pending('PriceBreakdown', 'Dominio', 'Desglose monetario; sin tarifas reales.'),
   pending('RouteSummary', 'Dominio'),

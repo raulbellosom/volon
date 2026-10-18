@@ -17,7 +17,7 @@ const preview: Preview = {
     controls: { expanded: true },
     options: {
       storySort: {
-        order: ['Introducción', 'Fundamentos', 'Acciones', 'Formularios', 'Contenido', 'Retroalimentación', 'Overlays', 'Patrones', 'Cobertura'],
+        order: ['Introducción', 'Fundamentos', 'Marca', 'Acciones', 'Formularios', 'Contenido', 'Datos', 'Navegación', 'Retroalimentación', 'Overlays', 'Patrones', 'Cobertura'],
       },
     },
   },

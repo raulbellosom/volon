@@ -1,28 +1,16 @@
 import type { HTMLAttributes, ReactNode } from 'react';
+import { brandScope } from '../../utils/brand-scope.ts';
 import { cx } from '../../utils/cx.ts';
 import { IconChip, type IconChipTone } from './IconChip.tsx';
 
 export type CardVariant = 'elevated' | 'outline' | 'sunken' | 'brand';
 
-/**
- * `brand` re-maps semantic tokens inside its subtree, so nested text, chips and dividers
- * adapt to the deep → electric blue panel without special-casing each component.
- * Pair it with the `accent` button variant.
- */
-const BRAND_SCOPE = cx(
-  'bg-[linear-gradient(135deg,var(--color-brand-surface-start)_0%,var(--color-brand-surface-end)_100%)] shadow-2',
-  '[--color-text-primary:var(--color-text-on-brand)]',
-  '[--color-text-secondary:color-mix(in_srgb,var(--color-text-on-brand)_80%,transparent)]',
-  '[--color-border-subtle:color-mix(in_srgb,var(--color-text-on-brand)_16%,transparent)]',
-  '[--color-surface-selected:color-mix(in_srgb,var(--color-text-on-brand)_14%,transparent)]',
-  '[--color-text-on-secondary:var(--color-accent)]',
-);
-
 const VARIANTS: Record<CardVariant, string> = {
   elevated: 'border border-border-subtle bg-surface shadow-1',
   outline: 'border border-border-subtle bg-surface',
   sunken: 'bg-surface-sunken',
-  brand: BRAND_SCOPE,
+  /** Brand panel; see utils/brand-scope.ts. Pair it with the `accent` button variant. */
+  brand: cx(brandScope, 'shadow-2'),
 };
 
 export interface CardProps extends HTMLAttributes<HTMLElement> {

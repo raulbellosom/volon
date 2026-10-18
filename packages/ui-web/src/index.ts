@@ -21,12 +21,23 @@ export { IconChip, type IconChipProps, type IconChipSize, type IconChipTone } fr
 export { StatusBadge, type DeliveryStatusTone, type StatusBadgeProps } from './components/content/StatusBadge.tsx';
 
 export { Alert, type AlertProps } from './components/feedback/Alert.tsx';
+export { EmptyState, type EmptyStateProps } from './components/feedback/EmptyState.tsx';
 export { Skeleton, SkeletonText, type SkeletonProps } from './components/feedback/Skeleton.tsx';
 export { Spinner, SpinnerIcon, type SpinnerProps } from './components/feedback/Spinner.tsx';
 
 export { Dialog, DialogTrigger, type DialogProps, type DialogSize } from './components/overlays/Dialog.tsx';
 export { AlertDialog, type AlertDialogProps } from './components/overlays/AlertDialog.tsx';
 export { Popover, type PopoverProps } from './components/overlays/Popover.tsx';
+export { Drawer, type DrawerProps, type DrawerSide } from './components/overlays/Drawer.tsx';
+
+export { Cell, Column, Row, Table, TableBody, TableFooter, TableFooterRow, TableHeader, type CellAlign, type CellProps, type ColumnProps, type TableProps } from './components/data/Table.tsx';
+
+export { Tab, TabList, TabPanel, Tabs, type TabListProps, type TabPanelProps, type TabProps, type TabsProps } from './components/navigation/Tabs.tsx';
+export { Menu, MenuItem, MenuSection, MenuSeparator, MenuTrigger, type MenuItemProps, type MenuProps } from './components/navigation/Menu.tsx';
+export { Pagination, pageItems, type PageItem, type PaginationProps } from './components/navigation/Pagination.tsx';
+export { Navbar, type NavItem, type NavbarProps } from './components/navigation/Navbar.tsx';
+export { SiteFooter, type FooterColumn, type SiteFooterProps } from './components/navigation/SiteFooter.tsx';
+export { Logo, type LogoProps, type LogoVariant } from './components/brand/Logo.tsx';
 export { ToastRegion, dismissToast, toast, type ToastContent, type ToastOptions } from './components/overlays/Toast.tsx';
 
 export { ThemeToggle, type ThemeToggleProps } from './theme/ThemeToggle.tsx';

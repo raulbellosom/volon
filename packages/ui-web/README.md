@@ -31,7 +31,7 @@ pnpm --filter @delivery/ui-web tokens   # regenera src/styles/tokens.css
 Una prueba falla si `tokens.css` queda desincronizado; otra falla si algún par de color baja de WCAG AA.
 
 ## Estructura
-`src/components/<familia>/` contiene el componente, sus pruebas (`*.test.tsx`) y su historia (`*.stories.tsx`). Familias: `actions`, `forms`, `content`, `feedback`, `overlays`. `src/gallery/` contiene solo páginas de la galería.
+`src/components/<familia>/` contiene el componente, sus pruebas (`*.test.tsx`) y su historia (`*.stories.tsx`). Familias: `actions`, `forms`, `content`, `data`, `navigation`, `feedback`, `overlays` y `brand`; el tema vive en `src/theme/`. `src/gallery/` contiene solo páginas y datos sintéticos de la galería (incluye *Patrones*: formulario y página de ejemplo).
 
 ## Agregar un componente
 1. Revisa [la matriz de cobertura](src/coverage.ts) y [las normas de componentes](../../docs/conventions/ui-components.md).

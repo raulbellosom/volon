@@ -17,6 +17,12 @@
   --animate-popover-in: vl-popover-in var(--duration-fast) var(--ease-enter);
   --animate-popover-out: vl-fade-out var(--duration-instant) var(--ease-exit) forwards;
   --animate-toast-in: vl-toast-in var(--duration-slow) var(--ease-spring);
+  --animate-sheet-in-start: vl-sheet-in-start var(--duration-slow) var(--ease-enter);
+  --animate-sheet-in-end: vl-sheet-in-end var(--duration-slow) var(--ease-enter);
+  --animate-sheet-in-bottom: vl-sheet-in-bottom var(--duration-slow) var(--ease-enter);
+  --animate-sheet-out-start: vl-sheet-out-start var(--duration-base) var(--ease-exit) forwards;
+  --animate-sheet-out-end: vl-sheet-out-end var(--duration-base) var(--ease-exit) forwards;
+  --animate-sheet-out-bottom: vl-sheet-out-bottom var(--duration-base) var(--ease-exit) forwards;
   --animate-spin: spin 0.75s linear infinite;
   --animate-shimmer: vl-shimmer 1.6s var(--ease-standard) infinite;
 
@@ -26,6 +32,12 @@
   @keyframes vl-modal-out { to { opacity: 0; transform: translateY(4px) scale(0.98); } }
   @keyframes vl-popover-in { from { opacity: 0; transform: translateY(-4px) scale(0.98); } }
   @keyframes vl-toast-in { from { opacity: 0; transform: translateY(12px) scale(0.96); } }
+  @keyframes vl-sheet-in-start { from { transform: translateX(-100%); } }
+  @keyframes vl-sheet-in-end { from { transform: translateX(100%); } }
+  @keyframes vl-sheet-in-bottom { from { transform: translateY(100%); } }
+  @keyframes vl-sheet-out-start { to { transform: translateX(-100%); } }
+  @keyframes vl-sheet-out-end { to { transform: translateX(100%); } }
+  @keyframes vl-sheet-out-bottom { to { transform: translateY(100%); } }
   @keyframes vl-shimmer { from { background-position: 150% 0; } to { background-position: -50% 0; } }
   @keyframes spin { to { transform: rotate(360deg); } }
 }

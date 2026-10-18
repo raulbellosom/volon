@@ -10,27 +10,31 @@ const BASE = cx(
   'data-focus-visible:focus-ring data-pressed:translate-y-px',
   'data-pending:cursor-wait',
   'data-disabled:cursor-not-allowed data-disabled:translate-y-0 data-disabled:shadow-none',
-  'data-disabled:bg-surface-disabled data-disabled:text-text-disabled data-disabled:border-transparent',
+  'data-disabled:text-text-disabled',
 );
+
+/** Solid variants fill with the disabled surface; quiet ones stay transparent when disabled. */
+const SOLID_DISABLED = 'data-disabled:bg-surface-disabled';
+const QUIET_DISABLED = 'data-disabled:bg-transparent data-disabled:border-border-subtle';
 
 /** Solid variants carry the «ribbon fold» underside that flattens when pressed. */
 const VARIANTS: Record<ButtonVariant, string> = {
   primary: cx(
-    'bg-action-primary text-text-on-action ribbon-fold',
+    'bg-action-primary text-text-on-action ribbon-fold', SOLID_DISABLED,
     'data-hovered:bg-action-primary-hover data-pressed:bg-action-primary-pressed data-pressed:ribbon-fold-pressed',
   ),
   accent: cx(
-    'bg-action-accent text-text-on-accent ribbon-fold',
+    'bg-action-accent text-text-on-accent ribbon-fold', SOLID_DISABLED,
     'data-hovered:bg-action-accent-hover data-pressed:ribbon-fold-pressed',
   ),
-  secondary: 'bg-action-secondary text-text-on-secondary data-hovered:bg-action-secondary-hover',
+  secondary: cx('bg-action-secondary text-text-on-secondary data-hovered:bg-action-secondary-hover', SOLID_DISABLED),
   outline: cx(
     'border-(length:--border-control) border-border bg-transparent text-text-primary',
-    'data-hovered:bg-surface-hover data-pressed:bg-surface-selected',
+    'data-hovered:bg-surface-hover data-pressed:bg-surface-selected', QUIET_DISABLED,
   ),
-  ghost: 'bg-transparent text-text-primary data-hovered:bg-surface-hover data-pressed:bg-surface-selected',
+  ghost: cx('bg-transparent text-text-primary data-hovered:bg-surface-hover data-pressed:bg-surface-selected', QUIET_DISABLED),
   danger: cx(
-    'bg-action-danger text-text-on-danger ribbon-fold',
+    'bg-action-danger text-text-on-danger ribbon-fold', SOLID_DISABLED,
     'data-hovered:bg-action-danger-hover data-pressed:ribbon-fold-pressed',
   ),
 };
