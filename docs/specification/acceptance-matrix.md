@@ -31,6 +31,16 @@
 
 ## Evidencias necesarias
 
+### Cobertura local de contexto de comercio
+
+La suite [merchant-context](../../apps/api/integration/merchant-context.test.ts)
+cubre ACC-010 para las lecturas de identidad y sucursales: múltiples membresías,
+sucursales hermanas sin autorización, revocación y deshabilitación de comercio o
+sucursal. Comprueba además el DTO mínimo, rechazo de tokens ausentes/alterados/
+vencidos por Auth real, RLS sin filtros de aplicación y errores seguros ante
+rechazo de lectura o indisponibilidad de DB/Auth. Alcance y respuestas en el
+[contrato API](api-contracts.md); resultados y SHA en CI/entrega.
+
 ### Cobertura local del módulo Delivery
 
 Las suites [deliveries](../../apps/api/integration/deliveries.test.ts), [transacciones](../../apps/api/integration/delivery-transactions.test.ts) y [durabilidad](../../apps/api/integration/delivery-durability.test.ts), ejecutadas con `pnpm test:integration`, verifican ACC-001/002/003/010/015 en el alcance sintético de [API](api-contracts.md): creación independiente de Order/Payment, claves persistentes incluso tras reinicio de contenedor, conflictos de payload, ganador único por quote, expiración al salir de espera, pertenencia/revocación, snapshot inmutable y rollback ante fallo diferido al commit. El comando conserva las integraciones previas y se ejecuta con un solo archivo a la vez porque las fixtures alteran temporalmente permisos, membresías y el proceso API del stack de pruebas.

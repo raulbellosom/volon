@@ -24,6 +24,16 @@ Delivery añade `POST /v1/deliveries` y `GET /v1/deliveries/{deliveryId}` según
 
 ## Puertos y redes
 
+El portal puede consumir `GET /v1/me` y
+`GET /v1/merchants/{merchantId}/branches` con el mismo bearer de Supabase Auth.
+DTOs, campos y errores están definidos en el [contrato API](../specification/api-contracts.md).
+La integración de contexto verifica múltiples membresías, sucursales hermanas sin
+acceso, comercio/sucursal deshabilitados, revocación, tokens inválidos/vencidos,
+RLS y fallos de lectura DB/Auth. Usa fixtures sintéticos con UUID y restaura flags
+y grants en `finally`; no ejecutarla en paralelo con otra suite sobre este stack.
+La firma del token vencido de prueba usa únicamente la clave del contenedor Auth
+local, en memoria y sin imprimirla. No se requiere service role en runtime.
+
 | Servicio | Acceso desde el host |
 | --- | --- |
 | API propia | `http://127.0.0.1:3100` (`GET /health`) |
