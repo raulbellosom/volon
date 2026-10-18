@@ -33,14 +33,18 @@ export interface LogoProps {
  */
 export function Logo({ variant = 'wordmark', size = 'md', onBrand, alt = brand.displayName, className }: LogoProps) {
   const { light, dark } = SOURCES[variant];
-  const image = cx('w-auto max-w-none select-none', SIZES[size]);
-  if (onBrand || light === dark) {
-    return <img src={onBrand ? dark : light} alt={alt} draggable={false} className={cx(image, className)} />;
-  }
+  const image = cx('w-auto max-w-none shrink-0 select-none', SIZES[size]);
+  // The wrapper absorbs flex/grid stretching so the artwork always keeps its aspect ratio.
   return (
-    <span className={cx('inline-flex', className)}>
-      <img src={light} alt={alt} draggable={false} className={cx(image, 'dark:hidden')} />
-      <img src={dark} alt={alt} draggable={false} className={cx(image, 'hidden dark:block')} />
+    <span className={cx('inline-flex max-w-full', className)}>
+      {onBrand || light === dark ? (
+        <img src={onBrand ? dark : light} alt={alt} draggable={false} className={image} />
+      ) : (
+        <>
+          <img src={light} alt={alt} draggable={false} className={cx(image, 'dark:hidden')} />
+          <img src={dark} alt={alt} draggable={false} className={cx(image, 'hidden dark:block')} />
+        </>
+      )}
     </span>
   );
 }

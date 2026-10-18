@@ -33,7 +33,7 @@ function Hero() {
   return (
     <header className={cx(brandScope, 'overflow-hidden rounded-2xl px-6 py-10 text-text-primary sm:px-10 sm:py-14')}>
       <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
-        <div className="flex max-w-xl flex-col gap-5">
+        <div className="flex max-w-xl flex-col items-start gap-5">
           <Logo variant="tagline" size="xl" onBrand />
           <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl">Volon UI, colección completa</h1>
           <p className="text-lg text-text-secondary">
@@ -60,7 +60,10 @@ export const Overview: StoryObj = {
     <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-10">
       <ToastRegion />
       <Hero />
-      <nav aria-label="Secciones (móvil)" className="sticky top-0 z-(--z-sticky) -mx-4 mt-6 overflow-x-auto bg-background/90 px-4 py-2 backdrop-blur lg:hidden">
+      <nav
+        aria-label="Secciones (móvil)"
+        className="sticky top-0 z-(--z-sticky) -mx-4 mt-6 overflow-x-auto border-b border-border-subtle bg-surface px-4 py-2.5 shadow-1 sm:-mx-6 sm:px-6 lg:hidden"
+      >
         <ul className="flex gap-1">{SECTIONS.map((section) => <li key={section.id}><a href={`#${section.id}`} className={TOC_LINK}>{section.label}</a></li>)}</ul>
       </nav>
       <div className="mt-10 grid gap-10 lg:grid-cols-[200px_1fr]">
