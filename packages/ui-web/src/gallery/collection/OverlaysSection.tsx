@@ -17,7 +17,6 @@ export function OverlaysSection() {
   return (
     <ShowroomSection
       id="overlays"
-      overline="08 · Overlays"
       title="Capas que respetan el foco"
       description="Todos atrapan el foco, cierran con Escape y lo devuelven al botón que los abrió. En teléfono, los modales se abren como hoja desde abajo."
     >

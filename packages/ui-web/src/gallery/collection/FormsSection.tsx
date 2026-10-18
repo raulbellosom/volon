@@ -14,7 +14,6 @@ export function FormsSection() {
   return (
     <ShowroomSection
       id="formularios"
-      overline="03 · Formularios"
       title="Todo campo tiene ícono"
       description="La ficha del ícono se ilumina al enfocar y se vuelve roja con error. Texto de 16 px para que iOS no haga zoom; filas de 44 px para el tacto."
     >

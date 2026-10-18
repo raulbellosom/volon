@@ -6,10 +6,13 @@ import { coverage } from '../../coverage.ts';
 import { ThemeToggle } from '../../theme/ThemeToggle.tsx';
 import { brandScope } from '../../utils/brand-scope.ts';
 import { cx } from '../../utils/cx.ts';
+import { AdvancedFormsSection } from './AdvancedForms.tsx';
 import { ContentSection, DataSection } from './ContentAndData.tsx';
+import { DisplaySection, WayfindingSection } from './DisplayAndWayfinding.tsx';
 import { FormsSection } from './FormsSection.tsx';
 import { ActionsSection, FoundationsSection } from './FoundationsAndActions.tsx';
 import { FeedbackSection, NavigationSection } from './NavigationAndFeedback.tsx';
+import { LogisticsSection } from './LogisticsSection.tsx';
 import { OverlaysSection } from './OverlaysSection.tsx';
 import { SECTIONS } from './Showroom.tsx';
 
@@ -66,7 +69,7 @@ export const Overview: StoryObj = {
       >
         <ul className="flex gap-1">{SECTIONS.map((section) => <li key={section.id}><a href={`#${section.id}`} className={TOC_LINK}>{section.label}</a></li>)}</ul>
       </nav>
-      <div className="mt-10 grid gap-10 lg:grid-cols-[200px_1fr]">
+      <div className="mt-10 grid gap-10 lg:grid-cols-[220px_1fr]">
         <nav aria-label="Secciones" className="hidden lg:block">
           <ul className="sticky top-6 flex flex-col gap-1">
             {SECTIONS.map((section, index) => (
@@ -82,11 +85,15 @@ export const Overview: StoryObj = {
           <FoundationsSection />
           <ActionsSection />
           <FormsSection />
+          <AdvancedFormsSection />
           <ContentSection />
+          <DisplaySection />
           <DataSection />
           <NavigationSection />
+          <WayfindingSection />
           <FeedbackSection />
           <OverlaysSection />
+          <LogisticsSection />
         </main>
       </div>
     </div>

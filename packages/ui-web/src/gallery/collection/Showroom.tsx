@@ -3,19 +3,18 @@ import type { ReactNode } from 'react';
 import { cx } from '../../utils/cx.ts';
 
 export interface ShowroomSectionProps {
-  id: string;
-  overline: string;
+  id: SectionId;
   title: string;
   description: string;
   children: ReactNode;
 }
 
 /** One family of components on the collection page. */
-export function ShowroomSection({ id, overline, title, description, children }: ShowroomSectionProps) {
+export function ShowroomSection({ id, title, description, children }: ShowroomSectionProps) {
   return (
     <section id={id} aria-labelledby={`${id}-title`} className="scroll-mt-24 border-t border-border-subtle py-12 first:border-0 first:pt-0">
       <header className="mb-8 flex max-w-2xl flex-col gap-2">
-        <p className="text-xs font-bold uppercase tracking-overline text-text-link">{overline}</p>
+        <p className="text-xs font-bold uppercase tracking-overline text-text-link">{sectionOverline(id)}</p>
         <h2 id={`${id}-title`} className="text-3xl font-extrabold tracking-tight">{title}</h2>
         <p className="text-md text-text-secondary">{description}</p>
       </header>
@@ -66,9 +65,21 @@ export const SECTIONS = [
   { id: 'fundamentos', label: 'Fundamentos' },
   { id: 'acciones', label: 'Acciones' },
   { id: 'formularios', label: 'Formularios' },
+  { id: 'formularios-avanzados', label: 'Formularios avanzados' },
   { id: 'contenido', label: 'Contenido' },
-  { id: 'datos', label: 'Datos' },
+  { id: 'presentacion', label: 'Presentación de datos' },
+  { id: 'datos', label: 'Tablas' },
   { id: 'navegacion', label: 'Navegación' },
+  { id: 'orientacion', label: 'Orientación e interacción' },
   { id: 'retroalimentacion', label: 'Retroalimentación' },
   { id: 'overlays', label: 'Overlays' },
+  { id: 'logistica', label: 'Logística' },
 ] as const;
+
+export type SectionId = (typeof SECTIONS)[number]['id'];
+
+/** «03 · Formularios», numbered from the index order so numbers never drift. */
+function sectionOverline(id: SectionId): string {
+  const index = SECTIONS.findIndex((section) => section.id === id);
+  return `${String(index + 1).padStart(2, '0')} · ${SECTIONS[index]?.label ?? ''}`;
+}

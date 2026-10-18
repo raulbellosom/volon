@@ -14,7 +14,7 @@ const STATUSES: DeliveryStatusTone[] = ['requested', 'searching', 'in-transit', 
 
 export function ContentSection() {
   return (
-    <ShowroomSection id="contenido" overline="04 · Contenido" title="Tarjetas, badges y estados" description="Contenedores concéntricos, la variante de marca en degradado y estados de entrega que siempre llevan ícono y texto.">
+    <ShowroomSection id="contenido" title="Tarjetas, badges y estados" description="Contenedores concéntricos, la variante de marca en degradado y estados de entrega que siempre llevan ícono y texto.">
       <SpecimenGrid columns={3}>
         <Specimen title="Card" storyId="contenido-card--overview">
           <Card>
@@ -60,7 +60,7 @@ const money = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN
 export function DataSection() {
   const [page, setPage] = useState(2);
   return (
-    <ShowroomSection id="datos" overline="05 · Datos" title="Tablas" description="Orden por columna, selección con el checkbox de marca, fila de totales y desplazamiento horizontal en teléfono. Montos de ejemplo, sin tarifas reales.">
+    <ShowroomSection id="datos" title="Tablas" description="Orden por columna, selección con el checkbox de marca, fila de totales y desplazamiento horizontal en teléfono. Montos de ejemplo, sin tarifas reales.">
       <Specimen title="Table + Pagination" storyId="datos-table--deliveries">
         <Table aria-label="Envíos de ejemplo" selectionMode="multiple" defaultSelectedKeys={['1']}>
           <TableHeader>

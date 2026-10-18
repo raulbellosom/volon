@@ -14,7 +14,7 @@ import { ShowroomSection, Specimen, SpecimenGrid } from './Showroom.tsx';
 
 export function NavigationSection() {
   return (
-    <ShowroomSection id="navegacion" overline="06 · Navegación" title="Moverse por la app" description="Navbar translúcida con menú lateral en teléfono, pestañas con barra deslizante y menús de acciones.">
+    <ShowroomSection id="navegacion" title="Moverse por la app" description="Navbar translúcida con menú lateral en teléfono, pestañas con barra deslizante y menús de acciones.">
       <Specimen title="Navbar" storyId="navegación-navbar--desktop" note="Reduce el viewport para ver el menú lateral">
         <div className="-m-5 overflow-hidden sm:-m-6"><Navbar items={NAV_ITEMS} currentId="deliveries" actions={NAV_ACTIONS} /></div>
       </Specimen>
@@ -49,7 +49,7 @@ export function NavigationSection() {
 
 export function FeedbackSection() {
   return (
-    <ShowroomSection id="retroalimentacion" overline="07 · Retroalimentación" title="Decir qué pasó y qué sigue" description="Avisos en línea, estados vacíos y de error, carga con skeleton y notificaciones temporales.">
+    <ShowroomSection id="retroalimentacion" title="Decir qué pasó y qué sigue" description="Avisos en línea, estados vacíos y de error, carga con skeleton y notificaciones temporales.">
       <SpecimenGrid>
         <Specimen title="Alert" storyId="retroalimentación-alert--tones">
           <Alert tone="info" title="Horario de servicio">Recibimos solicitudes de 12:00 a 20:00.</Alert>

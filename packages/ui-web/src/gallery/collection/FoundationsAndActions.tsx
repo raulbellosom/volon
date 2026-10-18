@@ -12,7 +12,7 @@ const RADII = [['xs', 'rounded-xs'], ['md', 'rounded-md'], ['xl', 'rounded-xl'],
 
 export function FoundationsSection() {
   return (
-    <ShowroomSection id="fundamentos" overline="01 · Fundamentos" title="El ADN visual" description="Paleta de marca, superficies semánticas, tipografía Plus Jakarta Sans y geometría inspirada en la cinta del logo.">
+    <ShowroomSection id="fundamentos" title="El ADN visual" description="Paleta de marca, superficies semánticas, tipografía Plus Jakarta Sans y geometría inspirada en la cinta del logo.">
       <SpecimenGrid columns={3}>
         <Specimen title="Paleta de marca" storyId="fundamentos-color--brand" note="Azul eléctrico, lima, azul profundo, gris claro">
           <div className="grid grid-cols-4 gap-2">
@@ -55,7 +55,7 @@ const VIEWS = [
 export function ActionsSection() {
   const [view, setView] = useState<(typeof VIEWS)[number]['id']>('list');
   return (
-    <ShowroomSection id="acciones" overline="02 · Acciones" title="Botones con pliegue" description="Píldoras con la franja inferior de la cinta que se aplana al presionar. Prueba el estado pendiente y el teclado.">
+    <ShowroomSection id="acciones" title="Botones con pliegue" description="Píldoras con la franja inferior de la cinta que se aplana al presionar. Prueba el estado pendiente y el teclado.">
       <SpecimenGrid>
         <Specimen title="Button · variantes" storyId="acciones-button--variants">
           <div className="flex flex-wrap gap-3">
