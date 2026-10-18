@@ -23,6 +23,8 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: Length, TypeScript, contracts and API tests
         run: pnpm run check
+      - name: Build Volon UI gallery (Storybook)
+        run: pnpm run gallery:build
   backend-integration:
     needs: quality
     runs-on: ubuntu-latest

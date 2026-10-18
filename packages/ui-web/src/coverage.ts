@@ -1,80 +1,104 @@
 /**
- * Single source for the Volon UI coverage matrix (rendered in the gallery and checked by
- * tests). `reviewed` is set only after the product owner approves the component visually.
+ * Single source for the Volon UI coverage matrix, rendered in the gallery and enforced by
+ * `coverage.test.ts`:
+ * - `implemented`: source and story exist (checked).
+ * - `tested`: plus behavior tests; every listed test file must render one of `renders`.
+ * - `reviewed`: visual approval by the product owner. Never set by an agent.
  */
-export type CoverageStatus = 'pending' | 'implemented' | 'documented' | 'tested' | 'reviewed';
+export type CoverageStatus = 'pending' | 'implemented' | 'tested' | 'reviewed';
 
-export type ComponentFamily = 'Acciones' | 'Formularios' | 'Contenido' | 'Datos' | 'Navegación' | 'Overlays' | 'Retroalimentación' | 'Marca' | 'Dominio';
+export type ComponentFamily =
+  | 'Acciones' | 'Formularios' | 'Contenido' | 'Datos' | 'Navegación'
+  | 'Overlays' | 'Retroalimentación' | 'Marca' | 'Logística';
 
 export interface ComponentCoverage {
   readonly name: string;
   readonly family: ComponentFamily;
-  /** Highest status reached; each status implies the previous ones. */
   readonly status: CoverageStatus;
-  /** Source file relative to src/components, required once implemented. */
+  /** Source file relative to src/components. */
   readonly source?: string;
+  /** Test files relative to src/components. */
+  readonly tests?: readonly string[];
+  /** JSX names the tests must render to count as covering this entry. */
+  readonly renders?: readonly string[];
   readonly notes?: string;
 }
 
-const done = (name: string, family: ComponentFamily, source: string, notes?: string): ComponentCoverage =>
-  ({ name, family, status: 'tested', source, ...(notes ? { notes } : {}) });
+interface Spec {
+  source: string;
+  tests: readonly string[];
+  renders: readonly string[];
+  notes?: string;
+}
+
+const tested = (name: string, family: ComponentFamily, spec: Spec): ComponentCoverage =>
+  ({ name, family, status: 'tested', ...spec });
 
 const pending = (name: string, family: ComponentFamily, notes?: string): ComponentCoverage =>
   ({ name, family, status: 'pending', ...(notes ? { notes } : {}) });
 
+const ACTIONS = 'actions/Button.test.tsx';
+const TEXT = 'forms/TextFields.test.tsx';
+const SELECTION = 'forms/SelectionControls.test.tsx';
+const CONTENT = 'content/Content.test.tsx';
+const NAV = 'navigation/Navigation.test.tsx';
+const OVERLAYS = 'overlays/Overlays.test.tsx';
+
 export const coverage: readonly ComponentCoverage[] = [
-  done('Button', 'Acciones', 'actions/Button.tsx'),
-  done('IconButton', 'Acciones', 'actions/IconButton.tsx'),
-  done('SegmentedControl', 'Acciones', 'actions/SegmentedControl.tsx', 'Píldora animada con SelectionIndicator.'),
-  done('ThemeToggle', 'Acciones', '../theme/ThemeToggle.tsx', 'Claro / Oscuro / Sistema, persistente.'),
+  tested('Button', 'Acciones', { source: 'actions/Button.tsx', tests: [ACTIONS], renders: ['Button'] }),
+  tested('IconButton', 'Acciones', { source: 'actions/IconButton.tsx', tests: [ACTIONS], renders: ['IconButton'] }),
+  tested('SegmentedControl', 'Acciones', { source: 'actions/SegmentedControl.tsx', tests: ['actions/SegmentedControl.test.tsx'], renders: ['SegmentedControl'] }),
+  tested('ThemeToggle', 'Acciones', { source: '../theme/ThemeToggle.tsx', tests: ['../theme/Theme.test.tsx'], renders: ['ThemeToggle'], notes: 'Claro / Oscuro / Sistema, persistente.' }),
   pending('ButtonGroup', 'Acciones'),
   pending('ToggleButton', 'Acciones'),
-  pending('Link', 'Acciones', 'Enlace estilizado y LinkButton.'),
-  done('TextField', 'Formularios', 'forms/TextField.tsx', 'Incluye Textarea (multiline).'),
-  done('PasswordField', 'Formularios', 'forms/PasswordField.tsx'),
-  done('SearchField', 'Formularios', 'forms/SearchField.tsx'),
-  done('Checkbox / CheckboxGroup', 'Formularios', 'forms/Checkbox.tsx'),
-  done('RadioGroup', 'Formularios', 'forms/RadioGroup.tsx'),
-  done('Switch', 'Formularios', 'forms/Switch.tsx'),
-  done('Select', 'Formularios', 'forms/Select.tsx'),
-  done('RadioCard / CheckboxCard', 'Formularios', 'forms/ChoiceCard.tsx'),
-  pending('NumberField / CurrencyField', 'Formularios', 'NumberField de React Aria con formato es-MX.'),
+  pending('Link / LinkButton', 'Acciones'),
+  tested('TextField', 'Formularios', { source: 'forms/TextField.tsx', tests: [TEXT], renders: ['TextField'], notes: 'Incluye Textarea (multiline); ícono obligatorio.' }),
+  tested('PasswordField', 'Formularios', { source: 'forms/PasswordField.tsx', tests: [TEXT], renders: ['PasswordField'] }),
+  tested('SearchField', 'Formularios', { source: 'forms/SearchField.tsx', tests: [TEXT], renders: ['SearchField'] }),
+  tested('Checkbox / CheckboxGroup', 'Formularios', { source: 'forms/Checkbox.tsx', tests: [SELECTION], renders: ['Checkbox', 'CheckboxGroup'] }),
+  tested('RadioGroup', 'Formularios', { source: 'forms/RadioGroup.tsx', tests: [SELECTION], renders: ['RadioGroup'] }),
+  tested('Switch', 'Formularios', { source: 'forms/Switch.tsx', tests: [SELECTION], renders: ['Switch'] }),
+  tested('Select', 'Formularios', { source: 'forms/Select.tsx', tests: [SELECTION], renders: ['Select'] }),
+  tested('RadioCard / CheckboxCard', 'Formularios', { source: 'forms/ChoiceCard.tsx', tests: ['forms/ChoiceCard.test.tsx'], renders: ['RadioCard', 'CheckboxCard'] }),
+  pending('NumberField', 'Formularios'),
+  pending('CurrencyField', 'Formularios', 'MXN en centavos enteros.'),
   pending('ComboBox', 'Formularios'),
-  pending('DatePicker / TimeField', 'Formularios'),
+  pending('DatePicker', 'Formularios'),
+  pending('TimeField', 'Formularios'),
   pending('Slider', 'Formularios'),
   pending('OTPField', 'Formularios', 'Sin primitiva en React Aria; evaluar antes de construir.'),
-  done('Card', 'Contenido', 'content/Card.tsx'),
-  done('Badge', 'Contenido', 'content/Badge.tsx'),
-  done('IconChip', 'Contenido', 'content/IconChip.tsx'),
-  done('StatusBadge', 'Contenido', 'content/StatusBadge.tsx'),
+  tested('Card', 'Contenido', { source: 'content/Card.tsx', tests: [CONTENT], renders: ['Card'] }),
+  tested('Badge', 'Contenido', { source: 'content/Badge.tsx', tests: [CONTENT], renders: ['Badge'] }),
+  tested('IconChip', 'Contenido', { source: 'content/IconChip.tsx', tests: [CONTENT], renders: ['IconChip'] }),
+  tested('StatusBadge', 'Contenido', { source: 'content/StatusBadge.tsx', tests: [CONTENT], renders: ['StatusBadge'] }),
+  pending('Tooltip', 'Contenido'),
   pending('Avatar / AvatarGroup', 'Contenido'),
   pending('Divider', 'Contenido'),
-  pending('Tooltip', 'Contenido'),
   pending('Progress', 'Contenido'),
-  pending('DescriptionList', 'Contenido'),
-  pending('Stat', 'Contenido'),
-  done('Table + TableFooter', 'Datos', 'data/Table.tsx', 'Orden, selección, fila de totales y estado vacío.'),
-  done('Tabs', 'Navegación', 'navigation/Tabs.tsx'),
-  done('Navbar', 'Navegación', 'navigation/Navbar.tsx', 'Responsiva con menú lateral en teléfono.'),
-  done('SiteFooter', 'Navegación', 'navigation/SiteFooter.tsx'),
+  pending('Stat', 'Datos'),
+  pending('DescriptionList', 'Datos'),
+  tested('Table + TableFooter', 'Datos', { source: 'data/Table.tsx', tests: ['data/Table.test.tsx'], renders: ['Table'], notes: 'Orden, selección, fila de totales y estado vacío.' }),
+  tested('Tabs', 'Navegación', { source: 'navigation/Tabs.tsx', tests: [NAV], renders: ['Tabs'] }),
+  tested('Menu (DropdownMenu)', 'Navegación', { source: 'navigation/Menu.tsx', tests: [NAV], renders: ['Menu'] }),
+  tested('Pagination', 'Navegación', { source: 'navigation/Pagination.tsx', tests: [NAV], renders: ['Pagination'] }),
+  tested('Navbar', 'Navegación', { source: 'navigation/Navbar.tsx', tests: [NAV], renders: ['Navbar'], notes: 'Responsiva con menú lateral en teléfono.' }),
+  tested('SiteFooter', 'Navegación', { source: 'navigation/SiteFooter.tsx', tests: [NAV], renders: ['SiteFooter'] }),
   pending('Breadcrumbs', 'Navegación'),
-  done('Menu (DropdownMenu)', 'Navegación', 'navigation/Menu.tsx'),
-  done('Pagination', 'Navegación', 'navigation/Pagination.tsx'),
   pending('Stepper', 'Navegación'),
-  pending('Sidebar primitives', 'Navegación'),
-  done('Dialog', 'Overlays', 'overlays/Dialog.tsx'),
-  done('AlertDialog', 'Overlays', 'overlays/AlertDialog.tsx'),
-  done('Popover', 'Overlays', 'overlays/Popover.tsx'),
-  done('Toast', 'Overlays', 'overlays/Toast.tsx', 'Envuelve la API UNSTABLE de React Aria.'),
-  done('Drawer / Sheet', 'Overlays', 'overlays/Drawer.tsx'),
-  done('Alert', 'Retroalimentación', 'feedback/Alert.tsx'),
-  done('Spinner', 'Retroalimentación', 'feedback/Spinner.tsx', 'Animación de marca pendiente para una iteración posterior.'),
-  done('Skeleton', 'Retroalimentación', 'feedback/Skeleton.tsx'),
-  done('EmptyState / ErrorState', 'Retroalimentación', 'feedback/EmptyState.tsx'),
+  pending('Sidebar', 'Navegación'),
+  tested('Dialog', 'Overlays', { source: 'overlays/Dialog.tsx', tests: [OVERLAYS], renders: ['Dialog'] }),
+  tested('AlertDialog', 'Overlays', { source: 'overlays/AlertDialog.tsx', tests: [OVERLAYS], renders: ['AlertDialog'] }),
+  tested('Popover', 'Overlays', { source: 'overlays/Popover.tsx', tests: [OVERLAYS], renders: ['Popover'] }),
+  tested('Drawer / Sheet', 'Overlays', { source: 'overlays/Drawer.tsx', tests: [OVERLAYS], renders: ['Drawer'] }),
+  tested('Toast', 'Overlays', { source: 'overlays/Toast.tsx', tests: [OVERLAYS], renders: ['ToastRegion'], notes: 'Envuelve la API UNSTABLE de React Aria.' }),
+  tested('Alert', 'Retroalimentación', { source: 'feedback/Alert.tsx', tests: [CONTENT], renders: ['Alert'] }),
+  tested('EmptyState / ErrorState', 'Retroalimentación', { source: 'feedback/EmptyState.tsx', tests: [CONTENT, 'data/Table.test.tsx'], renders: ['EmptyState'] }),
+  tested('Spinner', 'Retroalimentación', { source: 'feedback/Spinner.tsx', tests: [CONTENT], renders: ['Spinner'], notes: 'Animación de marca pendiente para una iteración posterior.' }),
+  tested('Skeleton', 'Retroalimentación', { source: 'feedback/Skeleton.tsx', tests: [CONTENT], renders: ['Skeleton', 'SkeletonText'] }),
   pending('Accordion', 'Retroalimentación'),
-  done('Logo', 'Marca', 'brand/Logo.tsx', 'PNG oficiales; SVG pendiente de diseño.'),
-  pending('Timeline', 'Dominio', 'Eventos de una entrega con datos sintéticos.'),
-  pending('PriceBreakdown', 'Dominio', 'Desglose monetario; sin tarifas reales.'),
-  pending('RouteSummary', 'Dominio'),
-  pending('ConnectionStatus', 'Dominio'),
+  tested('Logo', 'Marca', { source: 'brand/Logo.tsx', tests: ['brand/Logo.test.tsx'], renders: ['Logo'], notes: 'PNG oficiales; SVG pendiente de diseño.' }),
+  pending('Timeline', 'Logística', 'Eventos de una entrega con datos sintéticos.'),
+  pending('PriceBreakdown', 'Logística', 'Desglose monetario; sin tarifas reales.'),
+  pending('RouteSummary', 'Logística'),
+  pending('ConnectionStatus', 'Logística'),
 ];

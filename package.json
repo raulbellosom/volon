@@ -21,7 +21,8 @@
     "local:stop": "node scripts/local/operations.mjs stop",
     "test:integration": "node --experimental-strip-types --test --test-concurrency=1 apps/api/integration/*.test.ts",
     "gallery": "pnpm --filter @delivery/ui-web gallery",
-    "typecheck:ui": "pnpm --filter @delivery/ui-web typecheck"
+    "typecheck:ui": "pnpm --filter @delivery/ui-web typecheck",
+    "gallery:build": "pnpm --filter @delivery/ui-web gallery:build"
   },
   "devDependencies": {
     "@prisma/client": "7.10.1",

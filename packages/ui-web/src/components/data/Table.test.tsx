@@ -1,11 +1,10 @@
-import { render, screen, waitFor, within } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Inbox } from 'lucide-react';
 import { useState } from 'react';
 import type { SortDescriptor } from 'react-aria-components';
 import { describe, expect, it, vi } from 'vitest';
 import { EmptyState } from '../feedback/EmptyState.tsx';
-import { Drawer } from '../overlays/Drawer.tsx';
 import { Cell, Column, Row, Table, TableBody, TableFooter, TableFooterRow, TableHeader } from './Table.tsx';
 
 const ROWS = [
@@ -65,15 +64,5 @@ describe('Table', () => {
       </Table>,
     );
     expect(screen.getByText('Sin envíos todavía')).toBeInTheDocument();
-  });
-});
-
-describe('Drawer', () => {
-  it('opens as a labelled dialog and closes with its close button', async () => {
-    const onOpenChange = vi.fn();
-    render(<Drawer isOpen onOpenChange={onOpenChange} title="Filtros" side="end">Contenido</Drawer>);
-    expect(screen.getByRole('dialog', { name: 'Filtros' })).toBeInTheDocument();
-    await userEvent.click(screen.getByRole('button', { name: 'Cerrar' }));
-    await waitFor(() => expect(onOpenChange).toHaveBeenCalledWith(false));
   });
 });

@@ -55,7 +55,8 @@ export function SegmentedControl<K extends string>({
       selectedKeys={[selectedKey]}
       onSelectionChange={(keys: Set<Key>) => {
         const [next] = [...keys];
-        if (next !== undefined) onSelectionChange(String(next) as K);
+        // Re-pressing the selected option is not a change; avoid redundant callbacks.
+        if (next !== undefined && String(next) !== selectedKey) onSelectionChange(String(next) as K);
       }}
       {...(isDisabled ? { isDisabled } : {})}
       className={cx('inline-flex w-fit gap-1 rounded-full bg-surface-sunken p-1', className)}

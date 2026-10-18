@@ -3,7 +3,11 @@ import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import { axeViolations } from '../../test/axe.ts';
 import { Button } from '../actions/Button.tsx';
+import { Dialog as AriaDialog, DialogTrigger as AriaDialogTrigger } from 'react-aria-components';
+import { IconButton } from '../actions/IconButton.tsx';
 import { AlertDialog } from './AlertDialog.tsx';
+import { Drawer } from './Drawer.tsx';
+import { Popover } from './Popover.tsx';
 import { Dialog, DialogTrigger } from './Dialog.tsx';
 import { ToastRegion, dismissToast, toast } from './Toast.tsx';
 
@@ -75,5 +79,32 @@ describe('Toast', () => {
     expect(screen.getByRole('region')).toBeInTheDocument();
     act(() => dismissToast(key));
     await waitFor(() => expect(screen.queryByText('Envío creado')).not.toBeInTheDocument());
+  });
+});
+
+describe('Drawer', () => {
+  it('opens as a labelled dialog and closes with its close button', async () => {
+    const onOpenChange = vi.fn();
+    render(<Drawer isOpen onOpenChange={onOpenChange} title="Filtros" side="end">Contenido</Drawer>);
+    expect(screen.getByRole('dialog', { name: 'Filtros' })).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Cerrar' }));
+    await waitFor(() => expect(onOpenChange).toHaveBeenCalledWith(false));
+  });
+});
+
+describe('Popover', () => {
+  it('opens from its trigger, closes with Escape and returns focus', async () => {
+    render(
+      <AriaDialogTrigger>
+        <IconButton label="Ayuda" icon={<span />} />
+        <Popover><AriaDialog aria-label="Explicación">Cargo base más distancia.</AriaDialog></Popover>
+      </AriaDialogTrigger>,
+    );
+    const trigger = screen.getByRole('button', { name: 'Ayuda' });
+    await userEvent.click(trigger);
+    expect(await screen.findByRole('dialog', { name: 'Explicación' })).toHaveTextContent('Cargo base');
+    await userEvent.keyboard('{Escape}');
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+    await waitFor(() => expect(trigger).toHaveFocus());
   });
 });

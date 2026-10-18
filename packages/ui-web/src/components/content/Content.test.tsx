@@ -5,7 +5,10 @@ import { axeViolations } from '../../test/axe.ts';
 import { Alert } from '../feedback/Alert.tsx';
 import { Skeleton, SkeletonText } from '../feedback/Skeleton.tsx';
 import { Spinner } from '../feedback/Spinner.tsx';
+import { Inbox } from 'lucide-react';
+import { EmptyState } from '../feedback/EmptyState.tsx';
 import { Badge } from './Badge.tsx';
+import { IconChip } from './IconChip.tsx';
 import { Card, CardContent, CardFooter, CardHeader } from './Card.tsx';
 import { StatusBadge } from './StatusBadge.tsx';
 
@@ -71,5 +74,24 @@ describe('Loading', () => {
     );
     expect(screen.getByRole('progressbar', { name: 'Cargando envíos' })).toBeInTheDocument();
     expect(container.querySelectorAll('[aria-hidden="true"]').length).toBeGreaterThanOrEqual(2);
+  });
+});
+
+describe('IconChip', () => {
+  it('is decorative and applies the requested tone and size', () => {
+    const { container } = render(<IconChip icon={<svg />} tone="danger" size="lg" />);
+    const chip = container.firstElementChild as HTMLElement;
+    expect(chip).toHaveAttribute('aria-hidden', 'true');
+    expect(chip.className).toContain('bg-feedback-danger-bg');
+    expect(chip.className).toContain('size-12');
+  });
+});
+
+describe('EmptyState', () => {
+  it('shows title, help and actions with a decorative icon', async () => {
+    const { container } = render(<EmptyState icon={<Inbox />} title="Aún no tienes envíos" description="Solicita el primero." actions={<button type="button">Nuevo envío</button>} />);
+    expect(screen.getByText('Aún no tienes envíos')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Nuevo envío' })).toBeInTheDocument();
+    expect(await axeViolations(container)).toEqual([]);
   });
 });

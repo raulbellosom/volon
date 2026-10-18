@@ -3,7 +3,9 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "sideEffects": ["*.css"],
+  "sideEffects": [
+    "*.css"
+  ],
   "exports": {
     ".": "./src/index.ts",
     "./styles.css": "./src/styles/volon.css"
@@ -19,6 +21,7 @@
     "@delivery/branding": "workspace:*",
     "@delivery/design-tokens": "workspace:*",
     "@fontsource-variable/plus-jakarta-sans": "5.3.0",
+    "@internationalized/date": "3.12.4",
     "lucide-react": "1.51.0",
     "react-aria-components": "1.21.1"
   },
