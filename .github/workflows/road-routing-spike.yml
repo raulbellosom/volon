@@ -1,0 +1,19 @@
+name: Manual-scope routing spike
+on:
+  push:
+    branches: [main]
+    paths:
+      - scripts/spikes/pv-route-benchmark.mjs
+permissions:
+  contents: read
+jobs:
+  osrm-noncommercial-demo:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.23.3'
+      - name: Probe two synthetic route pairs once (demo only, not production)
+        run: node scripts/spikes/pv-route-benchmark.mjs

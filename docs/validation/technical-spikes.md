@@ -42,3 +42,5 @@ Fecha, versión, hardware/OS, hipótesis, entorno, pasos reproducibles, datos us
 
 ## Criterio de avance
 No aprobar componentes por apariencia ni proveedores por documentación únicamente. Registrar pruebas antes de comenzar el MVP remunerado.
+
+**Prueba diagnóstica independiente en GitHub:** `scripts/spikes/pv-route-benchmark.mjs` realiza solo dos consultas al demo OSRM, espaciadas más de un segundo, con puntos sintéticos cercanos a Puerto Vallarta (no domicilios ni rutas de personas). Reporta metros viales, metros en línea recta, duración del modelo automovilístico y distancia de ajuste a la calle. El workflow `road-routing-spike.yml` se ejecuta al introducir o modificar ese script, no en cada push ordinario. Es **no comercial** y puede fallar por disponibilidad del demo; su resultado no debe tomarse como SLA ni validar rutas para motocicletas. La API `main.ts` sigue sin conectar a ningún motor vial.
