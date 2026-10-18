@@ -25,6 +25,15 @@
 | DEC-17 | Eventos y outbox | **Definido conceptualmente, prueba pendiente** | Backend autoridad; outbox para hechos durables; Broadcast privado efímero, snapshot tras reconexión. Test de versionado, permisos y consistencia. | Integraciones |
 | DEC-18 | Gestión de flotas múltiples | **Diferido a M2** | Modelo compatible con roles/tenants; no construir fleet-web ni split payouts en M0. Definir contratos/roles en M2. | Flotas |
 
+### Contexto mínimo de comercio — decisión del incremento #9
+
+Solicitud del usuario del 18-10-2026: implementar únicamente identidad y selector
+de sucursales sobre el modelo local vigente (DEC-16/ADR-0007). Sin nuevos roles,
+estados, tablas ni permisos: membresía habilitada por sucursal, comercio y
+sucursal habilitados. Respuesta mínima y 404 anti-enumeración definidos en
+[API](api-contracts.md). Historial paginado diferido al próximo incremento;
+roles/vigencias temporales y autorización productiva continúan pendientes.
+
 ## Interpretación obligatoria
 - **Definido para diseño:** permite preparar casos, APIs candidatas, mockups y estimaciones. **No permite desplegar servicio real ni marcar validado**.
 - **Parcialmente definido:** conservar el diseño seleccionado, pero no implementar dependencias críticas sin la evidencia indicada.

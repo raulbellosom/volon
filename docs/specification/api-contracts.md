@@ -1,6 +1,6 @@
 # API HTTP — contrato candidato de versión 1
 
-**Estado:** superficie general candidata. POST y GET de cotizaciones y Delivery tienen handlers Fetch, listener HTTP local y adaptadores PostgreSQL/Auth ejecutables mediante [entorno Docker local](../operations/local-backend.md). Sin operación comercial ni servicios públicos; el resto de las rutas sigue siendo ilustrativo.
+**Estado:** superficie general candidata. POST y GET de cotizaciones y Delivery, más GET de identidad y sucursales, tienen handlers Fetch, listener HTTP local y adaptadores PostgreSQL/Auth ejecutables mediante [entorno Docker local](../operations/local-backend.md). Sin operación comercial ni servicios públicos; el resto de las rutas sigue siendo ilustrativo.
 
 ## Corte experimental de cotización (RF-001/005/006, UC-03, DEL-003)
 
@@ -16,6 +16,40 @@ Contrato formal: [`delivery-quote.schema.json`](../../packages/contracts/deliver
 Los ejemplos siguientes conservan su carácter conceptual; los esquemas formales gobiernan los cortes locales. ACC-015 se comprueba en las pruebas de snapshot de Delivery; no implica ajustes financieros comerciales implementados.
 
 ## Convenciones horizontales
+
+### Contexto de comercio: lectura local v1 (issue #9, RF-001, UC-01, ENG-009, ACC-010)
+
+Primer corte autorizado para desarrollo sintético: `GET /v1/me` y
+`GET /v1/merchants/{merchantId}/branches`. El historial de entregas queda fuera.
+DTOs cerrados en `packages/contracts/merchant-context.schema.json`, con validación
+runtime compartida en `@delivery/contracts`.
+
+- `/v1/me`: `200 { subjectId, memberships: [{ merchant: { merchantId, name }, branch: { branchId, name } }] }`.
+  `subjectId` es exclusivamente el UUID verificado por Supabase Auth. Cada elemento
+  representa una membresía vigente por sucursal; se omiten membresías revocadas,
+  comercios deshabilitados y sucursales deshabilitadas. Sin accesos vigentes:
+  `200 { subjectId, memberships: [] }`. Soporta varias sucursales/comercios por sujeto.
+- `/v1/merchants/{merchantId}/branches`: `200 { merchant: { merchantId, name }, branches: [{ branchId, name }] }`.
+  `merchantId` usa `[A-Za-z0-9_-]{1,128}`. Solo incluye sucursales con membresía propia
+  vigente, nunca todas las sucursales del comercio por pertenecer a una de ellas.
+  Comercio ajeno, inexistente, deshabilitado o sin sucursales visibles: `404 NOT_FOUND`
+  idéntico. Identificador de ruta inválido: el mismo 404.
+- Orden ascendente por `merchantId` y después `branchId` en `/me`; por `branchId`
+  en sucursales. Una entrada por membresía sujeto+sucursal, conforme a la unicidad
+  existente. No se aceptan identidad ni scope desde headers alternativos, body,
+  metadata o query; los parámetros query no cambian el resultado.
+- No se devuelven correo, nombre personal, teléfono, metadata Auth, coordenadas,
+  dirección, IDs internos de membresía, flags de estado, roles ni permisos inventados.
+  El modelo actual no persiste roles ni fechas de vigencia: vigente significa
+  Membership.enabled, Merchant.enabled y Branch.enabled en la lectura actual.
+- Bearer ausente/inválido/vencido: `401 UNAUTHENTICATED`; Auth o PostgreSQL
+  indisponible, error de consulta o DTO inválido: `503 SERVICE_UNAVAILABLE` seguro.
+  Método distinto: `405 METHOD_NOT_ALLOWED`, `Allow: GET`. No se usa 403 para
+  revelar existencia del comercio. Errores con el formato `application/problem+json`
+  existente. Éxitos JSON y todos los errores usan `Cache-Control: no-store`.
+- Cada lectura usa una consulta contextual Prisma con rol `delivery_api` y RLS
+  vigente; el filtro del merchant no sustituye RLS. No hay cambios de esquema,
+  privilegios, políticas, endpoints administrativos o llamadas con service role.
 
 ### Delivery local: contrato ejecutable (RF-007/008, UC-04, DEL-004)
 
@@ -49,8 +83,8 @@ POST mantiene el contrato anterior. La composición PostgreSQL revalida membres�
 
 | Método y ruta propuesta | Acción | Actor/scope | Efecto |
 | --- | --- | --- | --- |
-| `GET /v1/me` | Identidad, memberships y permisos efectivos | Autenticado | Lectura |
-| `GET /v1/merchants/{merchantId}/branches` | Consultar sucursales propias | Member autorizado | Lectura |
+| `GET /v1/me` | UUID y membresías habilitadas (corte local definido arriba) | Autenticado | Lectura |
+| `GET /v1/merchants/{merchantId}/branches` | Sucursales visibles con membresía vigente | Member autorizado | Lectura |
 | `POST /v1/delivery-quotes` | Cotizar transporte sin persistir Delivery | Comercio / actor habilitado | Crea quote temporal |
 | `POST /v1/deliveries` | Crear solicitud usando quote vigente | Comercio/sucursal | Comando idempotente |
 | `GET /v1/deliveries/{deliveryId}` | Estado, datos según rol | Vinculado a recurso | Lectura |

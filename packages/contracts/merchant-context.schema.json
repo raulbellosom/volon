@@ -1,0 +1,111 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:delivery:contracts:merchant-context:v1",
+  "title": "Contexto mínimo autenticado de comercio",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/me"
+    },
+    {
+      "$ref": "#/$defs/merchantBranches"
+    }
+  ],
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{1,128}$",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "merchant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "merchantId",
+        "name"
+      ],
+      "properties": {
+        "merchantId": {
+          "$ref": "#/$defs/id"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "branch": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "branchId",
+        "name"
+      ],
+      "properties": {
+        "branchId": {
+          "$ref": "#/$defs/id"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "membership": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "merchant",
+        "branch"
+      ],
+      "properties": {
+        "merchant": {
+          "$ref": "#/$defs/merchant"
+        },
+        "branch": {
+          "$ref": "#/$defs/branch"
+        }
+      }
+    },
+    "me": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "subjectId",
+        "memberships"
+      ],
+      "properties": {
+        "subjectId": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+        },
+        "memberships": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/membership"
+          }
+        }
+      }
+    },
+    "merchantBranches": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "merchant",
+        "branches"
+      ],
+      "properties": {
+        "merchant": {
+          "$ref": "#/$defs/merchant"
+        },
+        "branches": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/branch"
+          }
+        }
+      }
+    }
+  }
+}

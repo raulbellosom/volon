@@ -16,6 +16,18 @@ POST y GET reutilizan la identidad verificada y la membresía vigente por Branch
 
 `Delivery` tiene RLS SELECT por Branch visible e INSERT por subject propio, quote visible/vigente y snapshot coincidente. Sin permisos UPDATE/DELETE ni acceso desde PostgREST; un trigger privado INVOKER conserva inmutabilidad. FKs compuestas y unicidad de quote refuerzan las reglas fuera del repositorio. No se conceden permisos sobre pagos/asignaciones y no existe un campo cliente que autorice despacho.
 
+### Contexto mínimo del portal (issue #9)
+
+`GET /v1/me` proyecta exclusivamente el UUID autenticado y las parejas
+Merchant/Branch visibles mediante la política `branch_member` existente. No lee
+perfiles Auth ni retorna directamente filas Membership, cuya política propia no
+filtra el estado de Branch/Merchant. `GET /v1/merchants/{merchantId}/branches`
+aplica esa misma visibilidad, además del filtro del identificador solicitado.
+Conocer un merchantId no concede acceso; cero sucursales visibles produce 404
+uniforme. Un sujeto sin membresías conserva acceso a `/me` con lista vacía.
+No se derivan permisos de metadata ni se amplía acceso a sucursales hermanas.
+DTOs y semántica de errores: [contrato propietario](api-contracts.md).
+
 ## Actores y scopes
 - `customer`: acceso a sus propios pedidos/enlaces de seguimiento válidos.
 - `merchant_owner`: configuración del Merchant y sucursales autorizadas.

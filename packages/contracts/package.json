@@ -6,6 +6,7 @@
   "exports": {
     ".": "./src/index.ts",
     "./delivery-quote.schema.json": "./delivery-quote.schema.json",
-    "./delivery.schema.json": "./delivery.schema.json"
+    "./delivery.schema.json": "./delivery.schema.json",
+    "./merchant-context.schema.json": "./merchant-context.schema.json"
   }
 }
