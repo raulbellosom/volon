@@ -6,6 +6,8 @@ import { createDatabase, withSubject, assertRuntimeRole } from '../src/infrastru
 import { createQuoteRepository } from '../src/infrastructure/quote.repository.ts';
 import { createSupabaseAuthenticator } from '../src/infrastructure/supabase-auth.adapter.ts';
 import { createSyntheticRouteAdapter } from '../src/infrastructure/synthetic-route.adapter.ts';
+import { createPostgisCoverageInspector } from '../src/infrastructure/postgis-road-coverage.adapter.ts';
+import { QuoteFailure } from '../src/modules/pricing/quote.service.ts';
 import { createApi } from '../src/app.ts';
 import { createHttpServer } from '../src/http/server.ts';
 
@@ -148,4 +150,28 @@ test('local backend: RLS rejects a cross-merchant insert even when application c
     branchId: 'branch_synthetic_b', request: {}, amountMinor: 3000, baseAmountMinor: 3000,
     distanceAmountMinor: 0, currency: 'MXN', expiresAt: new Date(Date.now() + 600000), rateVersion: 'synthetic-test',
   } })));
+});
+
+
+test('local PostGIS: server-owned synthetic polygon and tenant-scoped branch pickup', async () => {
+  const a = await login('a');
+  const b = await login('b');
+  const inspect = createPostgisCoverageInspector(db, [
+    { lat: -0.05, lng: -0.05 }, { lat: -0.05, lng: 0.05 },
+    { lat: 0.05, lng: 0.05 }, { lat: 0.05, lng: -0.05 },
+  ]);
+  const own = await inspect(payload('a'), a);
+  assert.deepEqual(own.trustedPickup, { lat: 0, lng: 0 });
+  assert.equal(own.pickupMatches, true);
+  assert.equal(own.pickupCovered, true);
+  assert.equal(own.dropoffCovered, true);
+
+  const forged = await inspect({ ...payload('a'), pickup: { lat: 0.02, lng: 0.02 } }, a);
+  assert.equal(forged.pickupMatches, false);
+  const outside = await inspect({ ...payload('a'), dropoff: { lat: 0.1, lng: 0.1 } }, a);
+  assert.equal(outside.dropoffCovered, false);
+
+  await assert.rejects(inspect(payload('a'), b), (error: unknown) =>
+    error instanceof QuoteFailure && error.code === 'ACCESS_DENIED');
+  assert.throws(() => createPostgisCoverageInspector(db, [{ lat: 0, lng: 0 }]), RangeError);
 });

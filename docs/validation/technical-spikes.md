@@ -50,6 +50,8 @@ Ejecución: [GitHub Actions #39136492484](https://github.com/raulbellosom/volon/
 
 **Interpretación:** los dos recorridos devuelven distancias viales mayores que la línea recta; la conexión pública al demo funcionó desde GitHub en la fecha indicada. **No** demuestra precisión para motos, maniobras, tráfico, horas punta, calidad comercial, disponibilidad sostenida, seguridad vial ni equivalencia a costo/tarifa. Los puntos no fueron aprobados como una microzona piloto ni se han validado direcciones de recogida. El servidor demo no es un proveedor de producción.
 
+**Avance de infraestructura de cobertura — 18-10-2026:** `road-eligibility.service.ts` es un caso de uso aislado que primero autoriza el comercio, valida pickup/cobertura y después calcula metros viales con un proveedor inyectado; falla cerrado ante resultados inconsistentes o proveedor indisponible. `postgis-road-coverage.adapter.ts` verifica un polígono de zona propiedad del servidor mediante PostGIS/RLS, validando la recogida contra coordenadas de sucursal. Los tests de integración usan solo un polígono sintético cerca de (0,0). **La API en ejecución no utiliza este módulo y no se han aprobado polígono real, precios, proveedor productivo o ETA.**
+
 ## Formato de reporte de prueba
 Fecha, versión, hardware/OS, hipótesis, entorno, pasos reproducibles, datos usados, resultados medidos, evidencia (sin secretos), fallas, impacto, recomendación, responsable y ADR afectado.
 
