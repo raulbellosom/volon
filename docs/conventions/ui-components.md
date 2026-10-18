@@ -1,6 +1,6 @@
 # Componentes reutilizables — UI web y móvil
 
-**Estado:** existe `design-tokens` inicial (tokens semánticos claro/oscuro y auditoría de contraste); `ui-web` y `ui-native` pendientes.
+**Estado:** existen `design-tokens` (color, tipografía, espaciado, geometría, elevación, movimiento y auditoría de contraste) y `ui-web` (Volon UI, [ADR-0008](../decisions/0008-ui-web-stack.md)); `ui-native` pendiente. Uso, galería y matriz de cobertura: [packages/ui-web/README.md](../../packages/ui-web/README.md).
 
 ## Filosofía
 Queremos un **design system propio**, no el diseño predeterminado de una librería. shadcn/ui es fuente opcional de primitivas web modificables; Tailwind CSS 4 es candidato web. React Native + Expo es candidato móvil sujeto a validación GPS y gestos. NativeWind no se exige hasta fijar versión estable y comprobar compatibilidad.

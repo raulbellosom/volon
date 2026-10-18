@@ -1,6 +1,6 @@
 # UI web, UI nativa y decisión móvil
 
-**Estado:** dirección preferida; no hay librerías instaladas.
+**Estado:** web implementada en `packages/ui-web` según [ADR-0008](../decisions/0008-ui-web-stack.md) (React Aria Components + Tailwind 4 + Storybook); móvil sigue como dirección preferida sin librerías instaladas.
 
 ## Web
 - React y Next.js para portales; Astro para marketing como candidato.

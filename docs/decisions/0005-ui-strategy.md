@@ -1,6 +1,6 @@
 # ADR-0005: Design system propio con base selectiva shadcn
 - **Fecha:** 2026-10-17
-- **Estado:** Propuesta avanzada
+- **Estado:** Propuesta avanzada. **Parte web ajustada por [ADR-0008](0008-ui-web-stack.md)** (18-10-2026): las primitivas de comportamiento son React Aria Components en lugar de shadcn/Radix; tokens propios, Tailwind 4 y ui-native separada se mantienen.
 - **Contexto:** se desean componentes altamente personalizables que funcionen de manera confiable en web y móvil.
 - **Elección candidata:** design-tokens centrales; ui-web propia utilizando opcionalmente código shadcn/ui y Tailwind CSS 4; ui-native propia con primitives nativos.
 - **Alternativas:** crear absolutamente toda la UI web desde cero; imponer el mismo renderer web en aplicaciones móviles.
