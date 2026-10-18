@@ -10,3 +10,4 @@ coverage/
 *.log
 .local/
 .superpowers/
+.claude/settings.local.json
