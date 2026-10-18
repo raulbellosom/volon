@@ -1,0 +1,54 @@
+name: delivery-backend-local
+services:
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    image: delivery-api:0.1.0-local
+    init: true
+    restart: unless-stopped
+    environment:
+      NODE_ENV: development
+      LOCAL_SYNTHETIC_MODE: "true"
+      PORT: "3100"
+      DATABASE_URL: ${DATABASE_DOCKER_URL:?Run pnpm local:up}
+      SUPABASE_URL: http://supabase_kong_delivery-local:8000
+      SUPABASE_PUBLISHABLE_KEY: ${SUPABASE_PUBLISHABLE_KEY:?Run pnpm local:up}
+    ports:
+      - "127.0.0.1:3100:3100"
+    networks: [backend, supabase]
+    read_only: true
+    tmpfs: [/tmp]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    healthcheck:
+      test: [CMD, node, -e, "fetch('http://127.0.0.1:3100/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    depends_on:
+      redis:
+        condition: service_healthy
+  redis:
+    image: redis:7.4.7-alpine
+    user: redis
+    command: [redis-server, --appendonly, "yes", --save, "60", "1"]
+    restart: unless-stopped
+    networks: [backend]
+    volumes: [redis-data:/data]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    healthcheck:
+      test: [CMD, redis-cli, ping]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+volumes:
+  redis-data:
+networks:
+  backend:
+    internal: true
+  supabase:
+    external: true
+    name: delivery-local

@@ -1,6 +1,6 @@
 # Supabase Self-Hosted — evaluación
 
-**Estado:** candidato para infraestructura; NO desplegado ni validado para el tráfico de Volón.
+**Estado:** Supabase local oficial sobre Docker elegido para desarrollo sintético ([ADR-0007](../decisions/0007-local-backend.md), [runbook](../operations/local-backend.md)). Self-Hosted productivo sigue en evaluación; no se validó tráfico comercial.
 
 ## Capacidades a considerar
 PostgreSQL, Auth, Storage, Realtime (Broadcast/Presence y Postgres Changes), políticas RLS y funciones adicionales según versión/stack seleccionado. PostGIS requiere instalación/habilitación y pruebas. Supabase no desarrolla nuestro algoritmo de despacho, geolocalización móvil, cartografía, pagos ni envía por sí mismo push a Android/iOS/Web.

@@ -12,7 +12,14 @@
     "check": "pnpm run db:generate && pnpm run db:validate && pnpm run check:lines && pnpm run typecheck && pnpm run test",
     "typecheck": "tsc --project tsconfig.json",
     "db:generate": "prisma generate",
-    "db:validate": "prisma validate"
+    "db:validate": "prisma validate",
+    "db:status": "node --env-file=.env.local node_modules/prisma/build/index.js migrate status",
+    "local:up": "node scripts/local/up.mjs",
+    "local:seed": "node --experimental-strip-types scripts/local/seed.ts",
+    "local:quote": "node --experimental-strip-types scripts/local/quote.ts",
+    "local:status": "node scripts/local/operations.mjs status",
+    "local:stop": "node scripts/local/operations.mjs stop",
+    "test:integration": "node --experimental-strip-types --test apps/api/integration/*.test.ts"
   },
   "devDependencies": {
     "@prisma/client": "7.10.1",

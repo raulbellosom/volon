@@ -9,23 +9,23 @@ Queremos construir una alternativa local en Puerto Vallarta y, posteriormente, B
 - [`packages/branding`](packages/branding/src/index.ts): punto central para reemplazar nombre comercial y configuración visible.
 - [`pnpm-workspace.yaml`](pnpm-workspace.yaml), [`turbo.json`](turbo.json), [`tsconfig.base.json`](tsconfig.base.json): fundamentos del monorepo.
 - [`scripts/check-source-lengths.mjs`](scripts/check-source-lengths.mjs): límite automático de tamaño para archivos fuente.
-- [`packages/contracts`](packages/contracts/src/index.ts) y [`apps/api`](apps/api/src/app.ts): contrato de cotización y handler HTTP modular aislado; [alcance y pendientes](docs/specification/api-contracts.md).
+- [`packages/contracts`](packages/contracts/src/index.ts) y [`apps/api`](apps/api/src/app.ts): contrato reutilizable de cotización, handler modular, listener HTTP y adaptadores Auth/PostgreSQL; [alcance y pendientes](docs/specification/api-contracts.md).
 - [CI](.github/workflows/pricing-checks.yml): instalación con lockfile, TypeScript estricto, límite de líneas y pruebas de dominio, contratos y API.
 
-**Sin apps web/móviles, Supabase, pagos o GPS implementados todavía**. No tomar valores de ejemplo de las pruebas como tarifas comerciales.
+**Backend Docker local con Supabase oficial, Prisma/PostGIS y Redis; sin apps web/móviles, pagos ni tracking GPS**. No tomar valores de ejemplo de las pruebas como tarifas comerciales. [Arranque, credenciales sintéticas y protección de red](docs/operations/local-backend.md).
 
 ## Ejecutar pruebas ahora
-Node.js >=22.16 y pnpm 10.15.1:
+Node.js 22.23.3 (versión probada) y pnpm 10.15.1:
 
 ```bash
 pnpm install --frozen-lockfile
 pnpm check
 ```
 
-`pnpm check` ejecuta longitudes, TypeScript 5.8.3 y pruebas automatizadas. No hay lint ni build configurados; los paquetes privados exponen TypeScript fuente y la API no inicia un servidor.
+`pnpm check` genera/valida Prisma, comprueba longitudes, TypeScript estricto y pruebas sin servicios. `pnpm local:up` construye la API e inicia el backend; después `pnpm local:quote` demuestra crear/consultar una quote y `pnpm test:integration` comprueba el stack real. No hay lint de estilo configurado. [Runbook completo](docs/operations/local-backend.md).
 
-## Qué desarrollaremos a continuación
-Fundamento de API y contratos de cotización, autenticación/multiempresa, portal de comercios, app de repartidores React Native/Expo (con pruebas GPS reales) y panel de despacho. **Podemos desarrollar con datos sintéticos mientras revisamos el cumplimiento para operar comercialmente.** El marco legal es un requisito para lanzar, no motivo para impedir codificar.
+## Prioridad actual
+Backend e infraestructura con datos sintéticos. **No iniciar interfaces gráficas en este corte**. Siguen pendientes el proveedor real de rutas, creación de entregas e idempotencia, auditoría y controles de operación; [decisiones](docs/specification/open-decisions.md). El marco legal es un requisito para lanzar, no motivo para impedir codificar.
 
 ## Guías del proyecto
 - [Plan Maestro](MASTER_PLAN.md) y [requisitos/casos](docs/product/requirements.md).

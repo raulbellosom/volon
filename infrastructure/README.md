@@ -1,5 +1,5 @@
-# Infraestructura — planificación únicamente
+# Infraestructura local
 
-No hay compose, credenciales, servicios ni instancias creadas. Se prevén espacios para Supabase, Redis, Docker, despliegues, observabilidad y recuperación.
+El backend local usa [`supabase/config.toml`](../supabase/config.toml) y CLI oficial fijada para el stack Supabase. [`compose.yaml`](../compose.yaml) administra únicamente API/Redis; no contiene otro PostgreSQL.
 
-Antes de agregar configuración real: definir entornos, proveedores, seguridad, backup/restore, costos, dependencias y criterios de operación. Ver [hosting](../docs/operations/hosting.md).
+Comandos y restricciones: [runbook del backend local](../docs/operations/local-backend.md). No hay despliegue público. Self-Hosted de producción, observabilidad, backup/restore y capacidad siguen pendientes: [hosting](../docs/operations/hosting.md).

@@ -1,6 +1,6 @@
 # Estrategia de pruebas y puertas de calidad
 
-**Estado:** política para cuando exista código; **no hay CI, tests ni cobertura ejecutándose actualmente**.
+**Estado:** CI activo para generación/validación Prisma, límites, TypeScript estricto y tests de dominio/contratos/API/políticas. El job backend agrega Supabase local oficial, migraciones, build Docker e integración Auth/PostGIS/RLS. No se mide cobertura ni se implementó lint de estilo. Ver [comandos locales](../operations/local-backend.md).
 
 ## Pirámide de pruebas
 | Nivel | Casos | Cuándo |

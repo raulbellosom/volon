@@ -23,3 +23,25 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: Length, TypeScript, contracts and API tests
         run: pnpm run check
+  backend-integration:
+    needs: quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.23.3'
+          cache: 'pnpm'
+      - run: pnpm install --frozen-lockfile
+      - name: Official Supabase, Prisma migrations, seed and API Docker build
+        run: pnpm local:up
+      - name: Auth, PostGIS, tenant isolation and database failure integration
+        run: pnpm test:integration
+      - name: Container health
+        if: always()
+        run: pnpm local:status
+      - name: Stop this local stack, preserving volumes
+        if: always()
+        run: pnpm local:stop

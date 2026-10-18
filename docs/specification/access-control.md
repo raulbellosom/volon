@@ -1,6 +1,14 @@
 # Autorización, roles y visibilidad de datos
 
-**Estado:** política propuesta de RBAC + comprobación de atributos/relaciones; no es una matriz implementada.
+**Estado:** política general propuesta. El corte local de cotización implementa verificación Supabase Auth, membresía habilitada por comercio/sucursal y RLS con rol limitado según [ADR-0007](../decisions/0007-local-backend.md); los demás permisos siguen pendientes.
+
+## Aplicación local de cotizaciones
+
+El bearer se verifica mediante `/auth/v1/user` con clave publicable; un subject válido no concede acceso por sí mismo. `delivery_api` no es propietario, superusuario ni BYPASSRLS y no usa service role. Cada transacción Prisma establece `app.subject_id` con el subject ya verificado mediante `set_config(..., true)`, sin compartir contexto entre solicitudes. La credencial de ese rol es exclusivamente del servidor; no se entrega a usuarios. RLS no sustituye la autenticación de la API.
+
+Merchant y Branch deben estar habilitados. Membership habilitada concede únicamente cotizar/leer en su Branch y Merchant, con FK compuesta. Se reconsulta al guardar/leer; revocación afecta nuevas operaciones aunque el JWT siga vigente. No hay permisos globales implícitos ni autorización por metadata. Las quotes solo permiten SELECT/INSERT al runtime; su snapshot no se actualiza. Una lectura ajena es indistinguible de una inexistente (404).
+
+La conexión administrativa local solo se usa en migración/seed/pruebas de rechazo y nunca se inyecta al contenedor API. No se conceden permisos al rol runtime sobre `auth`, `storage` o `realtime`, ni se expone `app` por PostgREST. La gestión completa de sesiones revocadas, auditoría, MFA y retención sigue pendiente para operación real.
 
 ## Actores y scopes
 - `customer`: acceso a sus propios pedidos/enlaces de seguimiento válidos.

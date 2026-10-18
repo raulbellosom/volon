@@ -1,9 +1,10 @@
-import { InvalidQuoteRequest, parseDeliveryQuoteRequest } from '@delivery/contracts';
+import { InvalidQuoteRequest, parseDeliveryQuoteRequest, type DeliveryQuoteResponse } from '@delivery/contracts';
 import { createQuoteService, QuoteFailure, type QuoteActor, type QuoteDependencies } from './modules/pricing/quote.service.ts';
 
 export interface ApiDependencies extends QuoteDependencies {
   /** Return null for invalid/absent credentials. No default or development auth bypass. */
   readonly authenticate: (request: Request) => Promise<QuoteActor | null>;
+  readonly readQuote?: (actor: QuoteActor, quoteId: string) => Promise<DeliveryQuoteResponse | null>;
 }
 
 function problem(status: number, code: string, title: string): Response {
@@ -16,17 +17,25 @@ function problem(status: number, code: string, title: string): Response {
 export function createApi(dependencies: ApiDependencies): (request: Request) => Promise<Response> {
   const quote = createQuoteService(dependencies);
   return async (request) => {
-    if (new URL(request.url).pathname !== '/v1/delivery-quotes') {
+    const path = new URL(request.url).pathname;
+    const quoteId = /^\/v1\/delivery-quotes\/([A-Za-z0-9_-]{1,128})$/.exec(path)?.[1];
+    if (path !== '/v1/delivery-quotes' && !(quoteId && dependencies.readQuote)) {
       return problem(404, 'NOT_FOUND', 'Recurso no encontrado.');
     }
-    if (request.method !== 'POST') {
+    const method = quoteId ? 'GET' : 'POST';
+    if (request.method !== method) {
       const response = problem(405, 'METHOD_NOT_ALLOWED', 'Método no permitido.');
-      response.headers.set('allow', 'POST');
+      response.headers.set('allow', method);
       return response;
     }
     try {
       const actor = await dependencies.authenticate(request);
       if (!actor || !actor.subjectId) return problem(401, 'UNAUTHENTICATED', 'Autenticación requerida.');
+      if (quoteId && dependencies.readQuote) {
+        const result = await dependencies.readQuote(actor, quoteId);
+        return result ? Response.json(result, { headers: { 'cache-control': 'no-store' } })
+          : problem(404, 'NOT_FOUND', 'Recurso no encontrado.');
+      }
       if (request.headers.get('content-type')?.split(';')[0]?.trim().toLowerCase() !== 'application/json') {
         return problem(415, 'UNSUPPORTED_MEDIA_TYPE', 'Se requiere JSON.');
       }

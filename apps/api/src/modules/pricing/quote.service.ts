@@ -27,7 +27,7 @@ export interface QuoteDependencies {
   /** Verify current membership, permission and enabled branch; fail closed. */
   readonly canQuote: (actor: QuoteActor, branchId: string) => Promise<boolean>;
   /** Resolve branch pickup, coverage and route server-side. No client distance/rate. */
-  readonly resolveRoute: (request: DeliveryQuoteRequest) => Promise<{
+  readonly resolveRoute: (request: DeliveryQuoteRequest, actor: QuoteActor) => Promise<{
     readonly eligible: boolean;
     readonly distanceMeters: number;
     readonly policy: DeliveryRatePolicy;
@@ -48,7 +48,7 @@ export function createQuoteService(dependencies: QuoteDependencies) {
 
   return async (actor: QuoteActor, request: DeliveryQuoteRequest): Promise<DeliveryQuoteResponse> => {
     if (!await dependencies.canQuote(actor, request.branchId)) throw new QuoteFailure('ACCESS_DENIED');
-    const route = await dependencies.resolveRoute(request);
+    const route = await dependencies.resolveRoute(request, actor);
     if (!route.eligible) throw new QuoteFailure('OUTSIDE_COVERAGE');
     if (route.distanceMeters > route.policy.maximumRouteMeters) throw new QuoteFailure('OUTSIDE_COVERAGE');
     const result = calculateDeliveryQuote({ policy: route.policy, routeDistanceMeters: route.distanceMeters });

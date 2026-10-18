@@ -1,4 +1,12 @@
 {
   "extends": "./tsconfig.base.json",
-  "include": ["apps/*/src/**/*.ts", "packages/*/src/**/*.ts"]
+  "include": [
+    "apps/*/src/**/*.ts",
+    "apps/*/tests/**/*.ts",
+    "apps/*/integration/**/*.ts",
+    "packages/*/src/**/*.ts",
+    "packages/*/tests/**/*.ts",
+    "scripts/local/**/*.ts",
+    "prisma.config.ts"
+  ]
 }
