@@ -13,6 +13,13 @@ export { Switch, type SwitchProps } from './components/forms/Switch.tsx';
 export { Select, type SelectProps } from './components/forms/Select.tsx';
 export { Option, type OptionProps } from './components/forms/ListBoxItem.tsx';
 export { CheckboxCard, RadioCard, type CheckboxCardProps, type RadioCardProps } from './components/forms/ChoiceCard.tsx';
+export { NumberField, type NumberFieldProps } from './components/forms/NumberField.tsx';
+export { CurrencyField, toMinorUnits, type CurrencyFieldProps } from './components/forms/CurrencyField.tsx';
+export { ComboBox, type ComboBoxProps } from './components/forms/ComboBox.tsx';
+export { Calendar, type CalendarProps } from './components/forms/Calendar.tsx';
+export { DatePicker, type DatePickerProps } from './components/forms/DatePicker.tsx';
+export { TimeField, type TimeFieldProps } from './components/forms/TimeField.tsx';
+export { Slider, type SliderProps } from './components/forms/Slider.tsx';
 export type { ControlSize } from './components/forms/field-styles.ts';
 
 export { Card, CardContent, CardFooter, CardHeader, type CardFooterProps, type CardProps, type CardVariant } from './components/content/Card.tsx';
