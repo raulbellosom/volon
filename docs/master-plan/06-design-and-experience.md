@@ -40,4 +40,4 @@ Reusar **tokens, contratos, validación, lógica de dominio y principios de UX**
 Marca «Volón» es provisional. `branding` administra logotipos, nombre, assets, slogans y valores de tema; dominios/env/deep links/store listing se migran con checklist. No usar «volon» en paquetes, DB o eventos técnicos.
 
 ## Puertas de aprobación
-Prototipo revisado por actor de negocio, componentes documentados/ejemplificados, errores/offline, A11y y pruebas reales en teléfonos. Los colores/branding visuales definitivos quedan pendientes de identidad legal/comercial.
+Prototipo revisado por actor de negocio, componentes documentados/ejemplificados, errores/offline, A11y y pruebas reales en teléfonos. Identidad visual aprobada para desarrollo en [identity](../brand/identity.md); registro legal/comercial pendiente (DEC-15).

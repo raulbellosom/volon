@@ -4,6 +4,7 @@
 
 ## Separación de capas
 - Marca visible: nombre, eslogan, colores, logos, íconos y material comercial en un único paquete de branding/configuración.
+- Identidad visual vigente (logo, paleta, tipografía y voz): [identity.md](identity.md).
 - Identidad técnica: nombres neutros de paquetes, tablas, clases, contratos, eventos y servicios.
 - Configuración de entorno: URLs, dominio API, callback OAuth, email corporativo, deep links, assets y recursos de terceros.
 - Nombre remoto GitHub volon: aceptable de manera provisional, no una razón para acoplar el código.

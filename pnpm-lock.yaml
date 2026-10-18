@@ -46,6 +46,12 @@ importers:
 
   packages/contracts: {}
 
+  packages/design-tokens:
+    dependencies:
+      '@delivery/branding':
+        specifier: workspace:*
+        version: link:../branding
+
   packages/pricing: {}
 
 packages:

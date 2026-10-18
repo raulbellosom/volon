@@ -1,6 +1,3 @@
-/** Replace these values without renaming domain packages, tables or APIs. */
-export const brand = Object.freeze({
-  displayName: 'Volón',
-  locale: 'es-MX',
-  supportEmail: null as string | null,
-});
+export { brand } from './brand.ts';
+export { brandPalette, type BrandColor } from './palette.ts';
+export { logoFiles, type LogoVariant } from './logo-files.ts';

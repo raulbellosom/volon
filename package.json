@@ -7,7 +7,7 @@
     "node": ">=22.16.0"
   },
   "scripts": {
-    "test": "node --experimental-strip-types --test packages/pricing/tests/*.test.ts packages/contracts/tests/*.test.ts apps/api/tests/*.test.ts scripts/tests/*.test.mjs",
+    "test": "node --experimental-strip-types --test packages/pricing/tests/*.test.ts packages/contracts/tests/*.test.ts packages/branding/tests/*.test.ts packages/design-tokens/tests/*.test.ts apps/api/tests/*.test.ts scripts/tests/*.test.mjs",
     "check:lines": "node scripts/check-source-lengths.mjs",
     "check": "pnpm run db:generate && pnpm run db:validate && pnpm run check:lines && pnpm run typecheck && pnpm run test",
     "typecheck": "tsc --project tsconfig.json",
