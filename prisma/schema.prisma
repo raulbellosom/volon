@@ -27,6 +27,7 @@ model Branch {
   merchant    Merchant       @relation(fields: [merchantId], references: [id], onDelete: Restrict)
   memberships Membership[]
   quotes      PricingQuote[]
+  deliveries  Delivery[]
 
   @@unique([id, merchantId])
   @@index([merchantId])
@@ -49,21 +50,49 @@ model Membership {
 }
 
 model PricingQuote {
-  id                  String   @id
-  subjectId           String   @db.Uuid
+  id                  String    @id
+  subjectId           String    @db.Uuid
   merchantId          String
   branchId            String
   request             Json
   amountMinor         Int
   baseAmountMinor     Int
   distanceAmountMinor Int
-  currency            String   @default("MXN")
-  expiresAt           DateTime @db.Timestamptz(3)
+  currency            String    @default("MXN")
+  expiresAt           DateTime  @db.Timestamptz(3)
   rateVersion         String
-  createdAt           DateTime @default(now()) @db.Timestamptz(3)
-  branch              Branch   @relation(fields: [branchId, merchantId], references: [id, merchantId], onDelete: Restrict)
+  createdAt           DateTime  @default(now()) @db.Timestamptz(3)
+  branch              Branch    @relation(fields: [branchId, merchantId], references: [id, merchantId], onDelete: Restrict)
+  delivery            Delivery?
 
+  @@unique([id, branchId, merchantId])
   @@index([branchId, merchantId, createdAt])
   @@index([subjectId])
+  @@schema("app")
+}
+
+model Delivery {
+  id                  String       @id @default(uuid())
+  subjectId           String       @db.Uuid
+  merchantId          String
+  branchId            String
+  quoteId             String       @unique
+  status              String       @default("requested")
+  version             Int          @default(1)
+  amountMinor         Int
+  baseAmountMinor     Int
+  distanceAmountMinor Int
+  currency            String
+  rateVersion         String
+  routeSnapshot       Json
+  idempotencyKeyHash  String       @db.Char(64)
+  requestHash         String       @db.Char(64)
+  createdAt           DateTime     @default(now()) @db.Timestamptz(3)
+  branch              Branch       @relation(fields: [branchId, merchantId], references: [id, merchantId], onDelete: Restrict)
+  quote               PricingQuote @relation(fields: [quoteId, branchId, merchantId], references: [id, branchId, merchantId], onDelete: Restrict)
+
+  @@unique([subjectId, branchId, idempotencyKeyHash])
+  @@unique([quoteId, branchId, merchantId])
+  @@index([branchId, merchantId, createdAt])
   @@schema("app")
 }

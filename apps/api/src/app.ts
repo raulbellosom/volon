@@ -1,23 +1,24 @@
 import { InvalidQuoteRequest, parseDeliveryQuoteRequest, type DeliveryQuoteResponse } from '@delivery/contracts';
 import { createQuoteService, QuoteFailure, type QuoteActor, type QuoteDependencies } from './modules/pricing/quote.service.ts';
+import { createDeliveryHandler } from './modules/deliveries/delivery.handler.ts';
+import type { DeliveryStore } from './modules/deliveries/delivery.service.ts';
+import { problem } from './http/problem.ts';
 
 export interface ApiDependencies extends QuoteDependencies {
   /** Return null for invalid/absent credentials. No default or development auth bypass. */
   readonly authenticate: (request: Request) => Promise<QuoteActor | null>;
   readonly readQuote?: (actor: QuoteActor, quoteId: string) => Promise<DeliveryQuoteResponse | null>;
-}
-
-function problem(status: number, code: string, title: string): Response {
-  return Response.json({ type: 'about:blank', title, status, code }, {
-    status, headers: { 'content-type': 'application/problem+json', 'cache-control': 'no-store' },
-  });
+  readonly deliveries?: DeliveryStore;
 }
 
 /** Fetch-compatible composition root. Does not listen on a port or select a framework. */
 export function createApi(dependencies: ApiDependencies): (request: Request) => Promise<Response> {
   const quote = createQuoteService(dependencies);
+  const deliveries = dependencies.deliveries
+    ? createDeliveryHandler({ ...dependencies.deliveries, authenticate: dependencies.authenticate }) : null;
   return async (request) => {
     const path = new URL(request.url).pathname;
+    if (deliveries && (path === '/v1/deliveries' || path.startsWith('/v1/deliveries/'))) return deliveries(request);
     const quoteId = /^\/v1\/delivery-quotes\/([A-Za-z0-9_-]{1,128})$/.exec(path)?.[1];
     if (path !== '/v1/delivery-quotes' && !(quoteId && dependencies.readQuote)) {
       return problem(404, 'NOT_FOUND', 'Recurso no encontrado.');

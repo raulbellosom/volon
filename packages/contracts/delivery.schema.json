@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:delivery:contracts:delivery:v1",
+  "title": "Crear Delivery local desde cotización",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["branchId", "quoteId"],
+  "properties": {
+    "branchId": { "$ref": "#/$defs/id" },
+    "quoteId": { "$ref": "#/$defs/id" }
+  },
+  "$defs": {
+    "id": { "type": "string", "pattern": "^[A-Za-z0-9_-]{1,128}$", "minLength": 1, "maxLength": 128 },
+    "idempotencyKey": { "$ref": "#/$defs/id" },
+    "response": {
+      "type": "object", "additionalProperties": false,
+      "required": ["deliveryId", "branchId", "quoteId", "status", "version", "createdAt", "pricing"],
+      "properties": {
+        "deliveryId": { "$ref": "#/$defs/id" },
+        "branchId": { "$ref": "#/$defs/id" },
+        "quoteId": { "$ref": "#/$defs/id" },
+        "status": { "const": "requested" },
+        "version": { "const": 1 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "pricing": {
+          "type": "object", "additionalProperties": false,
+          "required": ["amountMinor", "currency", "lines", "rateVersion"],
+          "properties": {
+            "amountMinor": { "type": "integer", "minimum": 0, "maximum": 9007199254740991 },
+            "currency": { "const": "MXN" },
+            "lines": { "$ref": "urn:delivery:contracts:delivery-quote:v1#/$defs/response/properties/lines" },
+            "rateVersion": { "type": "string", "minLength": 1 }
+          }
+        }
+      }
+    }
+  }
+}

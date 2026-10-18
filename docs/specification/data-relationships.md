@@ -1,6 +1,6 @@
 # Relaciones, claves y propiedad de datos
 
-**Estado:** diseño general candidato; el subconjunto local Merchant/Branch/Membership/PricingQuote tiene esquema y migraciones Prisma ejecutables según ADR-0007. El resto no está implementado.
+**Estado:** diseño general candidato; el subconjunto local Merchant/Branch/Membership/PricingQuote/Delivery tiene esquema y migraciones Prisma ejecutables. El resto no está implementado.
 
 ## Relaciones de entidades prioritarias
 - `User` —< `Membership` >— `Merchant` / `Fleet` / `PlatformRole` (ámbito específico).
@@ -46,6 +46,12 @@
     Payment ──< Refund / LedgerEntry / Settlement
 
 ## Migración y expansión
+
+### Delivery local e idempotencia (DEL-004)
+
+`app.Delivery` pertenece a una Branch/Merchant mediante FK compuesta y a una PricingQuote de la misma sucursal/comercio mediante FK compuesta. `quoteId` es único: una quote crea como máximo una Delivery, independientemente de actor o key. Columnas de snapshot: importes total/base/distancia, moneda, versión tarifaria y solicitud de ruta original; sin Order/Payment ni recipient nuevo.
+
+En la misma fila se guardan subject creador, `idempotencyKeyHash` y `requestHash` (SHA-256). Unicidad `(subjectId, branchId, idempotencyKeyHash)` representa la operación fija de creación; no se necesita otra tabla ni persistencia fuera de la transacción. `createdAt` UTC, `version = 1` y `status = requested` tienen restricciones SQL. RLS comprueba subject, Branch habilitada y coincidencia/vigencia del snapshot respecto a la quote al insertar. Runtime solo puede SELECT/INSERT; un trigger rechaza UPDATE/DELETE incluso por otros escritores. Cambios futuros de estados deberán conservar campos inmutables mediante una migración explícita, nunca editando la ya aplicada.
 
 ### Primer esquema ejecutable local (ADR-0007)
 

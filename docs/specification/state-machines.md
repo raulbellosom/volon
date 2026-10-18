@@ -3,6 +3,8 @@
 **Estado:** catálogo conceptual versionable. Los nombres precisos deben ratificarse antes de escribir esquemas, API y móvil.
 
 ## Delivery (unidad logística)
+
+**Corte local implementado por solicitud del usuario:** solo se crea `requested` con `version: 1`, desde una quote almacenada y vigente, de uso único, mediante comando idempotente. Snapshot y comando son inmutables en PostgreSQL; todas las demás transiciones listadas siguen siendo propuestas y requieren otra migración/contrato. No hay elegibilidad financiera simulada ni transición a `dispatching`. Ver [API](api-contracts.md).
 Estados propuestos:
 - `requested`: solicitud persistida y validada, pendiente de iniciar despacho.
 - `dispatching`: buscando/intentando asignar repartidor.

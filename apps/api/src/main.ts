@@ -6,12 +6,14 @@ import { createQuoteRepository } from './infrastructure/quote.repository.ts';
 import { createSyntheticRouteAdapter } from './infrastructure/synthetic-route.adapter.ts';
 import { createSupabaseAuthenticator } from './infrastructure/supabase-auth.adapter.ts';
 import { createHttpServer } from './http/server.ts';
+import { createDeliveryRepository } from './infrastructure/delivery.repository.ts';
 
 const config = readConfig();
 const db = createDatabase(config.databaseUrl);
 await assertRuntimeRole(db);
 const api = createApi({
   ...createQuoteRepository(db), resolveRoute: createSyntheticRouteAdapter(db),
+  deliveries: createDeliveryRepository(db),
   authenticate: createSupabaseAuthenticator(config.supabaseUrl, config.publishableKey),
   now: () => new Date(), newQuoteId: randomUUID, ttlMilliseconds: 600000,
 });

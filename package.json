@@ -19,7 +19,7 @@
     "local:quote": "node --experimental-strip-types scripts/local/quote.ts",
     "local:status": "node scripts/local/operations.mjs status",
     "local:stop": "node scripts/local/operations.mjs stop",
-    "test:integration": "node --experimental-strip-types --test apps/api/integration/*.test.ts"
+    "test:integration": "node --experimental-strip-types --test --test-concurrency=1 apps/api/integration/*.test.ts"
   },
   "devDependencies": {
     "@prisma/client": "7.10.1",

@@ -1,6 +1,6 @@
 # API HTTP — contrato candidato de versión 1
 
-**Estado:** superficie general candidata. POST y GET de cotizaciones tienen handler Fetch, listener HTTP local y adaptadores PostgreSQL/Auth ejecutables mediante [entorno Docker local](../operations/local-backend.md). Sin operación comercial ni servicios públicos; el resto de las rutas sigue siendo ilustrativo.
+**Estado:** superficie general candidata. POST y GET de cotizaciones y Delivery tienen handlers Fetch, listener HTTP local y adaptadores PostgreSQL/Auth ejecutables mediante [entorno Docker local](../operations/local-backend.md). Sin operación comercial ni servicios públicos; el resto de las rutas sigue siendo ilustrativo.
 
 ## Corte experimental de cotización (RF-001/005/006, UC-03, DEL-003)
 
@@ -11,11 +11,25 @@ Contrato formal: [`delivery-quote.schema.json`](../../packages/contracts/deliver
 - `201` solo después de confirmar almacenamiento del snapshot con sujeto, sucursal, solicitud, versión tarifaria y respuesta. ID generado por dependencia del servidor. TTL obligatorio, positivo y configurable; los fixtures usan 600000 ms conforme a DEC-12. El almacenamiento debe garantizar unicidad del ID.
 - Respuesta MXN en enteros seguros, suma de líneas `base_delivery` y `distance_delivery` (incluye cero), `quoteId`, `expiresAt` UTC y `coverage: eligible`. No incluye ETA, productos, impuestos ni cobros. `Cache-Control: no-store` en éxito y error.
 - `400 INVALID_JSON`, `401 UNAUTHENTICATED`, `403 ACCESS_DENIED`, `404 NOT_FOUND`, `405 METHOD_NOT_ALLOWED` con `Allow: POST`, `415 UNSUPPORTED_MEDIA_TYPE`, `422 INVALID_QUOTE_REQUEST`/`OUTSIDE_COVERAGE`, `503 ROUTING_UNAVAILABLE`/`SERVICE_UNAVAILABLE`. Errores `application/problem+json` con `type`, `title`, `status`, `code` y texto seguro, sin detalles del proveedor.
-- Cotizar no crea Delivery ni cobra. Cada POST puede crear una quote nueva; no se promete idempotencia en este corte. El listener limita el cuerpo a 16 KiB (413), headers y tiempos de conexión. Confirmar entregas, rechazar quotes vencidas al consumo, auditoría durable, rate limiting y trazas correlacionadas quedan para los siguientes cortes antes de exponer el servicio.
+- Cotizar no crea Delivery ni cobra. Cada POST de cotización puede crear una quote nueva; no se promete idempotencia para cotizar. El listener limita el cuerpo a 16 KiB (413), headers y tiempos de conexión. Delivery consume la quote vigente de forma idempotente según su contrato más abajo. Auditoría completa, outbox, rate limiting y trazas correlacionadas siguen pendientes antes de exponer el servicio.
 
-Los ejemplos siguientes conservan su carácter conceptual; el esquema formal gobierna exclusivamente este corte experimental. No se declara completado ACC-015 (congelación al crear Delivery).
+Los ejemplos siguientes conservan su carácter conceptual; los esquemas formales gobiernan los cortes locales. ACC-015 se comprueba en las pruebas de snapshot de Delivery; no implica ajustes financieros comerciales implementados.
 
 ## Convenciones horizontales
+
+### Delivery local: contrato ejecutable (RF-007/008, UC-04, DEL-004)
+
+`POST /v1/deliveries` exige bearer verificado e `Idempotency-Key` de 1–128 caracteres `[A-Za-z0-9_-]` (se recomienda UUID aleatorio). Solicitud cerrada `{ "branchId": "branch_synthetic_a", "quoteId": "..." }`; rechaza campos adicionales, identidad, precios, estados, recipient o flags de pago. Los datos de recogida/destino proceden exclusivamente de la cotización almacenada. El ejemplo con recipient más abajo sigue siendo conceptual y no forma parte de este corte sin datos personales.
+
+Contrato formal compartido: [`delivery.schema.json`](../../packages/contracts/delivery.schema.json), solicitud en raíz y respuesta en `#/$defs/response`; parser runtime en `@delivery/contracts`. El puerto transaccional de aplicación no importa Prisma; el adaptador usa la transacción contextual existente.
+
+Respuesta `201` tanto al crear como al repetir: `{ deliveryId, branchId, quoteId, status: requested, version: 1, createdAt, pricing: { amountMinor, currency, lines, rateVersion } }`. Snapshot persistido; no recalcula ni incorpora cambios posteriores de tarifa/quote. `GET /v1/deliveries/{deliveryId}` devuelve ese mismo DTO con `200`, o `404` uniforme si es ajena/inexistente. No devuelve claves, hashes, destinatarios ni coordenadas. Ambas operaciones requieren membresía habilitada y comercio/sucursal habilitados; se revalida en cada reintento/lectura.
+
+La clave se guarda como SHA-256 por sujeto+sucursal+operación; el hash del comando se calcula a partir del DTO normalizado (orden JSON irrelevante). Misma clave y comando devuelven exactamente el mismo recurso después de commit, aun si la quote ya expiró; misma clave con otro quoteId en la misma sucursal devuelve `409 IDEMPOTENCY_CONFLICT`. Otra sucursal/actor tiene namespace independiente, nunca visibilidad de comandos ajenos. Fallos no reservan la clave ni consumen la quote.
+
+Quote inexistente, ajena o de otra sucursal: `404 QUOTE_NOT_FOUND`; sucursal no autorizada: `403 ACCESS_DENIED`; quote vencida (`expiresAt <= reloj PostgreSQL`): `409 QUOTE_EXPIRED`; quote ya utilizada con otro comando: `409 QUOTE_ALREADY_USED`; cuerpo inválido: `422 INVALID_DELIVERY_REQUEST`; key ausente/inválida: `422 INVALID_IDEMPOTENCY_KEY`. JSON/tipo de contenido conservan `400/415`; fallos DB/commit: `503 SERVICE_UNAVAILABLE`, sin éxito anticipado. Respuestas `no-store`, errores `application/problem+json`.
+
+Una transacción Prisma establece subject, serializa por clave y por quote mediante advisory locks transaccionales, verifica membresía/vigencia y persiste una Delivery con snapshot y metadatos de idempotencia. Índices únicos y FKs compuestas refuerzan unicidad y pertenencia; RLS impide lecturas/escrituras cruzadas. No hay retención/limpieza automática de claves ni escrituras UPDATE/DELETE de Delivery en este corte. Nunca se crea Payment, Assignment, Order ni evento de despacho.
 
 ### Extensión backend local (ADR-0007)
 
