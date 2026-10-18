@@ -9,11 +9,17 @@
   "scripts": {
     "test": "node --experimental-strip-types --test packages/pricing/tests/*.test.ts packages/contracts/tests/*.test.ts apps/api/tests/*.test.ts scripts/tests/*.test.mjs",
     "check:lines": "node scripts/check-source-lengths.mjs",
-    "check": "pnpm run check:lines && pnpm run typecheck && pnpm run test",
-    "typecheck": "tsc --project tsconfig.json"
+    "check": "pnpm run db:generate && pnpm run db:validate && pnpm run check:lines && pnpm run typecheck && pnpm run test",
+    "typecheck": "tsc --project tsconfig.json",
+    "db:generate": "prisma generate",
+    "db:validate": "prisma validate"
   },
   "devDependencies": {
-    "typescript": "5.8.3",
-    "turbo": "2.5.6"
+    "@prisma/client": "7.10.1",
+    "@types/node": "22.19.15",
+    "prisma": "7.10.1",
+    "supabase": "2.121.0",
+    "turbo": "2.5.6",
+    "typescript": "5.8.3"
   }
 }

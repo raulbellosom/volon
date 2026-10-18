@@ -1,0 +1,69 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  schemas  = ["app"]
+}
+
+model Merchant {
+  id          String       @id
+  name        String
+  enabled     Boolean      @default(true)
+  branches    Branch[]
+  memberships Membership[]
+
+  @@schema("app")
+}
+
+model Branch {
+  id          String         @id
+  merchantId  String
+  name        String
+  enabled     Boolean        @default(true)
+  latitude    Float
+  longitude   Float
+  merchant    Merchant       @relation(fields: [merchantId], references: [id], onDelete: Restrict)
+  memberships Membership[]
+  quotes      PricingQuote[]
+
+  @@unique([id, merchantId])
+  @@index([merchantId])
+  @@schema("app")
+}
+
+model Membership {
+  id         String   @id
+  subjectId  String   @db.Uuid
+  merchantId String
+  branchId   String
+  enabled    Boolean  @default(true)
+  merchant   Merchant @relation(fields: [merchantId], references: [id], onDelete: Restrict)
+  branch     Branch   @relation(fields: [branchId, merchantId], references: [id, merchantId], onDelete: Restrict)
+
+  @@unique([subjectId, branchId])
+  @@index([branchId, merchantId])
+  @@index([merchantId])
+  @@schema("app")
+}
+
+model PricingQuote {
+  id                  String   @id
+  subjectId           String   @db.Uuid
+  merchantId          String
+  branchId            String
+  request             Json
+  amountMinor         Int
+  baseAmountMinor     Int
+  distanceAmountMinor Int
+  currency            String   @default("MXN")
+  expiresAt           DateTime @db.Timestamptz(3)
+  rateVersion         String
+  createdAt           DateTime @default(now()) @db.Timestamptz(3)
+  branch              Branch   @relation(fields: [branchId, merchantId], references: [id, merchantId], onDelete: Restrict)
+
+  @@index([branchId, merchantId, createdAt])
+  @@index([subjectId])
+  @@schema("app")
+}

@@ -1,6 +1,6 @@
 # Relaciones, claves y propiedad de datos
 
-**Estado:** diseño conceptual; NO es migración SQL ni ERD definitivo.
+**Estado:** diseño general candidato; el subconjunto local Merchant/Branch/Membership/PricingQuote tiene esquema y migraciones Prisma ejecutables según ADR-0007. El resto no está implementado.
 
 ## Relaciones de entidades prioritarias
 - `User` —< `Membership` >— `Merchant` / `Fleet` / `PlatformRole` (ámbito específico).
@@ -46,4 +46,12 @@
     Payment ──< Refund / LedgerEntry / Settlement
 
 ## Migración y expansión
+
+### Primer esquema ejecutable local (ADR-0007)
+
+Prisma es dueño único del esquema privado `app`. `Merchant(id, name, enabled)` es la organización de este corte; no se inventa otra tabla Organization. `Branch(id, merchantId, name, enabled, latitude, longitude)` tiene FK al comercio y unicidad `(id, merchantId)`. `Membership(id, subjectId UUID, merchantId, branchId, enabled)` concede solo cotizar/leer en una sucursal concreta; FK compuesta impide mezclar sucursal y comercio. No concede administración. `subjectId` es identidad Supabase verificada; no se migra ni modifica `auth.users`.
+
+`PricingQuote(id, subjectId, merchantId, branchId, request JSON, amountMinor, baseAmountMinor, distanceAmountMinor, currency, expiresAt, rateVersion, createdAt)` persiste snapshot inmutable. FK compuesta a Branch, importes no negativos con suma consistente y moneda MXN. Membership y cotización se indexan por scope. Todos los accesos runtime usan RLS; el esquema no se expone por PostgREST. No hay eliminación en cascada ni tablas Delivery/Order/Payment en este corte.
+
+PostGIS se habilita mediante la misma historia Prisma, en `extensions`. Sus tipos no se modelan como columnas Prisma: las consultas parametrizadas convierten coordenadas a geography para comprobar recogida/cobertura/distancia sintéticas. Seed y credenciales solo locales.
 Antes de SQL: definir cardinalidades finales del piloto, eliminación lógica, scopes, objetos PII, índices, constraints y ownership por entidad. No inventar tables/columns al implementar una pantalla sin revisar este contrato.

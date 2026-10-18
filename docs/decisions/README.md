@@ -9,6 +9,7 @@ Los ADR registran **propuestas** y aceptación explícita. Estado inicial de tod
 - [ADR-0004 — Supabase y eventos en vivo](0004-supabase-realtime.md)
 - [ADR-0005 — Diseño UI web/nativo](0005-ui-strategy.md)
 - [ADR-0006 — Contratos primero y autoridad del backend](0006-contract-first.md)
+- [ADR-0007 — Backend local reproducible](0007-local-backend.md) — aceptado exclusivamente para desarrollo sintético por instrucción del usuario.
 
 ## Plantilla de nuevas decisiones
 Título, fecha, estado, contexto, motivación, alternativas, decisión, consecuencias, pruebas pendientes, reversibilidad y enlaces. Estados recomendados: Propuesta, Aceptada, Sustituida, Rechazada.

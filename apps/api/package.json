@@ -5,6 +5,8 @@
   "type": "module",
   "dependencies": {
     "@delivery/contracts": "workspace:*",
-    "@delivery/pricing": "workspace:*"
+    "@delivery/pricing": "workspace:*",
+    "@prisma/adapter-pg": "7.10.1",
+    "@prisma/client": "7.10.1"
   }
 }
