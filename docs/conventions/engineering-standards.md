@@ -24,7 +24,7 @@
 - Para pruebas: objetivo ≤400 líneas por archivo; dividir por comportamiento/escenario si excede. No sacrificar una prueba legible para pasar el conteo.
 - **Excluidos del límite general:** código generado (con cabecera/origen verificable), lockfiles, artefactos compilados, snapshots verificados, documentación Markdown, migraciones SQL que deban ser atómicas y archivos de configuración declarativa justificados. No aprovechar las exclusiones para esconder lógica de producto.
 - Excepciones a código de producción **solo** mediante revisión humana registrada en PR/issue con motivación, imposibilidad razonada de división y plan de seguimiento. La IA no se autoautoriza excepciones.
-- Cuando se implemente la primera aplicación, agregar un chequeo automatizado de archivos y límites al CI; **todavía no existe**, no reportarlo como activo.
+- Ya existe un chequeo automático de límites en CI; cubre fuente manual bajo `apps/`, `packages/` y `scripts/` y cuenta con pruebas de regresión. El lint de estilo sigue pendiente.
 
 ## 3. Separación por capas
 - Vista: estado visual, navegación y render.
