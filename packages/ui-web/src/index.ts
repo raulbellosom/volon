@@ -2,6 +2,9 @@ export { Button, type ButtonProps } from './components/actions/Button.tsx';
 export { IconButton, type IconButtonProps } from './components/actions/IconButton.tsx';
 export { buttonStyles, type ButtonSize, type ButtonVariant } from './components/actions/button-styles.ts';
 export { SegmentedControl, type SegmentedControlProps, type SegmentedItem } from './components/actions/SegmentedControl.tsx';
+export { ToggleButton, type ToggleButtonProps } from './components/actions/ToggleButton.tsx';
+export { ButtonGroup, type ButtonGroupProps } from './components/actions/ButtonGroup.tsx';
+export { Link, LinkButton, type LinkButtonProps, type LinkProps } from './components/actions/Link.tsx';
 
 export { FieldDescription, FieldError, FieldLabel } from './components/forms/FieldParts.tsx';
 export { TextField, type TextFieldProps } from './components/forms/TextField.tsx';
@@ -28,6 +31,7 @@ export { IconChip, type IconChipProps, type IconChipSize, type IconChipTone } fr
 export { StatusBadge, type DeliveryStatusTone, type StatusBadgeProps } from './components/content/StatusBadge.tsx';
 export { Avatar, AvatarGroup, initials, type AvatarGroupProps, type AvatarProps, type AvatarSize, type AvatarStatus } from './components/content/Avatar.tsx';
 export { Divider, type DividerProps } from './components/content/Divider.tsx';
+export { Accordion, AccordionItem, type AccordionItemProps, type AccordionProps } from './components/content/Accordion.tsx';
 export { Stat, type StatDelta, type StatProps } from './components/data/Stat.tsx';
 export { DescriptionList, type DescriptionItem, type DescriptionLayout, type DescriptionListProps } from './components/data/DescriptionList.tsx';
 
@@ -50,6 +54,9 @@ export { Menu, MenuItem, MenuSection, MenuSeparator, MenuTrigger, type MenuItemP
 export { Pagination, pageItems, type PageItem, type PaginationProps } from './components/navigation/Pagination.tsx';
 export { Navbar, type NavItem, type NavbarProps } from './components/navigation/Navbar.tsx';
 export { SiteFooter, type FooterColumn, type SiteFooterProps } from './components/navigation/SiteFooter.tsx';
+export { Breadcrumbs, type BreadcrumbsProps, type Crumb } from './components/navigation/Breadcrumbs.tsx';
+export { Stepper, stepState, type Step, type StepState, type StepperProps } from './components/navigation/Stepper.tsx';
+export { Sidebar, SidebarItem, SidebarSection, type SidebarItemProps, type SidebarProps, type SidebarSectionProps } from './components/navigation/Sidebar.tsx';
 export { Logo, type LogoProps, type LogoVariant } from './components/brand/Logo.tsx';
 export { ToastRegion, dismissToast, toast, type ToastContent, type ToastOptions } from './components/overlays/Toast.tsx';
 

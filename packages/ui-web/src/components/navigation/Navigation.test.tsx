@@ -29,6 +29,7 @@ describe('Tabs', () => {
     await userEvent.tab();
     await userEvent.keyboard('{ArrowRight}');
     expect(screen.getByRole('tab', { name: 'Terminados' })).toHaveAttribute('aria-selected', 'true');
+    expect(screen.getByRole('tab', { name: 'Activos, 3' })).toBeInTheDocument();
     expect(screen.getByRole('tabpanel')).toHaveTextContent('Lista terminada');
   });
 });

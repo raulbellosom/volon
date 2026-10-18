@@ -58,9 +58,12 @@ export function Tab({ children, icon, count, className, ...props }: TabProps) {
       {icon && <span aria-hidden="true" className="flex">{icon}</span>}
       {children}
       {count !== undefined && (
-        <span className="rounded-full bg-surface-sunken px-1.5 text-xs font-bold tabular-nums group-data-selected:bg-selection-fill group-data-selected:text-selection-mark">
-          {count}
-        </span>
+        <>
+          <span aria-hidden="true" className="rounded-full bg-surface-sunken px-1.5 text-xs font-bold tabular-nums group-data-selected:bg-selection-fill group-data-selected:text-selection-mark">
+            {count}
+          </span>
+          <span className="sr-only">, {count}</span>
+        </>
       )}
       <SelectionIndicator className="absolute inset-x-2 -bottom-px h-[3px] rounded-full bg-action-primary transition-[translate,width] duration-(--duration-base) ease-standard" />
     </AriaTab>
