@@ -37,7 +37,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - name: Official Supabase, Prisma migrations, seed and API Docker build
         run: pnpm local:up
-      - name: Auth, PostGIS, tenant isolation and database failure integration
+      - name: Quotes, Delivery, idempotency, tenant isolation and transaction integration
         run: pnpm test:integration
       - name: Container health
         if: always()

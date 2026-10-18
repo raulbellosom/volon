@@ -20,6 +20,8 @@ pnpm test:integration
 
 `local:quote` inicia sesión con el usuario de prueba A, crea una quote y la consulta mediante HTTP; muestra solo el DTO, nunca contraseña ni bearer. Las integraciones verifican ambos comercios, BOLA, RLS sin filtros de tenant en la aplicación, revocación de membresía, PostGIS y fallos reales de PostgreSQL/conexión. Las pruebas de rechazo modifican temporalmente un permiso del rol local y lo restauran en `finally`; ejecutar una sola suite a la vez en este stack exclusivo de pruebas.
 
+Delivery añade `POST /v1/deliveries` y `GET /v1/deliveries/{deliveryId}` según el [contrato](../specification/api-contracts.md). `local:up` aplica también su migración y reconstruye la API. La misma suite de integración verifica creación/consulta, snapshots, duplicados concurrentes, claves en conflicto, expiración, revocación durante locks y rollback al commit. Reinicia una vez el contenedor API para comprobar durabilidad; crea y elimina su propio trigger de fallo diferido dentro de `finally`. No ejecutar mientras otra persona use este stack sintético. Los archivos corren secuencialmente; las solicitudes dentro de los tests de carrera sí son concurrentes.
+
 ## Puertos y redes
 
 | Servicio | Acceso desde el host |
@@ -70,4 +72,4 @@ El stop afecta solo `delivery-backend-local` y el proyecto Supabase `delivery-lo
 
 ## Límites del incremento
 
-La ruta es distancia geodésica PostGIS desde sucursales sintéticas en `(0, 0)`, con recogida dentro de 1 m y radio máximo sintético de 8 km, sin ruta vial, ETA o tarifa comercial. El listener exige `LOCAL_SYNTHETIC_MODE=true`. Cotizar no crea Delivery ni cobra; sigue pendiente consumir/rechazar quotes vencidas al crear entregas, auditoría, rate limiting, gestión completa de sesiones y revisión de retención. Realtime y Storage están disponibles y saludables, pero no hay flujos de negocio ni buckets/canales abiertos. Redis está disponible sin workers. Self-Hosted oficial de producción, backups/restore y capacidad quedan fuera de esta entrega.
+La ruta es distancia geodésica PostGIS desde sucursales sintéticas en `(0, 0)`, con recogida dentro de 1 m y radio máximo sintético de 8 km, sin ruta vial, ETA o tarifa comercial. El listener exige `LOCAL_SYNTHETIC_MODE=true`. Cotizar no crea Delivery ni cobra; el comando separado Delivery consume una quote vigente una sola vez y persiste `requested` con snapshot/idempotencia inmutables. No hay otras transiciones, pagos ni despacho; quedan pendientes auditoría completa/outbox, rate limiting, gestión completa de sesiones y retención. Realtime y Storage están disponibles sin flujos de negocio ni buckets/canales abiertos. Redis está disponible sin workers. Self-Hosted de producción, backups/restore y capacidad quedan fuera de esta entrega.

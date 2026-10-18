@@ -1,6 +1,6 @@
 # Matriz de aceptación y trazabilidad del MVP
 
-**Estado:** casos de prueba esperados; no ejecutados. Todos son candidatos de criterios de aceptación al ratificar el MVP.
+**Estado:** catálogo de aceptación del MVP, con comprobación local parcial de cotización/Delivery; los criterios comerciales y de operación real siguen pendientes. No confundir los casos propuestos restantes con pruebas ejecutadas.
 
 > Trazabilidad: [requerimientos RF/RNF](../product/requirements.md) → [casos UC](../product/use-cases.md) → [entregables WBS](../master-plan/05-work-breakdown.md) → **ACC** → pruebas ejecutables (futuras). Este archivo es el dueño de los criterios de prueba; los catálogos RF y UC solo los referencian.
 
@@ -30,6 +30,12 @@
 | ACC-022 | Evento outbox falla y se reintenta | sin pérdida del cambio confirmado y con dedupe | Integración |
 
 ## Evidencias necesarias
+
+### Cobertura local del módulo Delivery
+
+Las suites [deliveries](../../apps/api/integration/deliveries.test.ts), [transacciones](../../apps/api/integration/delivery-transactions.test.ts) y [durabilidad](../../apps/api/integration/delivery-durability.test.ts), ejecutadas con `pnpm test:integration`, verifican ACC-001/002/003/010/015 en el alcance sintético de [API](api-contracts.md): creación independiente de Order/Payment, claves persistentes incluso tras reinicio de contenedor, conflictos de payload, ganador único por quote, expiración al salir de espera, pertenencia/revocación, snapshot inmutable y rollback ante fallo diferido al commit. El comando conserva las integraciones previas y se ejecuta con un solo archivo a la vez porque las fixtures alteran temporalmente permisos, membresías y el proceso API del stack de pruebas.
+
+No se declaran validados pago, despacho, outbox, custodia ni dispositivos reales. Los resultados concretos y SHA se reportan en la ejecución CI/entrega; no se mantiene aquí un conteo duplicado de pruebas.
 Para cada ACC: fixture sintético, versión de app/infra, comando/test asociado, fecha, resultado observado, logs anonimizados y vínculo al issue/PR. Automatizar unit/integración/E2E donde corresponda; pruebas de dispositivos físicos requieren reporte manual.
 
 ## Definition of Ready por vertical

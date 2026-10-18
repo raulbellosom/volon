@@ -10,6 +10,12 @@ Merchant y Branch deben estar habilitados. Membership habilitada concede únicam
 
 La conexión administrativa local solo se usa en migración/seed/pruebas de rechazo y nunca se inyecta al contenedor API. No se conceden permisos al rol runtime sobre `auth`, `storage` o `realtime`, ni se expone `app` por PostgREST. La gestión completa de sesiones revocadas, auditoría, MFA y retención sigue pendiente para operación real.
 
+## Aplicación local de Delivery
+
+POST y GET reutilizan la identidad verificada y la membresía vigente por Branch/Merchant. Una quote puede haber sido cotizada por otro miembro autorizado de la misma sucursal; no concede acceso a otra sucursal ni tenant. La clave de idempotencia pertenece al actor y scope: otro actor no obtiene un replay ajeno por conocerla. Revocación impide también los reintentos previamente exitosos.
+
+`Delivery` tiene RLS SELECT por Branch visible e INSERT por subject propio, quote visible/vigente y snapshot coincidente. Sin permisos UPDATE/DELETE ni acceso desde PostgREST; un trigger privado INVOKER conserva inmutabilidad. FKs compuestas y unicidad de quote refuerzan las reglas fuera del repositorio. No se conceden permisos sobre pagos/asignaciones y no existe un campo cliente que autorice despacho.
+
 ## Actores y scopes
 - `customer`: acceso a sus propios pedidos/enlaces de seguimiento válidos.
 - `merchant_owner`: configuración del Merchant y sucursales autorizadas.

@@ -25,7 +25,7 @@ pnpm check
 `pnpm check` genera/valida Prisma, comprueba longitudes, TypeScript estricto y pruebas sin servicios. `pnpm local:up` construye la API e inicia el backend; después `pnpm local:quote` demuestra crear/consultar una quote y `pnpm test:integration` comprueba el stack real. No hay lint de estilo configurado. [Runbook completo](docs/operations/local-backend.md).
 
 ## Prioridad actual
-Backend e infraestructura con datos sintéticos. **No iniciar interfaces gráficas en este corte**. Siguen pendientes el proveedor real de rutas, creación de entregas e idempotencia, auditoría y controles de operación; [decisiones](docs/specification/open-decisions.md). El marco legal es un requisito para lanzar, no motivo para impedir codificar.
+Backend e infraestructura con datos sintéticos. **No iniciar interfaces gráficas en este corte**. Delivery ya permite crear y consultar solicitudes `requested` con snapshot e idempotencia transaccional desde una quote vigente. Siguen pendientes proveedor vial, transiciones, pagos/despacho, auditoría completa y controles de operación; [contratos](docs/specification/api-contracts.md) y [decisiones](docs/specification/open-decisions.md). El marco legal es requisito para lanzar, no motivo para impedir codificar.
 
 ## Guías del proyecto
 - [Plan Maestro](MASTER_PLAN.md) y [requisitos/casos](docs/product/requirements.md).
