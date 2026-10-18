@@ -1,6 +1,6 @@
 # Pruebas técnicas previas al MVP (spikes)
 
-**Estado:** PLAN; ninguna prueba ha sido ejecutada aún. Un spike consiste en una pequeña implementación temporal para responder una duda de arquitectura, NO en construir toda la plataforma.
+**Estado:** PLAN con un diagnóstico vial de prueba ejecutado el 18-10-2026. Las pruebas de GPS móvil, pagos y operación comercial siguen pendientes. Un spike responde una duda técnica: NO equivale a construir toda la plataforma.
 
 ## Spike A — GPS real en Android e iOS (prioridad máxima)
 **Montaje futuro:** mini-app courier-mobile con React Native/Expo Development Build; API temporal autenticada, almacenamiento temporal y mapa web para observar un teléfono moviéndose.
@@ -43,4 +43,15 @@ Fecha, versión, hardware/OS, hipótesis, entorno, pasos reproducibles, datos us
 ## Criterio de avance
 No aprobar componentes por apariencia ni proveedores por documentación únicamente. Registrar pruebas antes de comenzar el MVP remunerado.
 
-**Prueba diagnóstica independiente en GitHub:** `scripts/spikes/pv-route-benchmark.mjs` realiza solo dos consultas al demo OSRM, espaciadas más de un segundo, con puntos sintéticos cercanos a Puerto Vallarta (no domicilios ni rutas de personas). Reporta metros viales, metros en línea recta, duración del modelo automovilístico y distancia de ajuste a la calle. El workflow `road-routing-spike.yml` se ejecuta al introducir o modificar ese script, no en cada push ordinario. Es **no comercial** y puede fallar por disponibilidad del demo; su resultado no debe tomarse como SLA ni validar rutas para motocicletas. La API `main.ts` sigue sin conectar a ningún motor vial.
+
+### Evidencia real del diagnóstico de rutas — 18-10-2026
+
+Ejecución: [GitHub Actions #39136492484](https://github.com/raulbellosom/volon/actions/runs/39136492484) — dos consultas HTTPS al **demo público** OSRM con perfil `driving`, en el runner GitHub con Node.js 22.23.3. Resultado: **2/2 exitosas**; no se usaron direcciones de personas ni tokens. Solo se observaron estas dos parejas sintéticas en la zona de Puerto Vallarta, sin revisión física de calles.
+
+| Pareja sintética (lat,lng) | Distancia geodésica | Distancia del motor OSRM | Duración del modelo (auto) | Ajuste a la red vial |
+| --- | ---: | ---: | ---: | --- |
+| (20.642,-105.226) → (20.624,-105.230) | 2,044 m | 3,467 m | 266 s | 36 m / 23 m |
+| (20.624,-105.230) → (20.609,-105.234) | 1,719 m | 2,878 m | 248 s | 23 m / 18 m |
+
+**Interpretación:** los dos recorridos devuelven distancias viales mayores que la línea recta; la conexión pública al demo funcionó desde GitHub en la fecha indicada. **No** demuestra precisión para motos, maniobras, tráfico, horas punta, calidad comercial, disponibilidad sostenida, seguridad vial ni equivalencia a costo/tarifa. Los puntos no fueron aprobados como una microzona piloto ni se han validado direcciones de recogida. El servidor demo no es un proveedor de producción.
+
