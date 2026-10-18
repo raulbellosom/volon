@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { Store } from 'lucide-react';
 import { describe, expect, it, vi } from 'vitest';
 import { axeViolations } from '../../test/axe.ts';
 import { Checkbox, CheckboxGroup } from './Checkbox.tsx';
@@ -71,7 +72,7 @@ describe('Select', () => {
   it('opens with the keyboard and selects an option', async () => {
     const onSelectionChange = vi.fn();
     render(
-      <Select label="Sucursal" onSelectionChange={onSelectionChange}>
+      <Select label="Sucursal" icon={<Store />} onSelectionChange={onSelectionChange}>
         <Option id="centro">Centro</Option>
         <Option id="marina">Marina</Option>
       </Select>,
@@ -85,5 +86,6 @@ describe('Select', () => {
     await userEvent.click(screen.getByRole('option', { name: 'Marina' }));
     expect(onSelectionChange).toHaveBeenCalledWith('marina');
     expect(trigger).toHaveTextContent('Marina');
+    expect(trigger.querySelector('[data-placeholder]')).toBeNull();
   });
 });

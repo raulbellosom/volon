@@ -40,6 +40,9 @@ export const contrastRequirements: readonly ContrastRequirement[] = Object.freez
   ...pairs('border', ['background', 'surface', 'surface-raised'], NON_TEXT),
   ...pairs('focus-ring', ['background', 'surface', 'surface-raised'], NON_TEXT),
   ...pairs('action-primary', ['background', 'surface'], NON_TEXT),
+  ...pairs('selection-fill', ['background', 'surface', 'surface-raised'], NON_TEXT),
+  ...pairs('selection-mark', ['selection-fill'], NON_TEXT),
+  ...pairs('text-on-brand', ['brand-surface-start', 'brand-surface-end'], TEXT),
   ...FEEDBACK.flatMap((tone) => pairs(`feedback-${tone}-fg`, [`feedback-${tone}-bg`, 'surface'], TEXT)),
   ...STATUSES.map((status): ContrastRequirement => ({
     foreground: `status-${status}-fg`, background: `status-${status}-bg`, minimum: TEXT,

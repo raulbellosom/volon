@@ -17,7 +17,8 @@ import '@delivery/ui-web/styles.css'; // una vez, en la raíz de la app
 import { Button, TextField, ToastRegion, toast } from '@delivery/ui-web';
 ```
 - La app necesita Tailwind 4 (`@tailwindcss/vite` o PostCSS); `styles.css` ya incluye Tailwind, la fuente y los tokens.
-- Tema: `data-theme="light" | "dark"` en `<html>`. Sin atributo sigue la preferencia del sistema.
+- Tema: usa `<ThemeToggle />` o `useTheme()` (Claro / Oscuro / Sistema, persistente) e inserta `themeInitScript` en un `<script>` dentro de `<head>` para evitar el parpadeo. Sin JavaScript, `styles.css` sigue la preferencia del sistema.
+- **Todo campo lleva ícono:** `TextField` y `Select` exigen la prop `icon` (TypeScript no compila sin ella); `PasswordField` y `SearchField` traen el suyo.
 - Monta `<ToastRegion />` una sola vez.
 - Usa utilidades semánticas (`bg-surface`, `text-text-secondary`, `border-border-subtle`); la paleta por defecto de Tailwind está desactivada a propósito.
 - `className` en los componentes es para maquetación (márgenes, ancho), no para cambiar su apariencia. Si falta una variante, se agrega aquí.

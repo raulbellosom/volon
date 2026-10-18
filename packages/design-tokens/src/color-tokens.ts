@@ -24,6 +24,10 @@ export type ColorTokenName =
   | 'action-accent' | 'action-accent-hover' | 'text-on-accent'
   | 'action-danger' | 'action-danger-hover' | 'text-on-danger'
   | 'accent'
+  /** Selected checkbox/radio/switch: deep blue + lime in light, lime + deep blue in dark. */
+  | 'selection-fill' | 'selection-mark'
+  /** Theme-independent brand panel (deep → electric blue gradient) with white text. */
+  | 'brand-surface-start' | 'brand-surface-end' | 'text-on-brand'
   | FeedbackColorTokenName
   | StatusColorTokenName;
 

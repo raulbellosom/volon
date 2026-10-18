@@ -1,6 +1,7 @@
 export { Button, type ButtonProps } from './components/actions/Button.tsx';
 export { IconButton, type IconButtonProps } from './components/actions/IconButton.tsx';
 export { buttonStyles, type ButtonSize, type ButtonVariant } from './components/actions/button-styles.ts';
+export { SegmentedControl, type SegmentedControlProps, type SegmentedItem } from './components/actions/SegmentedControl.tsx';
 
 export { FieldDescription, FieldError, FieldLabel } from './components/forms/FieldParts.tsx';
 export { TextField, type TextFieldProps } from './components/forms/TextField.tsx';
@@ -11,10 +12,12 @@ export { Radio, RadioGroup, type RadioGroupProps, type RadioProps } from './comp
 export { Switch, type SwitchProps } from './components/forms/Switch.tsx';
 export { Select, type SelectProps } from './components/forms/Select.tsx';
 export { Option, type OptionProps } from './components/forms/ListBoxItem.tsx';
+export { CheckboxCard, RadioCard, type CheckboxCardProps, type RadioCardProps } from './components/forms/ChoiceCard.tsx';
 export type { ControlSize } from './components/forms/field-styles.ts';
 
-export { Card, CardContent, CardFooter, CardHeader, type CardProps, type CardVariant } from './components/content/Card.tsx';
+export { Card, CardContent, CardFooter, CardHeader, type CardFooterProps, type CardProps, type CardVariant } from './components/content/Card.tsx';
 export { Badge, type BadgeProps, type BadgeTone } from './components/content/Badge.tsx';
+export { IconChip, type IconChipProps, type IconChipSize, type IconChipTone } from './components/content/IconChip.tsx';
 export { StatusBadge, type DeliveryStatusTone, type StatusBadgeProps } from './components/content/StatusBadge.tsx';
 
 export { Alert, type AlertProps } from './components/feedback/Alert.tsx';
@@ -25,6 +28,10 @@ export { Dialog, DialogTrigger, type DialogProps, type DialogSize } from './comp
 export { AlertDialog, type AlertDialogProps } from './components/overlays/AlertDialog.tsx';
 export { Popover, type PopoverProps } from './components/overlays/Popover.tsx';
 export { ToastRegion, dismissToast, toast, type ToastContent, type ToastOptions } from './components/overlays/Toast.tsx';
+
+export { ThemeToggle, type ThemeToggleProps } from './theme/ThemeToggle.tsx';
+export { useTheme, type UseThemeResult } from './theme/useTheme.ts';
+export { THEME_STORAGE_KEY, themeInitScript, type ResolvedTheme, type ThemePreference } from './theme/theme-store.ts';
 
 export { cx } from './utils/cx.ts';
 export { coverage, type ComponentCoverage, type CoverageStatus } from './coverage.ts';

@@ -1,5 +1,13 @@
 import { brandPalette } from '@delivery/branding';
-import type { StatusColorTokenName } from '../color-tokens.ts';
+import type { ColorTokenName, StatusColorTokenName } from '../color-tokens.ts';
+
+/** Brand panel colors identical in both themes so the brand moment looks the same. */
+export const brandSurfaceColors: Readonly<Record<Extract<ColorTokenName, `brand-${string}` | 'text-on-brand'>, string>> =
+  Object.freeze({
+    'brand-surface-start': brandPalette.deepBlue,
+    'brand-surface-end': '#0A2FC4',
+    'text-on-brand': '#FFFFFF',
+  });
 
 /** Delivery status chips share colors across themes; always pair them with icon and text. */
 export const statusColors: Readonly<Record<StatusColorTokenName, string>> = Object.freeze({

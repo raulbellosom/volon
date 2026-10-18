@@ -11,13 +11,15 @@ import { cx, withStyles } from '../../utils/cx.ts';
 import { defined } from '../../utils/defined.ts';
 import { Popover } from '../overlays/Popover.tsx';
 import { FieldChrome, type FieldErrorMessage } from './FieldParts.tsx';
-import { controlStyles, fieldStyles, type ControlSize } from './field-styles.ts';
+import { controlBoxStyles, fieldIconStyles, fieldStyles, type ControlSize } from './field-styles.ts';
 
 export interface SelectProps<T extends object> extends Omit<AriaSelectProps<T>, 'children' | 'className'> {
   label?: ReactNode;
   description?: ReactNode;
   errorMessage?: FieldErrorMessage;
   size?: ControlSize;
+  /** Required by design: tells people what the choice is about at a glance. */
+  icon: ReactNode;
   items?: Iterable<T>;
   /** `Option` elements, or a render function when `items` is provided. */
   children: ReactNode | ((item: T) => ReactNode);
@@ -29,7 +31,8 @@ export function Select<T extends object>({
   label,
   description,
   errorMessage,
-  size,
+  size = 'md',
+  icon,
   items,
   children,
   placeholder = 'Selecciona una opción',
@@ -39,15 +42,12 @@ export function Select<T extends object>({
   return (
     <AriaSelect {...props} placeholder={placeholder} className={withStyles(className, () => fieldStyles.root)}>
       <FieldChrome label={label} description={description} errorMessage={errorMessage} isRequired={props.isRequired}>
-        <AriaButton
-          className={cx(
-            controlStyles({ size }),
-            'flex cursor-pointer items-center justify-between gap-2 text-start',
-            'data-pressed:border-focus-ring data-focus-visible:border-focus-ring data-focus-visible:field-halo',
-            'group-data-invalid:border-feedback-danger-fg group-data-open:border-focus-ring',
-          )}
-        >
-          <SelectValue className="truncate data-placeholder:text-text-secondary" />
+        <AriaButton className={cx(controlBoxStyles({ size }), 'cursor-pointer text-start outline-none')}>
+          <span aria-hidden="true" className={fieldIconStyles(size)}>{icon}</span>
+          {/* Only the selected text: option descriptions and check marks stay in the list. */}
+          <SelectValue className="min-w-0 flex-1 truncate leading-normal data-placeholder:text-text-secondary">
+            {({ selectedText, isPlaceholder }) => (isPlaceholder ? placeholder : selectedText)}
+          </SelectValue>
           <ChevronDown
             aria-hidden="true"
             className="size-5 shrink-0 text-text-secondary transition-transform duration-(--duration-fast) group-data-open:rotate-180"

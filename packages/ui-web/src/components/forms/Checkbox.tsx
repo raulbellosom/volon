@@ -12,18 +12,22 @@ import { fieldStyles } from './field-styles.ts';
 
 /** Shared by checkbox and radio rows: label text, alignment and disabled color. */
 export const selectionRowStyles = cx(
-  'group relative inline-flex cursor-pointer items-start gap-3 text-md text-text-primary outline-none',
+  'group relative inline-flex min-h-11 cursor-pointer items-start gap-3 py-2.5 text-md text-text-primary outline-none',
   'data-disabled:cursor-not-allowed data-disabled:text-text-disabled',
 );
 
+/** Responsive grid for RadioCard / CheckboxCard groups: one column on phones, two from tablet. */
+export const CARD_GRID = 'grid gap-3 pt-1 sm:grid-cols-2';
+
 const BOX = cx(
   'mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-xs border-(length:--border-control) border-border bg-surface',
-  'text-text-on-action transition-[background-color,border-color,transform] duration-(--duration-fast) ease-standard',
+  'text-selection-mark transition-[background-color,border-color,transform] duration-(--duration-fast) ease-spring',
   'group-data-hovered:border-text-secondary group-data-pressed:scale-90',
-  'group-data-selected:border-action-primary group-data-selected:bg-action-primary',
-  'group-data-indeterminate:border-action-primary group-data-indeterminate:bg-action-primary',
+  'group-data-selected:border-selection-fill group-data-selected:bg-selection-fill',
+  'group-data-indeterminate:border-selection-fill group-data-indeterminate:bg-selection-fill',
   'group-data-invalid:border-feedback-danger-fg group-data-focus-visible:focus-ring',
-  'group-data-disabled:border-border-subtle group-data-disabled:bg-surface-disabled group-data-disabled:text-text-disabled',
+  // Opacity keeps the selected state readable but clearly inactive, whatever the selection.
+  'group-data-disabled:opacity-40 group-data-disabled:scale-100',
 );
 
 export interface CheckboxProps extends Omit<AriaCheckboxProps, 'children' | 'className'> {
@@ -51,16 +55,18 @@ export interface CheckboxGroupProps extends Omit<AriaCheckboxGroupProps, 'childr
   label?: ReactNode;
   description?: ReactNode;
   errorMessage?: FieldErrorMessage;
+  /** `cards` lays out CheckboxCard children in a responsive grid. */
+  layout?: 'list' | 'cards';
   children: ReactNode;
   className?: string;
 }
 
 /** Group of related checkboxes sharing a label, help text and validation. */
-export function CheckboxGroup({ label, description, errorMessage, children, className, ...props }: CheckboxGroupProps) {
+export function CheckboxGroup({ label, description, errorMessage, layout = 'list', children, className, ...props }: CheckboxGroupProps) {
   return (
     <AriaCheckboxGroup {...props} className={withStyles(className, () => fieldStyles.root)}>
       <FieldChrome label={label} description={description} errorMessage={errorMessage} isRequired={props.isRequired}>
-        <div className="flex flex-col gap-3 py-1">{children}</div>
+        <div className={layout === 'cards' ? CARD_GRID : 'flex flex-col'}>{children}</div>
       </FieldChrome>
     </AriaCheckboxGroup>
   );

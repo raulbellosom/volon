@@ -1,6 +1,6 @@
 import { brandPalette } from '@delivery/branding';
 import type { ColorTheme } from '../color-tokens.ts';
-import { statusColors } from './status.ts';
+import { brandSurfaceColors, statusColors } from './status.ts';
 
 /** Dark theme: deep blue surfaces get lighter as they rise; lime takes over primary actions. */
 export const darkTheme: ColorTheme = Object.freeze({
@@ -33,6 +33,8 @@ export const darkTheme: ColorTheme = Object.freeze({
   'action-danger-hover': '#FA8E8E',
   'text-on-danger': '#0B1230',
   accent: brandPalette.lime,
+  'selection-fill': brandPalette.lime,
+  'selection-mark': brandPalette.deepBlue,
   'feedback-info-fg': '#8FA6FF',
   'feedback-info-bg': '#0F1F5C',
   'feedback-info-border': '#2E4BB8',
@@ -45,5 +47,6 @@ export const darkTheme: ColorTheme = Object.freeze({
   'feedback-danger-fg': '#F87171',
   'feedback-danger-bg': '#2C1119',
   'feedback-danger-border': '#7F2A30',
+  ...brandSurfaceColors,
   ...statusColors,
 });

@@ -4,6 +4,7 @@ import { Dialog as AriaDialog, Heading, Modal, ModalOverlay } from 'react-aria-c
 import { cx } from '../../utils/cx.ts';
 import { defined } from '../../utils/defined.ts';
 import { IconButton } from '../actions/IconButton.tsx';
+import { IconChip, type IconChipTone } from '../content/IconChip.tsx';
 
 export { DialogTrigger } from 'react-aria-components';
 
@@ -27,6 +28,9 @@ const PANEL = cx(
 export interface DialogProps {
   title: ReactNode;
   description?: ReactNode;
+  /** Icon that represents the action (Pencil to edit, Store for a branch…). */
+  icon?: ReactNode;
+  iconTone?: IconChipTone;
   /** Body; a function receives `close` for in-content actions. */
   children: Slot;
   /** Action row; buttons stack full-width on phones. */
@@ -45,6 +49,8 @@ export interface DialogProps {
 export function Dialog({
   title,
   description,
+  icon,
+  iconTone,
   children,
   footer,
   size = 'md',
@@ -68,7 +74,8 @@ export function Dialog({
           {({ close }) => (
             <>
               <div className="flex items-start gap-4 px-6 pt-6">
-                <div className="flex min-w-0 flex-1 flex-col gap-1">
+                {icon && <IconChip icon={icon} size="lg" {...(iconTone ? { tone: iconTone } : {})} />}
+                <div className="flex min-w-0 flex-1 flex-col gap-1 self-center">
                   <Heading slot="title" className="text-xl font-bold">{title}</Heading>
                   {description && <p id={descriptionId} className="text-sm text-text-secondary">{description}</p>}
                 </div>

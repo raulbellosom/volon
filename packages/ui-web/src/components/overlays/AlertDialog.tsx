@@ -1,3 +1,4 @@
+import { CircleHelp, TriangleAlert } from 'lucide-react';
 import { useState, type ReactNode } from 'react';
 import { defined } from '../../utils/defined.ts';
 import { Button } from '../actions/Button.tsx';
@@ -11,6 +12,8 @@ export interface AlertDialogProps {
   confirmLabel: string;
   cancelLabel?: string;
   tone?: 'default' | 'danger';
+  /** Defaults to a warning for `danger` and a question mark otherwise. */
+  icon?: ReactNode;
   /** May return a promise; the dialog stays open and pending until it resolves. */
   onConfirm: () => void | Promise<void>;
   isOpen?: boolean;
@@ -27,11 +30,13 @@ export function AlertDialog({
   confirmLabel,
   cancelLabel = 'Cancelar',
   tone = 'default',
+  icon,
   onConfirm,
   isOpen,
   onOpenChange,
 }: AlertDialogProps) {
   const [isPending, setIsPending] = useState(false);
+  const isDanger = tone === 'danger';
 
   async function confirm(close: () => void) {
     setIsPending(true);
@@ -48,12 +53,14 @@ export function AlertDialog({
       role="alertdialog"
       size="sm"
       title={title}
+      icon={icon ?? (isDanger ? <TriangleAlert /> : <CircleHelp />)}
+      iconTone={isDanger ? 'danger' : 'brand'}
       hideCloseButton
       {...defined({ isOpen, onOpenChange })}
       footer={(close) => (
         <>
           <Button variant="ghost" isDisabled={isPending} onPress={close}>{cancelLabel}</Button>
-          <Button variant={tone === 'danger' ? 'danger' : 'primary'} isPending={isPending} onPress={() => void confirm(close)}>
+          <Button variant={isDanger ? 'danger' : 'primary'} isPending={isPending} onPress={() => void confirm(close)}>
             {confirmLabel}
           </Button>
         </>

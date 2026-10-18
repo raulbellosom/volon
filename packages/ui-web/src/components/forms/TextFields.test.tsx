@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { Mail } from 'lucide-react';
+import { Hash, Mail, MapPin, Phone, User } from 'lucide-react';
 import { describe, expect, it, vi } from 'vitest';
 import { axeViolations } from '../../test/axe.ts';
 import { PasswordField } from './PasswordField.tsx';
@@ -10,7 +10,7 @@ import { TextField } from './TextField.tsx';
 describe('TextField', () => {
   it('links label, help text and required state to the input', async () => {
     const { container } = render(
-      <TextField label="Correo" description="Te enviaremos el recibo." isRequired leadingIcon={<Mail />} />,
+      <TextField label="Correo" description="Te enviaremos el recibo." isRequired icon={<Mail />} />,
     );
     const input = screen.getByRole('textbox', { name: /Correo/ });
     expect(input).toBeRequired();
@@ -19,7 +19,7 @@ describe('TextField', () => {
   });
 
   it('announces a custom error message when invalid', () => {
-    render(<TextField label="Teléfono" isInvalid errorMessage="Escribe 10 dígitos." />);
+    render(<TextField label="Teléfono" icon={<Phone />} isInvalid errorMessage="Escribe 10 dígitos." />);
     const input = screen.getByRole('textbox', { name: 'Teléfono' });
     expect(input).toHaveAttribute('aria-invalid', 'true');
     expect(input).toHaveAccessibleDescription(/Escribe 10 dígitos\./);
@@ -29,9 +29,9 @@ describe('TextField', () => {
     const onChange = vi.fn();
     render(
       <>
-        <TextField label="Nombre" onChange={onChange} />
-        <TextField label="Folio" isDisabled />
-        <TextField label="Zona" isReadOnly defaultValue="Centro" />
+        <TextField label="Nombre" icon={<User />} onChange={onChange} />
+        <TextField label="Folio" icon={<Hash />} isDisabled />
+        <TextField label="Zona" icon={<MapPin />} isReadOnly defaultValue="Centro" />
       </>,
     );
     await userEvent.type(screen.getByRole('textbox', { name: 'Nombre' }), 'Ana');
@@ -43,7 +43,7 @@ describe('TextField', () => {
   });
 
   it('renders a multi-line text area', () => {
-    render(<TextField label="Indicaciones" multiline />);
+    render(<TextField label="Indicaciones" icon={<MapPin />} multiline />);
     expect(screen.getByRole('textbox', { name: 'Indicaciones' }).tagName).toBe('TEXTAREA');
   });
 });

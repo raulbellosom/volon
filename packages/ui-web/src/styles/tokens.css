@@ -31,6 +31,8 @@
   --color-action-danger-hover: #9A1C13;
   --color-text-on-danger: #FFFFFF;
   --color-accent: #C6FF3B;
+  --color-selection-fill: #001863;
+  --color-selection-mark: #C6FF3B;
   --color-feedback-info-fg: #0632D9;
   --color-feedback-info-bg: #EAF0FF;
   --color-feedback-info-border: #9DB2FF;
@@ -43,6 +45,9 @@
   --color-feedback-danger-fg: #A81F15;
   --color-feedback-danger-bg: #FDECEA;
   --color-feedback-danger-border: #F2A39B;
+  --color-brand-surface-start: #001863;
+  --color-brand-surface-end: #0A2FC4;
+  --color-text-on-brand: #FFFFFF;
   --color-status-requested-bg: #E5E9F2;
   --color-status-requested-fg: #001863;
   --color-status-searching-bg: #0A3DFF;
@@ -167,6 +172,8 @@
   --color-action-danger-hover: #FA8E8E;
   --color-text-on-danger: #0B1230;
   --color-accent: #C6FF3B;
+  --color-selection-fill: #C6FF3B;
+  --color-selection-mark: #001863;
   --color-feedback-info-fg: #8FA6FF;
   --color-feedback-info-bg: #0F1F5C;
   --color-feedback-info-border: #2E4BB8;
@@ -179,6 +186,9 @@
   --color-feedback-danger-fg: #F87171;
   --color-feedback-danger-bg: #2C1119;
   --color-feedback-danger-border: #7F2A30;
+  --color-brand-surface-start: #001863;
+  --color-brand-surface-end: #0A2FC4;
+  --color-text-on-brand: #FFFFFF;
   --color-status-requested-bg: #E5E9F2;
   --color-status-requested-fg: #001863;
   --color-status-searching-bg: #0A3DFF;
@@ -228,6 +238,8 @@
     --color-action-danger-hover: #FA8E8E;
     --color-text-on-danger: #0B1230;
     --color-accent: #C6FF3B;
+    --color-selection-fill: #C6FF3B;
+    --color-selection-mark: #001863;
     --color-feedback-info-fg: #8FA6FF;
     --color-feedback-info-bg: #0F1F5C;
     --color-feedback-info-border: #2E4BB8;
@@ -240,6 +252,9 @@
     --color-feedback-danger-fg: #F87171;
     --color-feedback-danger-bg: #2C1119;
     --color-feedback-danger-border: #7F2A30;
+    --color-brand-surface-start: #001863;
+    --color-brand-surface-end: #0A2FC4;
+    --color-text-on-brand: #FFFFFF;
     --color-status-requested-bg: #E5E9F2;
     --color-status-requested-fg: #001863;
     --color-status-searching-bg: #0A3DFF;

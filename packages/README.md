@@ -1,6 +1,6 @@
 # Paquetes compartidos
 
-Existen `pricing` (cálculos puros), `branding` (marca visible: nombre, paleta y logos), `design-tokens` (tokens semánticos claro/oscuro con auditoría de contraste WCAG) y `contracts` (DTO y validación runtime de cotización, con JSON Schema). Los demás paquetes del [mapa del monorepo](../docs/architecture/repository-structure.md) se crearán cuando un corte los necesite.
+Existen `pricing` (cálculos puros), `branding` (marca visible: nombre, paleta y logos), `design-tokens` (tokens semánticos claro/oscuro con auditoría de contraste WCAG), `ui-web` ([Volon UI](ui-web/README.md): componentes React y galería Storybook) y `contracts` (DTO y validación runtime de cotización, con JSON Schema). Los demás paquetes del [mapa del monorepo](../docs/architecture/repository-structure.md) se crearán cuando un corte los necesite.
 
 Cada paquete tendrá responsabilidad clara, imports controlados, contrato y política de versionado. La identidad visual de Volon está en [docs/brand/identity.md](../docs/brand/identity.md); identificadores técnicos permanecerán neutrales.
 

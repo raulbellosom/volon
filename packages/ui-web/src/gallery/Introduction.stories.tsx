@@ -4,6 +4,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { ArrowRight } from 'lucide-react';
 import { Button } from '../components/actions/Button.tsx';
 import { StatusBadge } from '../components/content/StatusBadge.tsx';
+import { ThemeToggle } from '../theme/ThemeToggle.tsx';
 import { Section } from './Showcase.tsx';
 
 const meta = { title: 'Introducción/Volon UI', parameters: { layout: 'fullscreen' } } satisfies Meta;
@@ -14,6 +15,7 @@ const PRINCIPLES = [
   { title: 'El pliegue', body: 'Los botones sólidos tienen una franja inferior más oscura, la cara oculta de la cinta. Al presionar se aplana y el botón baja 1 px.' },
   { title: 'Lima es señal', body: 'El lima marca lo vivo, lo seleccionado o el momento de marca. En claro siempre va junto al azul profundo; nunca solo sobre blanco.' },
   { title: 'Rápido, no flotante', body: 'Transiciones de 80 a 280 ms con desaceleración marcada; un pequeño rebote solo en toggles. Todo se desactiva con «reducir movimiento».' },
+  { title: 'Todo campo tiene ícono', body: 'Cada input y select muestra un ícono en una ficha que se ilumina al enfocar: se entiende qué se llena antes de leer la etiqueta.' },
   { title: 'Claridad local', body: 'Español de México, de tú, frases cortas. Estados con ícono y texto, nunca solo color. Números tabulares para precios y tiempos.' },
 ];
 
@@ -25,16 +27,16 @@ export const Overview: StoryObj = {
           <img src={logoLight} alt="Volon — Pídelo de Volon" className="w-64 dark:hidden" />
           <img src={logoDark} alt="Volon — Pídelo de Volon" className="hidden w-64 dark:block" />
           <p className="max-w-md text-md text-text-secondary">
-            Sistema de diseño y biblioteca de componentes web. Cambia entre <strong className="text-text-primary">Claro</strong> y{' '}
-            <strong className="text-text-primary">Oscuro</strong> con el ícono de pincel de la barra superior.
+            Sistema de diseño y biblioteca de componentes web. Cambia el tema aquí o con el pincel de la barra superior.
           </p>
         </div>
         <div className="flex flex-col items-start gap-3">
+          <ThemeToggle />
           <StatusBadge status="in-transit" />
           <Button variant="accent" size="lg" trailingIcon={<ArrowRight />}>Pídelo de Volon</Button>
         </div>
       </header>
-      <Section title="Lenguaje visual" description="Cinco ideas que deben reconocerse incluso en un solo botón.">
+      <Section title="Lenguaje visual" description="Seis ideas que deben reconocerse incluso en un solo botón.">
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {PRINCIPLES.map(({ title, body }) => (
             <article key={title} className="rounded-xl border border-border-subtle bg-surface p-5">

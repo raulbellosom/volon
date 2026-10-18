@@ -1,6 +1,6 @@
 import { brandPalette } from '@delivery/branding';
 import type { ColorTheme } from '../color-tokens.ts';
-import { statusColors } from './status.ts';
+import { brandSurfaceColors, statusColors } from './status.ts';
 
 /** Light theme: electric blue drives actions; lime only appears paired with deep blue. */
 export const lightTheme: ColorTheme = Object.freeze({
@@ -33,6 +33,8 @@ export const lightTheme: ColorTheme = Object.freeze({
   'action-danger-hover': '#9A1C13',
   'text-on-danger': '#FFFFFF',
   accent: brandPalette.lime,
+  'selection-fill': brandPalette.deepBlue,
+  'selection-mark': brandPalette.lime,
   'feedback-info-fg': '#0632D9',
   'feedback-info-bg': '#EAF0FF',
   'feedback-info-border': '#9DB2FF',
@@ -45,5 +47,6 @@ export const lightTheme: ColorTheme = Object.freeze({
   'feedback-danger-fg': '#A81F15',
   'feedback-danger-bg': '#FDECEA',
   'feedback-danger-border': '#F2A39B',
+  ...brandSurfaceColors,
   ...statusColors,
 });
