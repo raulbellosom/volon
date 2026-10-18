@@ -8,6 +8,7 @@ import { IconButton } from '../actions/IconButton.tsx';
 import { AlertDialog } from './AlertDialog.tsx';
 import { Drawer } from './Drawer.tsx';
 import { Popover } from './Popover.tsx';
+import { Tooltip } from './Tooltip.tsx';
 import { Dialog, DialogTrigger } from './Dialog.tsx';
 import { ToastRegion, dismissToast, toast } from './Toast.tsx';
 
@@ -106,5 +107,17 @@ describe('Popover', () => {
     await userEvent.keyboard('{Escape}');
     await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
     await waitFor(() => expect(trigger).toHaveFocus());
+  });
+});
+
+describe('Tooltip', () => {
+  it('shows on keyboard focus, describes the control and closes with Escape', async () => {
+    render(<Tooltip content="Duplicar envío"><IconButton label="Duplicar" icon={<span />} /></Tooltip>);
+    await userEvent.tab();
+    const tooltip = await screen.findByRole('tooltip');
+    expect(tooltip).toHaveTextContent('Duplicar envío');
+    expect(screen.getByRole('button', { name: 'Duplicar' })).toHaveAccessibleDescription('Duplicar envío');
+    await userEvent.keyboard('{Escape}');
+    await waitFor(() => expect(screen.queryByRole('tooltip')).not.toBeInTheDocument());
   });
 });

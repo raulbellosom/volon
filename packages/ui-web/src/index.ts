@@ -26,16 +26,22 @@ export { Card, CardContent, CardFooter, CardHeader, type CardFooterProps, type C
 export { Badge, type BadgeProps, type BadgeTone } from './components/content/Badge.tsx';
 export { IconChip, type IconChipProps, type IconChipSize, type IconChipTone } from './components/content/IconChip.tsx';
 export { StatusBadge, type DeliveryStatusTone, type StatusBadgeProps } from './components/content/StatusBadge.tsx';
+export { Avatar, AvatarGroup, initials, type AvatarGroupProps, type AvatarProps, type AvatarSize, type AvatarStatus } from './components/content/Avatar.tsx';
+export { Divider, type DividerProps } from './components/content/Divider.tsx';
+export { Stat, type StatDelta, type StatProps } from './components/data/Stat.tsx';
+export { DescriptionList, type DescriptionItem, type DescriptionLayout, type DescriptionListProps } from './components/data/DescriptionList.tsx';
 
 export { Alert, type AlertProps } from './components/feedback/Alert.tsx';
 export { EmptyState, type EmptyStateProps } from './components/feedback/EmptyState.tsx';
 export { Skeleton, SkeletonText, type SkeletonProps } from './components/feedback/Skeleton.tsx';
 export { Spinner, SpinnerIcon, type SpinnerProps } from './components/feedback/Spinner.tsx';
+export { Progress, type ProgressProps, type ProgressTone } from './components/feedback/Progress.tsx';
 
 export { Dialog, DialogTrigger, type DialogProps, type DialogSize } from './components/overlays/Dialog.tsx';
 export { AlertDialog, type AlertDialogProps } from './components/overlays/AlertDialog.tsx';
 export { Popover, type PopoverProps } from './components/overlays/Popover.tsx';
 export { Drawer, type DrawerProps, type DrawerSide } from './components/overlays/Drawer.tsx';
+export { Tooltip, type TooltipProps } from './components/overlays/Tooltip.tsx';
 
 export { Cell, Column, Row, Table, TableBody, TableFooter, TableFooterRow, TableHeader, type CellAlign, type CellProps, type ColumnProps, type TableProps } from './components/data/Table.tsx';
 

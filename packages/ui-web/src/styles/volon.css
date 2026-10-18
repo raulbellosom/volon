@@ -25,6 +25,7 @@
   --animate-sheet-out-bottom: vl-sheet-out-bottom var(--duration-base) var(--ease-exit) forwards;
   --animate-spin: spin 0.75s linear infinite;
   --animate-shimmer: vl-shimmer 1.6s var(--ease-standard) infinite;
+  --animate-indeterminate: vl-indeterminate 1.4s var(--ease-standard) infinite;
 
   @keyframes vl-fade-in { from { opacity: 0; } }
   @keyframes vl-fade-out { to { opacity: 0; } }
@@ -38,6 +39,7 @@
   @keyframes vl-sheet-out-start { to { transform: translateX(-100%); } }
   @keyframes vl-sheet-out-end { to { transform: translateX(100%); } }
   @keyframes vl-sheet-out-bottom { to { transform: translateY(100%); } }
+  @keyframes vl-indeterminate { from { left: -33%; } to { left: 100%; } }
   @keyframes vl-shimmer { from { background-position: 150% 0; } to { background-position: -50% 0; } }
   @keyframes spin { to { transform: rotate(360deg); } }
 }
