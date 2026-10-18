@@ -31,6 +31,12 @@ Android, iOS, navegador soportado; app cerrada/background; autorización; tokens
 ## Spike G — Rutas, costos y pagos
 Comparar mapas y precios con muestras de trayectos locales; validar PSP para México, pagos, reembolsos, comisiones, tiempos de liquidación y conciliación.
 
+**Avance aislado de contrato (18-10-2026; sin conexión al servicio):** `osrm-road.adapter.ts` es un candidato de prueba desacoplado del cotizador. Convierte la respuesta `route/v1/driving` de OSRM en distancia vial (metros) y duración estimada (segundos), registra procedencia y falla de forma segura ante ausencia de ruta, timeout, HTTP o payload inválido. Las pruebas usan `fetch` simulado y **no validan rutas de Puerto Vallarta, tráfico, motocicletas, costos, precisión de ETA ni disponibilidad de un proveedor**. No existe activación automática por variables de entorno: `main.ts` continúa con el adaptador sintético de PostGIS.
+
+**Evaluación aún pendiente (DEC-07):** comparar OSRM autohospedado, Mapbox Directions y Google Routes con trayectos representativos de Puerto Vallarta; medir precisión de calles y sentidos viales, restricciones para motos, cobertura, cuota/infraestructura, latencia, términos de uso, costos y comportamiento ante fallos. No trasladar el tiempo estimado del motor a una promesa de entrega ni sustituir datos de rutas por distancia en línea recta. Elegir proveedor y política de activación solo con evidencia y revisión de costos.
+
+Referencias técnicas: [OSRM](https://project-osrm.org/docs/v26.5.0/http), [Mapbox Directions](https://docs.mapbox.com/api/navigation/directions/), [Google Routes](https://developers.google.com/maps/documentation/routes/reference/rest/v2/TopLevel/computeRoutes).
+
 ## Formato de reporte de prueba
 Fecha, versión, hardware/OS, hipótesis, entorno, pasos reproducibles, datos usados, resultados medidos, evidencia (sin secretos), fallas, impacto, recomendación, responsable y ADR afectado.
 
