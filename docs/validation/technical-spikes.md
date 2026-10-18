@@ -37,12 +37,7 @@ Comparar mapas y precios con muestras de trayectos locales; validar PSP para Mé
 
 Referencias técnicas: [OSRM](https://project-osrm.org/docs/v26.5.0/http), [Mapbox Directions](https://docs.mapbox.com/api/navigation/directions/), [Google Routes](https://developers.google.com/maps/documentation/routes/reference/rest/v2/TopLevel/computeRoutes).
 
-## Formato de reporte de prueba
-Fecha, versión, hardware/OS, hipótesis, entorno, pasos reproducibles, datos usados, resultados medidos, evidencia (sin secretos), fallas, impacto, recomendación, responsable y ADR afectado.
-
-## Criterio de avance
-No aprobar componentes por apariencia ni proveedores por documentación únicamente. Registrar pruebas antes de comenzar el MVP remunerado.
-
+**Prueba diagnóstica independiente:** `scripts/spikes/pv-route-benchmark.mjs` consulta dos rutas sintéticas de Puerto Vallarta con al menos un segundo entre solicitudes al demo no comercial. El workflow `road-routing-spike.yml` corre solo si se modifica ese script. No es dependencia del backend, no utiliza datos personales y no debe habilitarse en producción.
 
 ### Evidencia real del diagnóstico de rutas — 18-10-2026
 
@@ -55,3 +50,8 @@ Ejecución: [GitHub Actions #39136492484](https://github.com/raulbellosom/volon/
 
 **Interpretación:** los dos recorridos devuelven distancias viales mayores que la línea recta; la conexión pública al demo funcionó desde GitHub en la fecha indicada. **No** demuestra precisión para motos, maniobras, tráfico, horas punta, calidad comercial, disponibilidad sostenida, seguridad vial ni equivalencia a costo/tarifa. Los puntos no fueron aprobados como una microzona piloto ni se han validado direcciones de recogida. El servidor demo no es un proveedor de producción.
 
+## Formato de reporte de prueba
+Fecha, versión, hardware/OS, hipótesis, entorno, pasos reproducibles, datos usados, resultados medidos, evidencia (sin secretos), fallas, impacto, recomendación, responsable y ADR afectado.
+
+## Criterio de avance
+No aprobar componentes por apariencia ni proveedores por documentación únicamente. Registrar pruebas antes de comenzar el MVP remunerado.
