@@ -1,35 +1,42 @@
 import { readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
+import { evaluateSourceFile, sourceLineLimit } from './source-file-policy.mjs';
 
-const EXCLUDED = new Set(['.git', 'node_modules', '.next', '.turbo', 'dist', 'coverage']);
-const EXT = /\.(?:ts|tsx|js|jsx|mjs|cjs)$/;
-const errors = [];
+const ROOTS = ['apps', 'packages', 'scripts'];
+const IGNORED = new Set(['.git', 'node_modules', '.next', '.turbo', 'dist', 'coverage', 'build']);
+const violations = [];
 
-async function visit(directory) {
+async function checkTree(directory) {
   let entries;
-  try { entries = await readdir(directory, { withFileTypes: true }); }
-  catch (error) { if (error.code === 'ENOENT') return; throw error; }
+  try {
+    entries = await readdir(directory, { withFileTypes: true });
+  } catch (error) {
+    if (error.code === 'ENOENT') return;
+    throw error;
+  }
+
   for (const entry of entries) {
-    if (EXCLUDED.has(entry.name)) continue;
+    if (IGNORED.has(entry.name)) continue;
     const file = path.join(directory, entry.name);
-    if (entry.isDirectory()) { await visit(file); continue; }
-    if (!entry.isFile() || !EXT.test(entry.name)) continue;
-    const content = await readFile(file, 'utf8');
-    const lines = content.trimEnd().split('\n').length;
-    const limit = file.includes(`${path.sep}tests${path.sep}`) ? 400
-      : /\.tsx$/.test(entry.name) ? 250
-      : /(?:^use[A-Z]|\.(?:controller|use-case|hook)\.)/.test(entry.name) ? 200
-      : /\.(?:service|repository|adapter)\./.test(entry.name) ? 300 : 400;
-    if (lines > limit) errors.push(`${file}: ${lines} lines (max ${limit})`);
+    if (entry.isDirectory()) {
+      await checkTree(file);
+      continue;
+    }
+    if (!entry.isFile()) continue;
+    const relativePath = path.relative(process.cwd(), file);
+    if (sourceLineLimit(relativePath) === null) continue;
+    const violation = evaluateSourceFile(relativePath, await readFile(file, 'utf8'));
+    if (violation) violations.push(violation);
   }
 }
 
-for (const directory of ['apps', 'packages', 'scripts']) {
-  await visit(path.resolve(directory));
-}
-if (errors.length) {
-  console.error(errors.join('\n'));
+for (const root of ROOTS) await checkTree(path.resolve(root));
+
+if (violations.length > 0) {
+  for (const { filePath, lines, limit } of violations) {
+    console.error(filePath + ': ' + lines + ' lines (maximum ' + limit + ')');
+  }
   process.exitCode = 1;
 } else {
-  console.log('Source length gate passed (hard limit: 400 lines).');
+  console.log('Source length checks passed: components 250, hooks/controllers 200, services 300, general 400.');
 }

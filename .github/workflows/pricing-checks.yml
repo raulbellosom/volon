@@ -1,18 +1,25 @@
-name: Domain checks
+name: Quality gates
 on:
   push:
     branches: [main]
   pull_request:
+permissions:
+  contents: read
+concurrency:
+  group: quality-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
-  pricing:
+  quality:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '22'
-      - uses: pnpm/action-setup@v4
+          node-version: '22.23.3'
+          cache: 'pnpm'
       - name: Install pinned dependencies
         run: pnpm install --frozen-lockfile
-      - name: Length, strict TypeScript, domain and API tests
-        run: pnpm check
+      - name: Length, TypeScript, contracts and API tests
+        run: pnpm run check

@@ -3,12 +3,17 @@
   "private": true,
   "type": "module",
   "packageManager": "pnpm@10.15.1",
-  "engines": { "node": ">=22.16.0" },
+  "engines": {
+    "node": ">=22.16.0"
+  },
   "scripts": {
-    "test": "node --experimental-strip-types --test packages/pricing/tests/*.test.ts packages/contracts/tests/*.test.ts apps/api/tests/*.test.ts",
+    "test": "node --experimental-strip-types --test packages/pricing/tests/*.test.ts packages/contracts/tests/*.test.ts apps/api/tests/*.test.ts scripts/tests/*.test.mjs",
     "check:lines": "node scripts/check-source-lengths.mjs",
-    "check": "npm run check:lines && npm run typecheck && npm test",
+    "check": "pnpm run check:lines && pnpm run typecheck && pnpm run test",
     "typecheck": "tsc --project tsconfig.json"
   },
-  "devDependencies": { "typescript": "5.8.3", "turbo": "2.5.6" }
+  "devDependencies": {
+    "typescript": "5.8.3",
+    "turbo": "2.5.6"
+  }
 }
