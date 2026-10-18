@@ -10,8 +10,11 @@ export interface RoadRoute {
 }
 
 export class RoadRoutingError extends Error {
-  constructor(readonly reason: 'NO_ROUTE' | 'UNAVAILABLE') {
+  readonly reason: 'NO_ROUTE' | 'UNAVAILABLE';
+
+  constructor(reason: RoadRoutingError['reason']) {
     super(reason);
+    this.reason = reason;
   }
 }
 
