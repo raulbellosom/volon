@@ -1,4 +1,4 @@
-import type { DeliveryQuoteResponse, DeliveryResponse, MeResponse } from '../api/merchant-api.ts';
+import type { DeliveryLocationsResponse, DeliveryQuoteResponse, DeliveryResponse, MeResponse } from '../api/merchant-api.ts';
 
 // Synthetic data for local design work only. Names say «demo» on purpose so no screen
 // rendered from them can be mistaken for a real merchant, branch or price.
@@ -66,4 +66,13 @@ export function demoHistory(now: number): DeliveryResponse[] {
       },
     };
   });
+}
+
+/** Seeded history predates stored addresses, like real `legacy_input` records. */
+export function legacyLocations(branchId: string): DeliveryLocationsResponse {
+  return {
+    branchId,
+    pickup: { coordinates: { lat: 0, lng: 0 }, source: 'legacy_input', verification: 'unverified' },
+    dropoff: { coordinates: { lat: 0.01, lng: 0.01 }, addressLine: null, instructions: null, source: 'legacy_input', verification: 'unverified' },
+  };
 }

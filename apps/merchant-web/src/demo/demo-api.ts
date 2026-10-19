@@ -1,6 +1,7 @@
+import { parseDeliveryQuoteRequest } from '@delivery/contracts';
 import { ApiError } from '../api/api-error.ts';
-import type { AuthApi, DeliveryQuoteResponse, DeliveryResponse, MerchantApi } from '../api/merchant-api.ts';
-import { DEMO_DELIVERY_ERRORS, DEMO_EMAILS, demoHistory, demoMe, demoQuote } from './demo-fixtures.ts';
+import type { AuthApi, DeliveryLocationsResponse, DeliveryQuoteRequest, DeliveryQuoteResponse, DeliveryResponse, MerchantApi } from '../api/merchant-api.ts';
+import { DEMO_DELIVERY_ERRORS, DEMO_EMAILS, demoHistory, demoMe, demoQuote, legacyLocations } from './demo-fixtures.ts';
 
 export interface DemoOptions {
   /** Artificial latency so loading states are visible; 0 in tests. */
@@ -12,11 +13,28 @@ export interface DemoOptions {
  * In-memory stand-in for the backend. Loaded only by `vite --mode demo` in development and
  * by tests; it never authenticates anyone and its data never leaves the browser tab.
  */
+/** What the server would store with a quote: pickup from the branch record, typed destination as-is. */
+function snapshotOf(request: DeliveryQuoteRequest): DeliveryLocationsResponse {
+  return {
+    branchId: request.branchId,
+    pickup: { coordinates: request.pickup, source: 'branch_record', verification: 'unverified' },
+    dropoff: {
+      coordinates: request.dropoff,
+      addressLine: request.destination?.addressLine ?? null,
+      instructions: request.destination?.instructions ?? null,
+      source: request.destination ? 'synthetic' : 'legacy_input',
+      verification: 'unverified',
+    },
+  };
+}
+
 export function createDemoApis({ latencyMs = 450, now = Date.now }: DemoOptions = {}): { auth: AuthApi; api: MerchantApi } {
   const wait = () => new Promise<void>((resolve) => setTimeout(resolve, latencyMs));
   const quotes = new Map<string, DeliveryQuoteResponse>();
   const deliveries = new Map<string, DeliveryResponse>(demoHistory(now()).map((delivery) => [delivery.deliveryId, delivery]));
   const byIdempotencyKey = new Map<string, DeliveryResponse>();
+  const snapshots = new Map<string, DeliveryLocationsResponse>();
+  const branchIds = new Set(demoMe.memberships.map(({ branch }) => branch.branchId));
   let signedInAs = '';
   let sequence = 0;
   let created = 0;
@@ -36,11 +54,19 @@ export function createDemoApis({ latencyMs = 450, now = Date.now }: DemoOptions 
       if (signedInAs === DEMO_EMAILS.noBranches) return { subjectId: demoMe.subjectId, memberships: [] };
       return demoMe;
     },
-    async createQuote() {
+    async createQuote(input) {
       await wait();
+      let request: DeliveryQuoteRequest;
+      try {
+        request = parseDeliveryQuoteRequest(input);
+      } catch {
+        throw new ApiError('invalid', 422, 'INVALID_QUOTE_REQUEST');
+      }
+      if (!branchIds.has(request.branchId)) throw new ApiError('not-found', 404, 'NOT_FOUND');
       sequence += 1;
       const quote = demoQuote(sequence, now());
       quotes.set(quote.quoteId, quote);
+      snapshots.set(quote.quoteId, snapshotOf(request));
       return quote;
     },
     async createDelivery({ branchId, quoteId, idempotencyKey }) {
@@ -60,6 +86,7 @@ export function createDemoApis({ latencyMs = 450, now = Date.now }: DemoOptions 
         pricing: { amountMinor: quote.amountMinor, currency: 'MXN', lines: quote.lines, rateVersion: 'demo' },
       };
       deliveries.set(delivery.deliveryId, delivery);
+      snapshots.set(delivery.deliveryId, snapshots.get(quoteId) ?? legacyLocations(branchId));
       byIdempotencyKey.set(idempotencyKey, delivery);
       return delivery;
     },
@@ -70,6 +97,23 @@ export function createDemoApis({ latencyMs = 450, now = Date.now }: DemoOptions 
       const delivery = deliveries.get(deliveryId);
       if (!delivery) throw new ApiError('not-found', 404, 'NOT_FOUND');
       return delivery;
+    },
+    async getPickupLocation(branchId) {
+      await wait();
+      if (!branchIds.has(branchId)) throw new ApiError('not-found', 404, 'NOT_FOUND');
+      return { branchId, coordinates: { lat: 0, lng: 0 }, source: 'branch_record', verification: 'unverified' };
+    },
+    async getQuoteLocations(quoteId) {
+      await wait();
+      const stored = snapshots.get(quoteId);
+      if (!stored) throw new ApiError('not-found', 404, 'NOT_FOUND');
+      return stored;
+    },
+    async getDeliveryLocations(deliveryId) {
+      await wait();
+      const delivery = deliveries.get(deliveryId);
+      if (!delivery) throw new ApiError('not-found', 404, 'NOT_FOUND');
+      return snapshots.get(deliveryId) ?? legacyLocations(delivery.branchId);
     },
     async listDeliveries({ branchId, limit, cursor }) {
       await wait();

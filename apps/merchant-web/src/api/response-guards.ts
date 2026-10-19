@@ -1,6 +1,6 @@
 import {
-  parseDeliveryHistoryResponse, parseDeliveryQuoteResponse, parseDeliveryResponse,
-  type DeliveryHistoryResponse, type DeliveryQuoteResponse, type DeliveryResponse,
+  parseDeliveryHistoryResponse, parseDeliveryLocationsResponse, parseDeliveryQuoteResponse, parseDeliveryResponse,
+  parsePickupLocationResponse, type DeliveryHistoryResponse, type DeliveryLocationsResponse, type PickupLocationResponse, type DeliveryQuoteResponse, type DeliveryResponse,
 } from '@delivery/contracts';
 import { ApiError } from './api-error.ts';
 
@@ -22,3 +22,12 @@ export function readHistory(value: unknown, branchId: string): DeliveryHistoryRe
   if (page.items.some((item) => item.branchId !== branchId)) throw new ApiError('unexpected', null, 'MALFORMED_RESPONSE');
   return page;
 }
+
+/** The pickup must belong to the branch that was asked for. */
+export function readPickup(value: unknown, branchId: string): PickupLocationResponse {
+  const pickup = parse(parsePickupLocationResponse, value);
+  if (pickup.branchId !== branchId) throw new ApiError('unexpected', null, 'MALFORMED_RESPONSE');
+  return pickup;
+}
+
+export const readLocations = (value: unknown): DeliveryLocationsResponse => parse(parseDeliveryLocationsResponse, value);

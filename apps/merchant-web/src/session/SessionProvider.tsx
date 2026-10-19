@@ -34,6 +34,9 @@ function withSessionGuard(api: MerchantApi, onUnauthenticated: () => void): Merc
     createDelivery: guard(api.createDelivery),
     getDelivery: guard(api.getDelivery),
     listDeliveries: guard(api.listDeliveries),
+    getPickupLocation: guard(api.getPickupLocation),
+    getQuoteLocations: guard(api.getQuoteLocations),
+    getDeliveryLocations: guard(api.getDeliveryLocations),
   };
 }
 

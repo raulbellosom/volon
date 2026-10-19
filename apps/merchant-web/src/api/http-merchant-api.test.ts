@@ -115,6 +115,53 @@ describe('HTTP delivery history', () => {
   });
 });
 
+describe('HTTP locations', () => {
+  const stored = (source: 'synthetic' | 'legacy_input') => ({
+    branchId: 'b1',
+    pickup: { coordinates: { lat: 0, lng: 0 }, source: source === 'synthetic' ? 'branch_record' : 'legacy_input', verification: 'unverified' },
+    dropoff: {
+      coordinates: { lat: 0.01, lng: 0.01 },
+      addressLine: source === 'synthetic' ? 'Calle Sintética 123' : null,
+      instructions: null,
+      source,
+      verification: 'unverified',
+    },
+  });
+
+  it('reads the branch pickup with the bearer and keeps it unverified', async () => {
+    const fetch = mockFetch(Response.json({ branchId: 'b1', coordinates: { lat: 0, lng: 0 }, source: 'branch_record', verification: 'unverified' }));
+    const pickup = await createHttpMerchantApi(() => 'token-1').getPickupLocation('b1');
+    expect(fetch.mock.calls[0]![0]).toBe('/v1/branches/b1/pickup-location');
+    expect(fetch.mock.calls[0]![1]?.headers).toMatchObject({ authorization: 'Bearer token-1' });
+    expect(pickup).toMatchObject({ coordinates: { lat: 0, lng: 0 }, verification: 'unverified' });
+  });
+
+  it.each([
+    ['another branch', { branchId: 'b2', coordinates: { lat: 0, lng: 0 }, source: 'branch_record', verification: 'unverified' }],
+    ['a verified claim', { branchId: 'b1', coordinates: { lat: 0, lng: 0 }, source: 'branch_record', verification: 'verified' }],
+    ['a street address', { branchId: 'b1', coordinates: { lat: 0, lng: 0 }, source: 'branch_record', verification: 'unverified', address: 'x' }],
+  ])('rejects a pickup with %s', async (_name, body) => {
+    mockFetch(Response.json(body));
+    await expect(createHttpMerchantApi(() => 't').getPickupLocation('b1')).rejects.toMatchObject({ code: 'MALFORMED_RESPONSE' });
+  });
+
+  it('reads quote and delivery snapshots, including legacy records without address', async () => {
+    const fetch = mockFetch(Response.json(stored('synthetic')));
+    const api = createHttpMerchantApi(() => 't');
+    expect((await api.getQuoteLocations('q1')).dropoff.addressLine).toBe('Calle Sintética 123');
+    expect(fetch.mock.calls[0]![0]).toBe('/v1/delivery-quotes/q1/locations');
+    fetch.mockImplementation(async () => Response.json(stored('legacy_input')));
+    const legacy = await api.getDeliveryLocations('d1');
+    expect(fetch.mock.calls[1]![0]).toBe('/v1/deliveries/d1/locations');
+    expect(legacy.dropoff).toMatchObject({ addressLine: null, instructions: null, source: 'legacy_input' });
+  });
+
+  it('rejects a legacy snapshot that claims an address', async () => {
+    mockFetch(Response.json({ ...stored('legacy_input'), dropoff: { ...stored('legacy_input').dropoff, addressLine: 'x' } }));
+    await expect(createHttpMerchantApi(() => 't').getDeliveryLocations('d1')).rejects.toMatchObject({ code: 'MALFORMED_RESPONSE' });
+  });
+});
+
 describe('location source', () => {
   it('only exists in development builds', () => {
     expect(locationSource(true)?.kind).toBe('synthetic');
