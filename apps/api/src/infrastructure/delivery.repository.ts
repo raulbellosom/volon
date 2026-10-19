@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import type { PrismaClient } from '@prisma/client';
-import { parseDeliveryQuoteRequest } from '@delivery/contracts';
+import { parseRouteSnapshot, serializeRouteSnapshot } from '../modules/pricing/route-snapshot.ts';
 import { withSubject } from './database.ts';
 import type { DeliveryStore } from '../modules/deliveries/delivery.service.ts';
 import { toDeliveryResponse } from './delivery-response.ts';
@@ -25,7 +25,7 @@ export function createDeliveryRepository(db: PrismaClient): DeliveryStore {
         const row = await tx.pricingQuote.findFirst({ where: { id, branchId } });
         if (!row) return null;
         if (row.currency !== 'MXN') throw new Error('Invalid stored currency');
-        return { ...row, currency: row.currency, route: parseDeliveryQuoteRequest(row.request) };
+        return { ...row, currency: row.currency, route: parseRouteSnapshot(row.request) };
       },
       currentTime: async () => {
         const [clock] = await tx.$queryRaw<{ now: Date }[]>`SELECT clock_timestamp() AS now`;
@@ -37,7 +37,7 @@ export function createDeliveryRepository(db: PrismaClient): DeliveryStore {
         id: randomUUID(), subjectId: actor.subjectId, branchId: quote.branchId, merchantId: quote.merchantId,
         quoteId: quote.id, amountMinor: quote.amountMinor, baseAmountMinor: quote.baseAmountMinor,
         distanceAmountMinor: quote.distanceAmountMinor, currency: quote.currency, rateVersion: quote.rateVersion,
-        routeSnapshot: { ...quote.route, pickup: { ...quote.route.pickup }, dropoff: { ...quote.route.dropoff } },
+        routeSnapshot: serializeRouteSnapshot(quote.route),
         idempotencyKeyHash, requestHash,
       } })),
     })),

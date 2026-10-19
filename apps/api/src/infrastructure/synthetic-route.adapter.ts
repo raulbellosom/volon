@@ -23,6 +23,7 @@ export function createSyntheticRouteAdapter(db: PrismaClient) {
       ) AS "pickupMatches", ${branch.latitude === 0 && branch.longitude === 0} AS synthetic`;
     if (!route) throw new Error('No spatial result');
     return { eligible: route.pickupMatches && route.synthetic && route.distance <= policy.maximumRouteMeters,
-      distanceMeters: route.distance, policy, rateVersion: 'synthetic-geodesic-v1' };
+      distanceMeters: route.distance, policy, rateVersion: 'synthetic-geodesic-v1',
+      trustedPickup: { lat: branch.latitude, lng: branch.longitude } };
   });
 }

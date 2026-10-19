@@ -9,6 +9,7 @@ import { createHttpServer } from './http/server.ts';
 import { createDeliveryRepository } from './infrastructure/delivery.repository.ts';
 import { createMerchantContextRepository } from './infrastructure/merchant-context.repository.ts';
 import { createDeliveryHistoryRepository } from './infrastructure/delivery-history.repository.ts';
+import { createLocationRepository } from './infrastructure/location.repository.ts';
 
 const config = readConfig();
 const db = createDatabase(config.databaseUrl);
@@ -17,6 +18,7 @@ const api = createApi({
   ...createQuoteRepository(db), resolveRoute: createSyntheticRouteAdapter(db),
   deliveries: createDeliveryRepository(db),
   deliveryHistory: createDeliveryHistoryRepository(db),
+  locations: createLocationRepository(db),
   merchantContext: createMerchantContextRepository(db),
   authenticate: createSupabaseAuthenticator(config.supabaseUrl, config.publishableKey),
   now: () => new Date(), newQuoteId: randomUUID, ttlMilliseconds: 600000,

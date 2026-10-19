@@ -6,6 +6,7 @@ import { problem } from './http/problem.ts';
 import { createMerchantContextHandler, type MerchantContextStore } from './modules/merchants/merchant-context.handler.ts';
 import { createDeliveryHistoryHandler } from './modules/deliveries/delivery-history.handler.ts';
 import type { DeliveryHistoryStore } from './modules/deliveries/delivery-history.service.ts';
+import { createLocationHandler, type LocationStore } from './modules/locations/location.handler.ts';
 
 export interface ApiDependencies extends QuoteDependencies {
   /** Return null for invalid/absent credentials. No default or development auth bypass. */
@@ -14,11 +15,14 @@ export interface ApiDependencies extends QuoteDependencies {
   readonly deliveries?: DeliveryStore;
   readonly merchantContext?: MerchantContextStore;
   readonly deliveryHistory?: DeliveryHistoryStore;
+  readonly locations?: LocationStore;
 }
 
 /** Fetch-compatible composition root. Does not listen on a port or select a framework. */
 export function createApi(dependencies: ApiDependencies): (request: Request) => Promise<Response> {
   const quote = createQuoteService(dependencies);
+  const locations = dependencies.locations
+    ? createLocationHandler({ ...dependencies.locations, authenticate: dependencies.authenticate }) : null;
   const history = dependencies.deliveryHistory
     ? createDeliveryHistoryHandler({ ...dependencies.deliveryHistory, authenticate: dependencies.authenticate }) : null;
   const merchantContext = dependencies.merchantContext
@@ -27,6 +31,7 @@ export function createApi(dependencies: ApiDependencies): (request: Request) => 
     ? createDeliveryHandler({ ...dependencies.deliveries, authenticate: dependencies.authenticate }) : null;
   return async (request) => {
     const path = new URL(request.url).pathname;
+    if (locations && (path.endsWith('/locations') || path.endsWith('/pickup-location'))) return locations(request);
     if (history && path === '/v1/deliveries' && request.method === 'GET') return history(request);
     if (merchantContext && (path === '/v1/me' || path.startsWith('/v1/merchants/'))) return merchantContext(request);
     if (deliveries && (path === '/v1/deliveries' || path.startsWith('/v1/deliveries/'))) return deliveries(request);

@@ -1,5 +1,6 @@
 import { createHash } from 'node:crypto';
-import type { CreateDeliveryRequest, DeliveryQuoteRequest, DeliveryResponse } from '@delivery/contracts';
+import type { CreateDeliveryRequest, DeliveryResponse } from '@delivery/contracts';
+import type { RouteSnapshot } from '../pricing/route-snapshot.ts';
 import type { QuoteActor } from '../pricing/quote.service.ts';
 
 export class DeliveryFailure extends Error {
@@ -20,7 +21,7 @@ export interface DeliveryQuoteSnapshot {
   readonly distanceAmountMinor: number;
   readonly currency: 'MXN';
   readonly rateVersion: string;
-  readonly route: DeliveryQuoteRequest;
+  readonly route: RouteSnapshot;
 }
 
 export interface DeliveryTransaction {

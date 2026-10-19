@@ -1,4 +1,5 @@
-import type { DeliveryQuoteRequest, DeliveryQuoteResponse } from '@delivery/contracts';
+import { parseDeliveryQuoteRequest, type QuotePoint, type DeliveryQuoteRequest, type DeliveryQuoteResponse } from '@delivery/contracts';
+import type { RouteSnapshot } from './route-snapshot.ts';
 import { calculateDeliveryQuote, type DeliveryRatePolicy } from '@delivery/pricing';
 
 export class QuoteFailure extends Error {
@@ -18,7 +19,7 @@ export interface QuoteActor {
 export interface StoredQuote {
   readonly subjectId: string;
   readonly branchId: string;
-  readonly request: DeliveryQuoteRequest;
+  readonly request: RouteSnapshot;
   readonly response: DeliveryQuoteResponse;
   readonly rateVersion: string;
 }
@@ -32,6 +33,7 @@ export interface QuoteDependencies {
     readonly distanceMeters: number;
     readonly policy: DeliveryRatePolicy;
     readonly rateVersion: string;
+    readonly trustedPickup?: QuotePoint;
   }>;
   /** Must confirm storage before success; production needs durable scoped storage. */
   readonly saveQuote: (quote: StoredQuote) => Promise<void>;
@@ -47,9 +49,14 @@ export function createQuoteService(dependencies: QuoteDependencies) {
   }
 
   return async (actor: QuoteActor, request: DeliveryQuoteRequest): Promise<DeliveryQuoteResponse> => {
+    request = parseDeliveryQuoteRequest(request);
     if (!await dependencies.canQuote(actor, request.branchId)) throw new QuoteFailure('ACCESS_DENIED');
     const route = await dependencies.resolveRoute(request, actor);
     if (!route.eligible) throw new QuoteFailure('OUTSIDE_COVERAGE');
+    if (request.destination && !route.trustedPickup) throw new QuoteFailure('ROUTING_UNAVAILABLE');
+    const snapshot: RouteSnapshot = route.trustedPickup
+      ? Object.freeze({ ...request, pickup: Object.freeze({ ...route.trustedPickup }), pickupOrigin: 'branch_record' })
+      : request;
     if (route.distanceMeters > route.policy.maximumRouteMeters) throw new QuoteFailure('OUTSIDE_COVERAGE');
     const result = calculateDeliveryQuote({ policy: route.policy, routeDistanceMeters: route.distanceMeters });
     const quoteId = dependencies.newQuoteId();
@@ -67,7 +74,7 @@ export function createQuoteService(dependencies: QuoteDependencies) {
       coverage: 'eligible',
     });
     await dependencies.saveQuote(Object.freeze({
-      subjectId: actor.subjectId, branchId: request.branchId, request, response, rateVersion: route.rateVersion,
+      subjectId: actor.subjectId, branchId: request.branchId, request: snapshot, response, rateVersion: route.rateVersion,
     }));
     return response;
   };
