@@ -201,6 +201,10 @@ En M0 **el comercio paga a la plataforma solamente el servicio logístico**. La 
 
 El flujo de pago debe disponer de una operación separada, idempotente, con webhooks PSP firmados, reconciliación de timeouts, cancelaciones y reembolsos. El endpoint, proveedor, uso de autorización/captura y respuesta final se definirán **después de DEC-03 y el spike PSP**. No incluir cobro de mercancía, wallet ni split de productos en M0. Ver [modelo operativo de piloto](../product/pilot-operating-model.md).
 
+El [incremento financiero #20](service-payments.md) agrega servicios internos y
+persistencia de preparación; **no agrega endpoints de pagos ni webhooks**.
+Elegibilidad operativa siempre false; no cambia los DTO públicos de Delivery.
+
 Los endpoints de catálogo, carrito, Orders y checkout se especificarán al aprobar la fase marketplace. Los endpoints de pagos comerciales dependen de PSP y modelo de cobro legalmente aprobado.
 
 ## Ejemplo ilustrativo de cotización

@@ -91,6 +91,14 @@ solo usa fixtures artificiales y, con revisión explícita, POIs públicos.
 | Editar tarifas | No | No | No | No | Solo rol especializado |
 
 ## Política técnica
+
+Base financiera #20: preparación interna con membresía efectiva sobre Delivery,
+FORCE RLS heredada de sucursal/comercio, sin permisos nuevos por ser Courier.
+Solo columnas de preparación; no UPDATE/DELETE, paid ni confirmación operativa.
+Casos de evidencias provisionados solo por fixtures y aislados por sucursal más
+contexto sintético. Ningún rol cliente recibe grants; no se exponen por HTTP.
+[Contrato y límites](service-payments.md).
+
 - Supabase Auth puede autenticar, pero un JWT válido **no acredita** acceso a cada merchant/branch/delivery.
 - Permisos se verifican por API antes de leer/escribir, y políticas de Realtime/Storage deben ser equivalentes.
 - Membresías con vigencia/estado; revocación corta canales y bloquea acciones nuevas. Tokens de canal deben expirar y resuscribirse; no depender únicamente del alta inicial.

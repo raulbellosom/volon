@@ -2,6 +2,10 @@
 
 **Estado:** conceptos de arquitectura, pendiente de asesoría fiscal y selección de procesador.
 
+El incremento local #20 implementa solamente [preparación financiera y laboratorio
+aislado](../specification/service-payments.md), según [ADR-0016](../decisions/0016-financial-foundation.md).
+No cobra productos ni confirma pagos reales; elegibilidad operativa siempre false.
+
 ## Objetos separados
 - PricingQuote: cálculo explicable y vigente.
 - Payment: autorización/captura/cancelación/estatus externo.

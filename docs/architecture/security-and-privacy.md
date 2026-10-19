@@ -2,6 +2,12 @@
 
 **Estado:** requisitos no negociables de diseño; revisión legal pendiente.
 
+El [corte financiero #20](../specification/service-payments.md) mantiene intención
+operativa pending e intento not_submitted inmutables. No acepta paid del cliente
+ni evidencias sintéticas para liberar despacho. El laboratorio append-only queda
+separado de Delivery, con FORCE RLS, claves HMAC efímeras solo en tests y sin PSP.
+No demuestra origen de cobros reales, liquidación ni cumplimiento financiero.
+
 ## Identidad y autorización
 - Autenticar comprador, empleado, operador de flota y repartidor.
 - Autorizar cada operación sobre recurso y tenant; no confiar en un rol indicado por cliente.

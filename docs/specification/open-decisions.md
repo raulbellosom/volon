@@ -40,6 +40,14 @@ autenticada, [ADR-0015](../decisions/0015-delivery-public-reference.md). UUID,
 snapshots, tarifas, estado y cursor permanecen. Prefijo configurable afecta solo
 emisiones nuevas; no implica marca legal definitiva ni token público de acceso.
 
+### Base financiera — incremento #20
+
+DEC-03/04/16: [ADR-0016](../decisions/0016-financial-foundation.md) autoriza solo
+preparación pendiente con importe persistido y evidencias sintéticas aisladas.
+Elegibilidad siempre denegada, sin PSP seleccionado ni sandbox. Criterios y
+puertas humanas en [contrato financiero](service-payments.md); siguen pendientes
+captura verificable, reconciliación operativa, fiscalidad, privacidad y reversos.
+
 ### Identidad Courier y disponibilidad — incremento #16
 
 DEC-11/16: corte reversible offline/available con Courier separado de Membership,

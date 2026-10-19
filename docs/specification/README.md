@@ -29,6 +29,9 @@ Este dossier especifica *cómo* deben mantenerse las invariantes y contratos. Pa
 
 ## Cómo leer los contratos
 
+La [base financiera del servicio logístico](service-payments.md) define el corte
+interno #20; no confirma pagos operativos ni habilita despacho.
+
 Los [folios públicos de Delivery](delivery-public-reference.md) documentan la
 referencia humana, backfill y búsqueda autenticada del incremento #19.
 

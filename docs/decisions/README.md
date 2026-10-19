@@ -25,6 +25,9 @@ Los ADR registran **propuestas** y aceptación explícita. Estado inicial de tod
 
 ## Plantilla de nuevas decisiones
 
+- [ADR-0016 — Base financiera](0016-financial-foundation.md): preparación pendiente
+  y evidencias aisladas; sin PSP ni desbloqueo de despacho.
+
 Título, fecha, estado, contexto, motivación, alternativas, decisión, consecuencias, pruebas pendientes, reversibilidad y enlaces. Estados recomendados: Propuesta, Aceptada, Sustituida, Rechazada.
 
 La elección de tecnología no debe basarse exclusivamente en familiaridad; registrar pruebas que motiven su adopción.

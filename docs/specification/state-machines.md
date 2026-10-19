@@ -54,6 +54,12 @@ Disponible no prueba contratación, vehículo ni elegibilidad financiera de Deli
 Separado: `pending_confirmation`, `confirmed`, `preparing`, `ready`, `fulfilled`, `cancelled`, etc., por diseñar con operaciones comerciales. No forzar equiparación con Delivery.
 
 ## Payment (según PSP)
+
+El corte #20 implementa únicamente ServicePaymentIntent pending/version 1 e
+intento not_submitted inmutables. Los estados de evidencias pertenecen a casos
+aislados del [laboratorio financiero](service-payments.md); confirmed allí no
+acredita una Delivery. Elegibilidad operativa siempre false, sin transición a
+dispatching. La siguiente lista sigue siendo diseño futuro dependiente de PSP.
 `pending`, `authorized`, `captured`, `failed`, `cancelled`; reembolsos parciales/totales como recursos separados. No convertir `delivered` en `paid` por regla implícita.
 
 ## Reglas comunes
