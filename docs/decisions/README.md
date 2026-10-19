@@ -16,6 +16,9 @@ Los ADR registran **propuestas** y aceptación explícita. Estado inicial de tod
 - [ADR-0010 — Direcciones y snapshots sintéticos](0010-delivery-location-snapshots.md)
   — compatible con JSON existente; no adopta proveedor ni autoriza domicilios reales.
 
+- [ADR-0011 — Ciclo de vida de ubicaciones personales](0011-location-privacy-lifecycle.md)
+  — propuesta, sin plazos aprobados ni borrado productivo.
+
 ## Plantilla de nuevas decisiones
 
 Título, fecha, estado, contexto, motivación, alternativas, decisión, consecuencias, pruebas pendientes, reversibilidad y enlaces. Estados recomendados: Propuesta, Aceptada, Sustituida, Rechazada.

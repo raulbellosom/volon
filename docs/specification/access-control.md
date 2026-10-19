@@ -48,6 +48,11 @@ domicilio haya sido geocodificado o verificado en terreno.
 
 ## Actores y scopes
 
+El sobre sensible y acceso temporal de futuros couriers están propuestos en
+[ADR-0011](../decisions/0011-location-privacy-lifecycle.md), sin implementación ni
+grants nuevos. El harness #12 no recibe bearer de comercios ni acceso a su DB;
+solo usa fixtures artificiales y, con revisión explícita, POIs públicos.
+
 - `customer`: acceso a sus propios pedidos/enlaces de seguimiento válidos.
 - `merchant_owner`: configuración del Merchant y sucursales autorizadas.
 - `merchant_staff`: operaciones limitadas a Branch habilitada.

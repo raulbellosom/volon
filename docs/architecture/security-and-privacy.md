@@ -36,12 +36,11 @@ Pickup y snapshots requieren bearer y RLS actual; no se agregan a historial,
 listados, eventos ni enlaces públicos. Las lecturas de registros legacy devuelven
 texto null y fuente desconocida, sin intentar geocodificar datos antiguos.
 
-Propuesta técnica para revisión, **no plazo legal aprobado**: purgar información
-precisa de cotizaciones 24 h después de expirar; conservar domicilio/indicaciones
-de una Delivery como máximo 30 días tras su cierre operativo, salvo un motivo
-documentado y acceso restringido. Mantener solo hechos no personales necesarios
-para auditoría. Revisar avisos, finalidad, derechos, accesos de soporte, respaldos
-y acuerdos de tratamiento/licencias de proveedores antes de aprobar esos plazos.
+Los plazos de retención requieren una política aprobada por finalidad, evento y
+licencia; no hay duración predeterminada. El issue #12 reemplaza los ejemplos
+temporales anteriores por configuración obligatoria sin valores inventados.
+Diseño propuesto de sobre sensible, eliminación y recuperación en
+[ADR-0011](../decisions/0011-location-privacy-lifecycle.md), todavía sin migración.
 
 No existe todavía ejecución de esta retención. El trigger inmutable de Delivery
 impide redactar/borrar el JSON; antes de domicilios reales se necesita un diseño
