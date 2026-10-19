@@ -18,12 +18,19 @@ Ambos abren `http://127.0.0.1:5173`. Pruebas: `pnpm --filter @delivery/merchant-
 | `/acceso` | Inicio de sesión | `POST /auth/v1/token?grant_type=password` (Supabase Auth) |
 | `/` | Inicio de la sucursal: historial paginado («Cargar más»), acciones y consulta por folio | `GET /v1/me`, `GET /v1/deliveries?branchId=&limit=20&cursor=` |
 | `/sucursal` | Selección de sucursal (se omite si solo hay una) | `GET /v1/me` |
-| `/envios/nuevo` | Solicitud: origen → destino → cotización → confirmación | `POST /v1/delivery-quotes`, `POST /v1/deliveries` con `Idempotency-Key` |
-| `/envios/:deliveryId` | Estado del envío | `GET /v1/deliveries/{id}` |
+| `/envios/nuevo` | Solicitud: origen → destino → cotización → confirmación | `GET /v1/branches/{id}/pickup-location`, `POST /v1/delivery-quotes` (con `destination` sintético), `GET /v1/delivery-quotes/{id}/locations`, `POST /v1/deliveries` con `Idempotency-Key` |
+| `/envios/:deliveryId` | Estado del envío y ubicaciones guardadas | `GET /v1/deliveries/{id}`, `GET /v1/deliveries/{id}/locations` |
 | cualquier otra | Página no encontrada | — |
 
 ## Estados cubiertos
 Los montos indican su origen: «ficticios» en demo y «de prueba con ruta sintética, no son una tarifa comercial» con el backend local. Carga (skeleton), error con reintento, acceso denegado (403), sin sucursal, no encontrado, sesión vencida (401 → vuelve a `/acceso` con aviso), cotización vencida (cuenta regresiva o `409 QUOTE_EXPIRED`), sesión guardada que ya venció (aviso al volver a entrar), fuera de cobertura (`422`), servicio caído (`503`) y sin conexión (aviso global y confirmación deshabilitada). Los reintentos de confirmación reutilizan la misma `Idempotency-Key`, así que no duplican el envío.
+
+## Ubicaciones (issue #11)
+- La recogida se pide al servidor para la sucursal elegida; si falla, no se puede cotizar. No tiene dirección escrita y nunca se presenta como verificada.
+- La dirección y las indicaciones de prueba se normalizan a una línea, se cuentan por puntos de código (240 y 500), se validan con `parseDeliveryQuoteRequest` y viajan con la cotización como `destination` sintético y sin verificar.
+- Antes de confirmar se muestra lo que el servidor guardó con la cotización, no el formulario; sin ese snapshot no se puede confirmar. La confirmación solo envía `branchId`, `quoteId` y la llave de idempotencia.
+- Cambiar sucursal, dirección o indicaciones descarta la cotización; una respuesta tardía nunca la revive. Cada cotización tiene su propia llave y los reintentos la reutilizan.
+- El detalle del envío lee sus ubicaciones solo al abrirse; el historial no las incluye. Los registros anteriores (`legacy_input`) se muestran como «Registro anterior» sin dirección.
 
 ## Estructura
 - `src/api/`: puerto `MerchantApi`, adaptador HTTP y errores problem+json → `ApiError`. Las respuestas se validan con los parsers de `@delivery/contracts`. Las pantallas nunca llaman `fetch`.
@@ -36,7 +43,7 @@ Los montos indican su origen: «ficticios» en demo y «de prueba con ruta sint�
 ## Pendiente de backend o decisión
 | Falta | Efecto hoy |
 | --- | --- |
-| Geocodificación y ubicación de sucursales en `/v1/me` | La cotización usa coordenadas sintéticas de desarrollo; en un build de producción el paso queda bloqueado con un aviso. |
-| Dirección e indicaciones en el contrato de entrega | Se capturan y se muestran solo en la cotización, marcadas como «todavía no se guarda». La confirmación y el estado avisan que el sistema no las registra. |
+| Geocodificación, mapa y selección de punto (proveedor sin aprobar; ver [integración de ubicaciones](../../docs/operations/location-integration.md)) | La recogida viene del registro de la sucursal; el destino usa un punto sintético fijo de desarrollo. En un build de producción la cotización queda bloqueada con un aviso. |
+| Retención y borrado de domicilios reales ([ADR-0010](../../docs/decisions/0010-delivery-location-snapshots.md)) | Solo se admiten direcciones ficticias y la pantalla lo advierte. Todo se muestra como «Ubicación sin verificar». |
 | Estados posteriores a `requested`, asignación y seguimiento en vivo | La línea de tiempo marca «Solicitado» y lista los pasos siguientes como pendientes; no se finge seguimiento. |
 | Gateway del mismo origen o CORS, renovación de token y hosting | Solo funciona con el proxy de desarrollo. |
