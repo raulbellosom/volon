@@ -4,6 +4,8 @@
 
 `merchant-web` es el panel web de comercios (primer incremento, issue #10): acceso, sucursal, solicitud con cotización y estado del envío. Ver su [README](merchant-web/README.md) para iniciarla y para saber qué depende de APIs pendientes.
 
+`courier-mobile` es la app Expo de repartidores en modo demostración sintética (issue #15): turno, ofertas y etapas simuladas, sin servidor ni permisos. Ver su [README](courier-mobile/README.md), incluida la validación pendiente en teléfonos reales.
+
 Cuando iniciemos implementación, se crearán solo las apps activas por fase: marketing, customer-web, merchant-web, courier-mobile, admin-web, api y worker. customer-mobile queda diferida hasta validar demanda.
 
 No utilizar la carpeta como señal de que una app ya existe, se compila o está desplegada.

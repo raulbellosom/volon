@@ -29,6 +29,11 @@ jobs:
         run: pnpm run gallery:build
       - name: Build merchant web (production bundle without demo fixtures)
         run: pnpm run merchant:build
+      - name: Export courier mobile demo bundles (Android Hermes + web, no device)
+        run: pnpm run courier:export
+        env:
+          CI: 'true'
+          EXPO_NO_TELEMETRY: '1'
   backend-integration:
     needs: quality
     runs-on: ubuntu-latest

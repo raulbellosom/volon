@@ -17,6 +17,7 @@ Los ADR registran **propuestas** y aceptación explícita. Estado inicial de tod
   — compatible con JSON existente; no adopta proveedor ni autoriza domicilios reales.
 
 - [ADR-0011 — Ciclo de vida de ubicaciones personales](0011-location-privacy-lifecycle.md)
+- [ADR-0012 — courier-mobile con Expo SDK 57](0012-courier-mobile-stack.md) — demo sintética headless: React Navigation, jest-expo y `expo export`; ADR-0003 sigue condicionada a teléfonos reales.
   — propuesta, sin plazos aprobados ni borrado productivo.
 
 ## Plantilla de nuevas decisiones
