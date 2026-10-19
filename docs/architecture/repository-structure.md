@@ -8,7 +8,7 @@ El repositorio GitHub se llama actualmente volon, pero el código no debería us
     apps/
       marketing/          # Astro; captación y contenido
       customer-web/       # React/Next.js; PWA y pedidos
-      merchant-web/       # React/Next.js; comercio y sucursales
+      merchant-web/       # React + Vite (ADR-0009); comercio y sucursales — primer incremento iniciado
       courier-mobile/     # React Native/Expo; GPS y entregas
       admin-web/          # Operaciones, soporte y supervisión
       api/                # Backend modular

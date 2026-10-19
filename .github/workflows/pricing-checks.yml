@@ -25,6 +25,8 @@ jobs:
         run: pnpm run check
       - name: Build Volon UI gallery (Storybook)
         run: pnpm run gallery:build
+      - name: Build merchant web (production bundle without demo fixtures)
+        run: pnpm run merchant:build
   backend-integration:
     needs: quality
     runs-on: ubuntu-latest

@@ -11,6 +11,7 @@ Los ADR registran **propuestas** y aceptación explícita. Estado inicial de tod
 - [ADR-0006 — Contratos primero y autoridad del backend](0006-contract-first.md)
 - [ADR-0007 — Backend local reproducible](0007-local-backend.md) — aceptado exclusivamente para desarrollo sintético por instrucción del usuario.
 - [ADR-0008 — Stack de Volon UI web](0008-ui-web-stack.md) — React Aria Components, Tailwind 4 y Storybook; ajusta la elección candidata de ADR-0005.
+- [ADR-0009 — merchant-web con Vite y React Router](0009-merchant-web-stack.md) — SPA autenticada; proxy local y modo demostración solo en desarrollo.
 
 ## Plantilla de nuevas decisiones
 Título, fecha, estado, contexto, motivación, alternativas, decisión, consecuencias, pruebas pendientes, reversibilidad y enlaces. Estados recomendados: Propuesta, Aceptada, Sustituida, Rechazada.
