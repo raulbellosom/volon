@@ -67,6 +67,7 @@ export { THEME_STORAGE_KEY, themeInitScript, type ResolvedTheme, type ThemePrefe
 
 export { Timeline, type TimelineEvent, type TimelineProps, type TimelineState } from './components/logistics/Timeline.tsx';
 export { PriceBreakdown, type PriceBreakdownProps, type PriceLine } from './components/logistics/PriceBreakdown.tsx';
+export { DeliveryList, DeliveryListItem, type DeliveryListItemProps, type DeliveryListProps } from './components/logistics/DeliveryList.tsx';
 export { RouteSummary, type RouteStop, type RouteSummaryProps } from './components/logistics/RouteSummary.tsx';
 export { ConnectionStatus, type ConnectionState, type ConnectionStatusProps } from './components/logistics/ConnectionStatus.tsx';
 export { formatDistance, formatDuration, formatMXN } from './utils/format.ts';

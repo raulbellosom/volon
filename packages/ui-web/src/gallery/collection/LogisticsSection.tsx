@@ -1,3 +1,4 @@
+import { DeliveryList, DeliveryListItem } from '../../components/logistics/DeliveryList.tsx';
 import { ConnectionStatus } from '../../components/logistics/ConnectionStatus.tsx';
 import { PriceBreakdown } from '../../components/logistics/PriceBreakdown.tsx';
 import { RouteSummary } from '../../components/logistics/RouteSummary.tsx';
@@ -52,6 +53,12 @@ export function LogisticsSection() {
           </div>
         </Specimen>
       </SpecimenGrid>
+      <Specimen title="DeliveryList" storyId="logística-deliverylist--history" note="Folios y montos de ejemplo">
+        <DeliveryList aria-label="Envíos de Sucursal Centro">
+          <DeliveryListItem href="#envio-1" title="18 oct 2026, 2:05 p.m." reference="35855628-1965-4f53-9743-2cd76a27a6bf" status="requested" statusLabel="Solicitado" amountMinor={6150} />
+          <DeliveryListItem href="#envio-2" title="17 oct 2026, 7:12 p.m." reference="PV-1042" status="delivered" amountMinor={3500} />
+        </DeliveryList>
+      </Specimen>
     </ShowroomSection>
   );
 }

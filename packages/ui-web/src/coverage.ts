@@ -101,6 +101,7 @@ export const coverage: readonly ComponentCoverage[] = [
   tested('Logo', 'Marca', { source: 'brand/Logo.tsx', tests: ['brand/Logo.test.tsx'], renders: ['Logo'], notes: 'PNG oficiales; SVG pendiente de diseño.' }),
   tested('Timeline', 'Logística', { source: 'logistics/Timeline.tsx', tests: ['logistics/Logistics.test.tsx'], renders: ['Timeline'], notes: 'Presentacional; los estados vienen del servidor.' }),
   tested('PriceBreakdown', 'Logística', { source: 'logistics/PriceBreakdown.tsx', tests: ['logistics/Logistics.test.tsx'], renders: ['PriceBreakdown'], notes: 'Muestra el total del servidor; no suma montos.' }),
+  tested('DeliveryList', 'Logística', { source: 'logistics/DeliveryList.tsx', tests: ['logistics/DeliveryList.test.tsx'], renders: ['DeliveryList'], notes: 'Historial enlazado; montos del servidor, sin estados inventados.' }),
   tested('RouteSummary', 'Logística', { source: 'logistics/RouteSummary.tsx', tests: ['logistics/Logistics.test.tsx'], renders: ['RouteSummary'], notes: 'Sin ETA inventada.' }),
   tested('ConnectionStatus', 'Logística', { source: 'logistics/ConnectionStatus.tsx', tests: ['logistics/Logistics.test.tsx'], renders: ['ConnectionStatus'], notes: 'Frescura GPS/realtime (RF-016).' }),
 ];
