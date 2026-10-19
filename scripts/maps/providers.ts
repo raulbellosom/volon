@@ -54,6 +54,7 @@ function buildRequest(provider: Provider, key: string, operation: Operation): { 
       url.searchParams.set('waypoints', `${operation.origin.lat},${operation.origin.lng}|${operation.destination.lat},${operation.destination.lng}`);
       url.searchParams.set('mode', operation.mode === 'motorcycle' ? 'motorcycle' : 'drive');
       url.searchParams.set('format', 'geojson');
+      url.searchParams.set('units', 'metric');
     } else {
       url.searchParams.set('text', operation.query);
       url.searchParams.set('filter', 'countrycode:mx');

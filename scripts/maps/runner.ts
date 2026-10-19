@@ -33,8 +33,9 @@ export function validateCases(cases: readonly EvaluationCase[]): void {
     if (!/^[a-z0-9_-]{1,64}$/.test(item.id) || ids.has(item.id)) throw new Error('Invalid evaluation case id');
     ids.add(item.id);
     validateOperation(item.operation);
-    if (item.reference && (!validPoint(item.reference.point) || !Number.isFinite(item.reference.toleranceMeters)
-      || item.reference.toleranceMeters <= 0 || item.reference.toleranceMeters > 1000)) throw new Error('Invalid evaluation reference');
+    if (item.reference && (!validPoint(item.reference.point) || (item.reference.toleranceMeters !== null
+      && (!Number.isFinite(item.reference.toleranceMeters) || item.reference.toleranceMeters <= 0
+        || item.reference.toleranceMeters > 1000)))) throw new Error('Invalid evaluation reference');
     if (item.reference?.requiredGranularity !== undefined
       && !['address', 'street', 'area', 'unknown'].includes(item.reference.requiredGranularity)) throw new Error('Invalid granularity');
     if (item.reference?.houseNumber !== undefined && (typeof item.reference.houseNumber !== 'string'
@@ -63,8 +64,9 @@ export async function evaluate(adapter: EvaluationAdapter, cases: readonly Evalu
       else {
         const candidates = result.kind === 'search' ? result.candidates : [];
         const reference = item.reference;
-        const matches = reference ? candidates.map((candidate) => candidate.point !== null
-          && referenceDistance(candidate.point, reference.point) <= reference.toleranceMeters
+        const tolerance = reference?.toleranceMeters;
+        const matches = reference && tolerance !== null && tolerance !== undefined ? candidates.map((candidate) => candidate.point !== null
+          && referenceDistance(candidate.point, reference.point) <= tolerance
           && (!reference.requiredGranularity || reference.requiredGranularity === candidate.granularity)
           && (!reference.houseNumber || reference.houseNumber.trim().toUpperCase() === candidate.houseNumber)) : null;
         // Unlocated predictions (e.g. Google) cannot be scored as misses.
@@ -90,6 +92,8 @@ export async function evaluate(adapter: EvaluationAdapter, cases: readonly Evalu
   const latencies = supported.map((item) => item.latencyMs).sort((a, b) => a - b);
   const percentile = (p: number) => latencies[Math.max(0, Math.ceil(latencies.length * p) - 1)] ?? null;
   const errors: Partial<Record<FailureCode, number>> = {};
+  const searches = metrics.filter((item) => item.candidateCount !== undefined);
+  const ambiguous = searches.filter((item) => (item.candidateCount ?? 0) > 1).length;
   for (const item of metrics) {
     if (!['ok', 'empty', 'unsupported'].includes(item.status)) {
       const code = item.status as FailureCode;
@@ -101,7 +105,9 @@ export async function evaluate(adapter: EvaluationAdapter, cases: readonly Evalu
   summary: { cases: metrics.length, supported: supported.length,
     attempts: metrics.reduce((sum, item) => sum + item.attempts, 0),
     technicalSuccesses: supported.filter((item) => ['ok', 'empty'].includes(item.status)).length,
-    ambiguous: metrics.filter((item) => (item.candidateCount ?? 0) > 1).length,
+    ambiguous, searchResponses: searches.length,
+    ambiguityPercent: searches.length ? 100 * ambiguous / searches.length : null,
+    emptyResponses: searches.filter((item) => item.status === 'empty').length,
     scored: metrics.filter((item) => item.top1Match !== undefined).length,
     top1Matches: metrics.filter((item) => item.top1Match === true).length,
     topKMatches: metrics.filter((item) => item.topKMatch === true).length,

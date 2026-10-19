@@ -28,17 +28,22 @@ export function readRealConfiguration(env: Readonly<Record<string, string | unde
   if (!key?.trim() || !Number.isSafeInteger(maximum) || maximum < 1 || maximum > 1000) denied();
   let manifest: unknown;
   try { manifest = JSON.parse(manifestBytes); } catch { return denied(); }
-  if (!isRecord(manifest) || manifest.publicNonResidential !== true || manifest.accessPointsReviewed !== true
+  if (!isRecord(manifest) || manifest.publicNonResidential !== true
     || typeof manifest.approvalReference !== 'string' || !/^[A-Za-z0-9_/#.-]{1,128}$/.test(manifest.approvalReference)
     || !Array.isArray(manifest.cases)) denied();
+  const observationalManifest = manifest.schemaVersion === 2;
+  if (manifest.schemaVersion !== undefined && !observationalManifest) denied();
+  if (observationalManifest ? manifest.searchReferencesReviewed !== true : manifest.accessPointsReviewed !== true) denied();
   const cases: EvaluationCase[] = manifest.cases.map((item: unknown) => {
     if (!isRecord(item) || typeof item.id !== 'string' || !Array.isArray(item.sources) || !item.sources.length
       || !item.sources.every((source: unknown) => typeof source === 'string' && /^https:\/\//.test(source))) denied();
     const operation = parseOperation(item.operation);
+    if (operation.kind === 'route' && manifest.accessPointsReviewed !== true) denied();
     let reference: EvaluationCase['reference'];
     if (item.reference !== undefined) {
       if (!isRecord(item.reference) || !validPoint(item.reference.point)
-        || typeof item.reference.toleranceMeters !== 'number') denied();
+        || (typeof item.reference.toleranceMeters !== 'number'
+          && !(observationalManifest && item.reference.toleranceMeters === null))) denied();
       const granularity = item.reference.requiredGranularity;
       if (granularity !== undefined && granularity !== 'address' && granularity !== 'street' && granularity !== 'area') denied();
       if (item.reference.houseNumber !== undefined && typeof item.reference.houseNumber !== 'string') denied();
@@ -47,7 +52,10 @@ export function readRealConfiguration(env: Readonly<Record<string, string | unde
         ...(typeof item.reference.houseNumber === 'string' ? { houseNumber: item.reference.houseNumber } : {}) };
     }
     if (item.expectEmpty !== undefined && typeof item.expectEmpty !== 'boolean') denied();
-    if (operation.kind !== 'route' && !reference && item.expectEmpty !== true) denied();
+    if (item.observationalOnly !== undefined && typeof item.observationalOnly !== 'boolean') denied();
+    if (item.observationalOnly === true && reference && reference.toleranceMeters !== null) denied();
+    if (operation.kind !== 'route' && (!reference || reference.toleranceMeters === null) && item.expectEmpty !== true
+      && !(observationalManifest && item.observationalOnly === true)) denied();
     return { id: item.id, operation, ...(reference ? { reference } : {}),
       ...(typeof item.expectEmpty === 'boolean' ? { expectEmpty: item.expectEmpty } : {}) };
   });

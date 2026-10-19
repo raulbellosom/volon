@@ -7,6 +7,7 @@ function googleError(body: Record<string, unknown>): void {
   if (!Object.hasOwn(body, 'error')) return;
   const error = record(body.error);
   throw new EvaluationFailure(error.code === 429 || error.status === 'RESOURCE_EXHAUSTED' ? 'quota'
+    : error.code === 503 || error.status === 'UNAVAILABLE' ? 'unavailable'
     : error.code === 401 || error.code === 403 || error.status === 'PERMISSION_DENIED' ? 'auth' : 'invalid_response');
 }
 function point(lat: unknown, lng: unknown) {
@@ -36,7 +37,8 @@ export function parseSearch(provider: Provider, value: unknown, autocomplete: bo
     } else {
       if (body.status === 'ZERO_RESULTS') return { kind: 'search', candidates: [] };
       if (body.status !== 'OK') {
-        throw new EvaluationFailure(body.status === 'OVER_QUERY_LIMIT' ? 'quota'
+        throw new EvaluationFailure(['OVER_QUERY_LIMIT', 'OVER_DAILY_LIMIT'].includes(String(body.status)) ? 'quota'
+          : body.status === 'UNKNOWN_ERROR' ? 'unavailable'
           : body.status === 'REQUEST_DENIED' ? 'auth' : 'invalid_response');
       }
       candidates = rows(body.results).map((row) => {
@@ -78,6 +80,7 @@ export function parseRoute(provider: Provider, value: unknown): EvaluationResult
     const features = rows(body.features);
     if (!features.length) return { kind: 'empty' };
     const properties = record(record(features[0]).properties);
+    if (properties.distance_units !== undefined && properties.distance_units !== 'Meters') invalid();
     distance = properties.distance;
     duration = properties.time;
   } else {
@@ -89,8 +92,10 @@ export function parseRoute(provider: Provider, value: unknown): EvaluationResult
     if (!routes.length) return { kind: 'empty' };
     const route = record(routes[0]);
     distance = provider === 'google' ? route.distanceMeters : route.distance;
-    duration = provider === 'google' && typeof route.duration === 'string' && /^\d+(\.\d+)?s$/.test(route.duration)
-      ? Number(route.duration.slice(0, -1)) : route.duration;
+    if (provider === 'google') {
+      if (typeof route.duration !== 'string' || !/^\d+(\.\d+)?s$/.test(route.duration)) invalid();
+      duration = Number(route.duration.slice(0, -1));
+    } else duration = route.duration;
   }
   if (typeof distance !== 'number' || typeof duration !== 'number' || !Number.isFinite(distance)
     || !Number.isFinite(duration) || distance < 0 || duration < 0

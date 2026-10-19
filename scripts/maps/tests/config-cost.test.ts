@@ -53,3 +53,21 @@ test('costs: full-session assumptions, tiles counted once, moto limitation, requ
   assert.throws(() => estimateCost('google', { ...single, routes: -1 }));
   assert.throws(() => estimateCost('google', { ...single, monthlyDeliveries: 0 }));
 });
+
+test('v2 real gate: explicitly reviewed observational searches do not approve routes or numeric accuracy', () => {
+  const search = { id: 'public-search', sources: ['https://synthetic.invalid/reference'],
+    operation: { kind: 'geocode', query: 'synthetic' }, observationalOnly: true,
+    reference: { point: { lat: 0, lng: 0 }, toleranceMeters: null } };
+  const proposal = { schemaVersion: 2, publicNonResidential: true, searchReferencesReviewed: true,
+    approvalReference: 'synthetic-test-approval', accessPointsReviewed: false, cases: [search] };
+  const config = (value: unknown) => {
+    const bytes = JSON.stringify(value);
+    return readRealConfiguration({ ...env, MAP_EVAL_DATASET_SHA256: createHash('sha256').update(bytes).digest('hex') }, bytes);
+  };
+  assert.equal(config(proposal).cases[0]?.reference?.toleranceMeters, null);
+  assert.throws(() => config({ ...proposal, searchReferencesReviewed: false }));
+  assert.throws(() => config({ ...proposal, cases: [{ ...search, observationalOnly: false }] }));
+  assert.throws(() => config({ ...proposal, schemaVersion: undefined }));
+  assert.throws(() => config({ ...proposal, cases: [{ ...search, operation: { kind: 'route',
+    origin: { lat: 0, lng: 0 }, destination: { lat: 1, lng: 1 }, mode: 'motorcycle' } }] }));
+});

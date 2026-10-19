@@ -36,7 +36,7 @@ export class EvaluationFailure extends Error {
 export interface EvaluationCase {
   readonly id: string;
   readonly operation: Operation;
-  readonly reference?: { readonly point: QuotePoint; readonly toleranceMeters: number;
+  readonly reference?: { readonly point: QuotePoint; readonly toleranceMeters: number | null;
     readonly requiredGranularity?: Candidate['granularity']; readonly houseNumber?: string };
   readonly expectEmpty?: boolean;
 }
