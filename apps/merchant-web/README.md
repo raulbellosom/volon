@@ -16,7 +16,7 @@ Ambos abren `http://127.0.0.1:5173`. Pruebas: `pnpm --filter @delivery/merchant-
 | Ruta | Pantalla | Endpoint |
 | --- | --- | --- |
 | `/acceso` | Inicio de sesión | `POST /auth/v1/token?grant_type=password` (Supabase Auth) |
-| `/` | Inicio de la sucursal: acciones, estado vacío y consulta por folio | `GET /v1/me` |
+| `/` | Inicio de la sucursal: historial paginado («Cargar más»), acciones y consulta por folio | `GET /v1/me`, `GET /v1/deliveries?branchId=&limit=20&cursor=` |
 | `/sucursal` | Selección de sucursal (se omite si solo hay una) | `GET /v1/me` |
 | `/envios/nuevo` | Solicitud: origen → destino → cotización → confirmación | `POST /v1/delivery-quotes`, `POST /v1/deliveries` con `Idempotency-Key` |
 | `/envios/:deliveryId` | Estado del envío | `GET /v1/deliveries/{id}` |
@@ -29,13 +29,13 @@ Los montos indican su origen: «ficticios» en demo y «de prueba con ruta sint�
 - `src/api/`: puerto `MerchantApi`, adaptador HTTP y errores problem+json → `ApiError`. Las respuestas se validan con los parsers de `@delivery/contracts`. Las pantallas nunca llaman `fetch`.
 - `src/demo/`: adaptador en memoria y fixtures, cargado solo con `--mode demo` en desarrollo.
 - `src/session/` y `src/workspace/`: sesión (token en `sessionStorage`) y sucursal activa.
+- Historial (`src/features/home/`): solo pide la sucursal activa y se monta con una llave por usuario y sucursal, así que cambiar cualquiera de los dos lo vacía. Las respuestas tardías de una consulta anterior se descartan, los envíos repetidos entre páginas se omiten y una página con envíos de otra sucursal se rechaza. Se recarga al volver al inicio, por ejemplo después de crear un envío.
 - `src/features/`: una carpeta por pantalla; `src/shared/`: estados de carga/error y hooks.
-- La UI sale de `@delivery/ui-web`: Navbar, ThemeToggle, Menu, TextField, PasswordField, RadioGroup/RadioCard, Stepper, RouteSummary, PriceBreakdown, Timeline, DescriptionList, StatusBadge, Alert, EmptyState, Skeleton, ConnectionStatus, Card, IconChip, Logo, Button y LinkButton. La app no define controles propios.
+- La UI sale de `@delivery/ui-web`: Navbar, ThemeToggle, Menu, TextField, PasswordField, RadioGroup/RadioCard, Stepper, RouteSummary, PriceBreakdown, Timeline, DeliveryList/DeliveryListItem, DescriptionList, StatusBadge, Alert, EmptyState, Skeleton, ConnectionStatus, Card, IconChip, Logo, Button y LinkButton. La app no define controles propios.
 
 ## Pendiente de backend o decisión
 | Falta | Efecto hoy |
 | --- | --- |
-| Listado de envíos por sucursal (`GET /v1/deliveries?branchId=`, #9; hoy responde 405) | «Envíos recientes» muestra un estado vacío y la consulta por folio. No se simula con datos falsos. |
 | Geocodificación y ubicación de sucursales en `/v1/me` | La cotización usa coordenadas sintéticas de desarrollo; en un build de producción el paso queda bloqueado con un aviso. |
 | Dirección e indicaciones en el contrato de entrega | Se capturan y se muestran solo en la cotización, marcadas como «todavía no se guarda». La confirmación y el estado avisan que el sistema no las registra. |
 | Estados posteriores a `requested`, asignación y seguimiento en vivo | La línea de tiempo marca «Solicitado» y lista los pasos siguientes como pendientes; no se finge seguimiento. |
