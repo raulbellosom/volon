@@ -1,5 +1,5 @@
 {
-  "status": "reference-only-not-approved-for-routing",
+  "status": "proposal-only-not-approved",
   "reviewedOn": "2026-10-18",
   "accessPointsReviewed": false,
   "note": "Referentes de POIs públicos; no son accesos de motocicleta ni verdades de terreno. Tolerancias pendientes de revisión humana. No es un manifiesto real aprobado.",
@@ -8,57 +8,479 @@
       "id": "pvr-airport",
       "name": "Aeropuerto Internacional de Puerto Vallarta",
       "address": "Km. 7.5 Carretera a Tepic, Puerto Vallarta, Jalisco, C.P. 48311",
-      "referencePoint": { "lat": 20.68, "lng": -105.25416666667 },
+      "referencePoint": {
+        "lat": 20.68,
+        "lng": -105.25416666667
+      },
       "coordinateRole": "airport-reference-not-terminal-access",
       "accessToleranceMeters": null,
       "coordinateLicense": "Wikidata structured data CC0",
       "coordinateSource": "https://www.wikidata.org/w/index.php?title=Q2666312&oldid=2553274561",
       "coordinateStatement": "P625",
       "addressSource": "https://aeropuertosgap.com.mx/es/puerto-vallarta-3/109-contacto-puerto-vallarta.html",
-      "independentCoordinateSource": "https://www.aeropuertosgap.com.mx/es/puerto-vallarta-3/108-puerto-vallarta.html"
+      "independentCoordinateSource": "https://www.aeropuertosgap.com.mx/es/puerto-vallarta-3/108-puerto-vallarta.html",
+      "zone": "airport",
+      "accuracyMeters": null,
+      "sourcePrecisionDegrees": null,
+      "toleranceRationale": "Sin exactitud independiente ni revisión humana: no proponer radio numérico.",
+      "supportedOperations": [
+        "geocode",
+        "autocomplete"
+      ],
+      "vehicleAccessReviewed": false,
+      "limitations": "Referencia documental; no acredita acceso vehicular ni número exterior coincidente."
     },
     {
       "id": "los-muertos-pier",
       "name": "Muelle de Los Muertos, Puerto Vallarta",
       "address": null,
-      "referencePoint": { "lat": 20.600555555555555, "lng": -105.23944444444444 },
+      "referencePoint": {
+        "lat": 20.600555555555555,
+        "lng": -105.23944444444444
+      },
       "coordinateRole": "pier-structure-not-street-access",
       "accessToleranceMeters": null,
       "coordinateLicense": "Wikidata structured data CC0",
       "coordinateSource": "https://www.wikidata.org/w/index.php?title=Q109292413&oldid=1902172606",
       "coordinateStatement": "P625",
-      "addressSource": null
+      "addressSource": null,
+      "zone": "zona-romantica",
+      "accuracyMeters": null,
+      "sourcePrecisionDegrees": null,
+      "toleranceRationale": "Sin exactitud independiente ni revisión humana: no proponer radio numérico.",
+      "supportedOperations": [
+        "geocode",
+        "autocomplete"
+      ],
+      "vehicleAccessReviewed": false,
+      "limitations": "Referencia documental; no acredita acceso vehicular ni número exterior coincidente."
     },
     {
       "id": "naval-museum",
       "name": "Museo Histórico Naval de Puerto Vallarta",
       "address": "Zaragoza 4, Centro, C.P. 48300, Puerto Vallarta, Jalisco",
-      "referencePoint": { "lat": 20.608534, "lng": -105.236349 },
+      "referencePoint": {
+        "lat": 20.608534,
+        "lng": -105.236349
+      },
       "coordinateRole": "catalog-geocoordinate-not-surveyed-access",
       "accessToleranceMeters": null,
       "coordinateLicense": "Revisar condiciones de reutilización del catálogo SIC antes de redistribución ampliada",
       "coordinateSource": "https://sic.cultura.gob.mx/ficha.php?table=museo&table_id=1256",
       "coordinateStatement": "JSON-LD geo.latitude/geo.longitude de la ficha pública; no extraído de respuesta de Google Maps",
-      "addressSource": "https://sic.cultura.gob.mx/ficha.php?table=museo&table_id=1256"
+      "addressSource": "https://sic.cultura.gob.mx/ficha.php?table=museo&table_id=1256",
+      "zone": "centro",
+      "accuracyMeters": null,
+      "sourcePrecisionDegrees": null,
+      "toleranceRationale": "Sin exactitud independiente ni revisión humana: no proponer radio numérico.",
+      "supportedOperations": [
+        "geocode",
+        "autocomplete"
+      ],
+      "vehicleAccessReviewed": false,
+      "limitations": "Referencia documental; no acredita acceso vehicular ni número exterior coincidente."
+    },
+    {
+      "id": "los-mangos-library",
+      "name": "Biblioteca Los Mangos",
+      "zone": "los-mangos",
+      "address": "Av. Francisco Villa 1001, Fracc. Los Mangos, C.P. 48310, Puerto Vallarta, Jalisco",
+      "referencePoint": {
+        "lat": 20.637943,
+        "lng": -105.222742
+      },
+      "coordinateRole": "catalog-geocoordinate-not-surveyed-access",
+      "coordinateSource": "https://sic.cultura.gob.mx/ficha.php?table=rnbp&table_id=80734",
+      "coordinateStatement": "JSON-LD geo de SIC; ficha modificada 2022-01-07; catálogo independiente de proveedores evaluados.",
+      "coordinateLicense": "Condiciones de reutilización SIC pendientes de revisión",
+      "addressSource": "https://sic.cultura.gob.mx/ficha.php?table=rnbp&table_id=80734",
+      "sourcePrecisionDegrees": null,
+      "accessToleranceMeters": null,
+      "accuracyMeters": null,
+      "vehicleAccessReviewed": false,
+      "supportedOperations": [
+        "geocode",
+        "autocomplete"
+      ],
+      "toleranceRationale": "Sin exactitud independiente ni revisión humana: no proponer radio numérico.",
+      "limitations": "Referencia documental no levantada; no demuestra acceso público para motocicleta."
+    },
+    {
+      "id": "cuc-campus",
+      "name": "Centro Universitario de la Costa",
+      "zone": "ixtapa",
+      "address": "Av. Universidad 203, Ixtapa, C.P. 48280, Puerto Vallarta, Jalisco",
+      "referencePoint": {
+        "lat": 20.70491,
+        "lng": -105.22178
+      },
+      "coordinateRole": "campus-reference-not-vehicle-gate",
+      "coordinateSource": "https://www.wikidata.org/w/index.php?title=Q123487905&oldid=2525596205",
+      "coordinateStatement": "P625 sin referencias de levantamiento; precisión declarada 0.00001 grados, no exactitud.",
+      "coordinateLicense": "CC0 (Wikidata structured data)",
+      "addressSource": "https://cuc.udg.mx/en/location",
+      "sourcePrecisionDegrees": 1e-05,
+      "accessToleranceMeters": null,
+      "accuracyMeters": null,
+      "vehicleAccessReviewed": false,
+      "supportedOperations": [
+        "geocode",
+        "autocomplete"
+      ],
+      "toleranceRationale": "Sin exactitud independiente ni revisión humana: no proponer radio numérico.",
+      "limitations": "Referencia documental no levantada; no demuestra acceso público para motocicleta."
+    },
+    {
+      "id": "marina-vallarta",
+      "name": "Marina Vallarta",
+      "zone": "marina-vallarta",
+      "address": null,
+      "referencePoint": {
+        "lat": 20.664,
+        "lng": -105.2531
+      },
+      "coordinateRole": "district-reference-not-poi-or-vehicle-access",
+      "coordinateSource": "https://www.wikidata.org/w/index.php?title=Q133054932&oldid=2371659525",
+      "coordinateStatement": "P625 del desarrollo; no ubica entrada, faro ni negocio específico.",
+      "coordinateLicense": "CC0 (Wikidata structured data)",
+      "addressSource": null,
+      "sourcePrecisionDegrees": 0.0001,
+      "accessToleranceMeters": null,
+      "accuracyMeters": null,
+      "vehicleAccessReviewed": false,
+      "supportedOperations": [
+        "geocode",
+        "autocomplete"
+      ],
+      "toleranceRationale": "Sin exactitud independiente ni revisión humana: no proponer radio numérico.",
+      "limitations": "Referencia documental no levantada; no demuestra acceso público para motocicleta."
     }
   ],
   "queryProposals": [
-    { "id": "airport-name", "kind": "geocode", "poi": "pvr-airport", "query": "Aeropuerto Internacional de Puerto Vallarta", "category": "poi-name" },
-    { "id": "airport-address", "kind": "geocode", "poi": "pvr-airport", "query": "Km. 7.5 Carretera a Tepic, Puerto Vallarta, Jalisco, C.P. 48311", "category": "complete-address-kilometer" },
-    { "id": "museum-address", "kind": "geocode", "poi": "naval-museum", "query": "Zaragoza 4, Centro, C.P. 48300, Puerto Vallarta, Jalisco", "category": "street-number-neighborhood" },
-    { "id": "museum-no-accent", "kind": "geocode", "poi": "naval-museum", "query": "Museo Historico Naval de Puerto Vallarta", "category": "poi-name-no-accent" },
-    { "id": "museum-street", "kind": "geocode", "poi": "naval-museum", "query": "Zaragoza, Puerto Vallarta, Jalisco", "category": "street-without-number" },
-    { "id": "museum-neighborhood", "kind": "geocode", "poi": "naval-museum", "query": "Centro, Puerto Vallarta, Jalisco", "category": "neighborhood-not-exact-address" },
-    { "id": "ambiguous-street", "kind": "geocode", "poi": null, "query": "Zaragoza", "category": "ambiguous-no-location-context" },
-    { "id": "pier-name", "kind": "geocode", "poi": "los-muertos-pier", "query": "Muelle de Los Muertos, Puerto Vallarta", "category": "poi-name" },
-    { "id": "museum-prefix", "kind": "autocomplete", "poi": "naval-museum", "query": "Zaragoza 4, Puerto V", "category": "address-prefix" },
-    { "id": "airport-prefix", "kind": "autocomplete", "poi": "pvr-airport", "query": "Carretera a Tepic, Puerto V", "category": "address-prefix" },
-    { "id": "artificial-nonexistent", "kind": "geocode", "poi": null, "query": "POI SINTETICO INEXISTENTE EVAL-0000, Puerto Vallarta", "category": "artificial-negative-expectation-needs-review" }
+    {
+      "id": "airport-name",
+      "kind": "geocode",
+      "poi": "pvr-airport",
+      "query": "Aeropuerto Internacional de Puerto Vallarta",
+      "category": "poi-name",
+      "measurement": "descriptive-only-no-approved-tolerance",
+      "mapboxCapability": "unsupported-poi-name",
+      "expectEmpty": null
+    },
+    {
+      "id": "airport-address",
+      "kind": "geocode",
+      "poi": "pvr-airport",
+      "query": "Km. 7.5 Carretera a Tepic, Puerto Vallarta, Jalisco, C.P. 48311",
+      "category": "complete-address-kilometer",
+      "measurement": "descriptive-only-no-approved-tolerance",
+      "mapboxCapability": "address-or-area-search",
+      "expectEmpty": null
+    },
+    {
+      "id": "museum-address",
+      "kind": "geocode",
+      "poi": "naval-museum",
+      "query": "Zaragoza 4, Centro, C.P. 48300, Puerto Vallarta, Jalisco",
+      "category": "street-number-neighborhood",
+      "measurement": "descriptive-only-no-approved-tolerance",
+      "mapboxCapability": "address-or-area-search",
+      "expectEmpty": null
+    },
+    {
+      "id": "museum-no-accent",
+      "kind": "geocode",
+      "poi": "naval-museum",
+      "query": "Museo Historico Naval de Puerto Vallarta",
+      "category": "poi-name-no-accent",
+      "measurement": "descriptive-only-no-approved-tolerance",
+      "mapboxCapability": "unsupported-poi-name",
+      "expectEmpty": null
+    },
+    {
+      "id": "museum-street",
+      "kind": "geocode",
+      "poi": "naval-museum",
+      "query": "Zaragoza, Puerto Vallarta, Jalisco",
+      "category": "street-without-number",
+      "measurement": "descriptive-only-no-approved-tolerance",
+      "mapboxCapability": "address-or-area-search",
+      "expectEmpty": null
+    },
+    {
+      "id": "museum-neighborhood",
+      "kind": "geocode",
+      "poi": "naval-museum",
+      "query": "Centro, Puerto Vallarta, Jalisco",
+      "category": "neighborhood-not-exact-address",
+      "measurement": "descriptive-only-no-approved-tolerance",
+      "mapboxCapability": "address-or-area-search",
+      "expectEmpty": null
+    },
+    {
+      "id": "ambiguous-street",
+      "kind": "geocode",
+      "poi": null,
+      "query": "Zaragoza",
+      "category": "ambiguous-no-location-context",
+      "measurement": "descriptive-only-no-approved-tolerance",
+      "mapboxCapability": "address-or-area-search",
+      "expectEmpty": null
+    },
+    {
+      "id": "pier-name",
+      "kind": "geocode",
+      "poi": "los-muertos-pier",
+      "query": "Muelle de Los Muertos, Puerto Vallarta",
+      "category": "poi-name",
+      "measurement": "descriptive-only-no-approved-tolerance",
+      "mapboxCapability": "unsupported-poi-name",
+      "expectEmpty": null
+    },
+    {
+      "id": "museum-prefix",
+      "kind": "autocomplete",
+      "poi": "naval-museum",
+      "query": "Zaragoza 4, Puerto V",
+      "category": "address-prefix",
+      "measurement": "descriptive-only-no-approved-tolerance",
+      "mapboxCapability": "address-or-area-search",
+      "expectEmpty": null
+    },
+    {
+      "id": "airport-prefix",
+      "kind": "autocomplete",
+      "poi": "pvr-airport",
+      "query": "Carretera a Tepic, Puerto V",
+      "category": "address-prefix",
+      "measurement": "descriptive-only-no-approved-tolerance",
+      "mapboxCapability": "address-or-area-search",
+      "expectEmpty": null
+    },
+    {
+      "id": "artificial-nonexistent",
+      "kind": "geocode",
+      "poi": null,
+      "query": "POI SINTETICO INEXISTENTE EVAL-0000, Puerto Vallarta",
+      "category": "artificial-negative-expectation-needs-review",
+      "measurement": "descriptive-only-no-approved-tolerance",
+      "mapboxCapability": "address-or-area-search",
+      "expectEmpty": null
+    },
+    {
+      "id": "museum-abbreviated",
+      "kind": "geocode",
+      "poi": "naval-museum",
+      "query": "Zaragoza 4, Col. Centro, CP 48300, Pto. Vallarta, Jal.",
+      "category": "address-abbreviations",
+      "measurement": "descriptive-only-no-approved-tolerance",
+      "mapboxCapability": "address-or-area-search",
+      "expectEmpty": null
+    },
+    {
+      "id": "library-name",
+      "kind": "geocode",
+      "poi": "los-mangos-library",
+      "query": "Biblioteca Los Mangos, Puerto Vallarta",
+      "category": "poi-name",
+      "measurement": "descriptive-only-no-approved-tolerance",
+      "mapboxCapability": "unsupported-poi-name",
+      "expectEmpty": null
+    },
+    {
+      "id": "library-address",
+      "kind": "geocode",
+      "poi": "los-mangos-library",
+      "query": "Av. Francisco Villa 1001, Fracc. Los Mangos, C.P. 48310, Puerto Vallarta, Jalisco",
+      "category": "street-number-neighborhood",
+      "measurement": "descriptive-only-no-approved-tolerance",
+      "mapboxCapability": "address-or-area-search",
+      "expectEmpty": null
+    },
+    {
+      "id": "library-prefix",
+      "kind": "autocomplete",
+      "poi": "los-mangos-library",
+      "query": "Av. Francisco Villa 1001, Puerto V",
+      "category": "address-prefix",
+      "measurement": "descriptive-only-no-approved-tolerance",
+      "mapboxCapability": "address-or-area-search",
+      "expectEmpty": null
+    },
+    {
+      "id": "library-neighborhood",
+      "kind": "geocode",
+      "poi": null,
+      "query": "Fracc. Los Mangos, C.P. 48310, Puerto Vallarta, Jalisco",
+      "category": "neighborhood-postcode-no-number",
+      "measurement": "descriptive-only-no-approved-tolerance",
+      "mapboxCapability": "address-or-area-search",
+      "expectEmpty": null
+    },
+    {
+      "id": "campus-name",
+      "kind": "geocode",
+      "poi": "cuc-campus",
+      "query": "Centro Universitario de la Costa, Puerto Vallarta",
+      "category": "poi-name",
+      "measurement": "descriptive-only-no-approved-tolerance",
+      "mapboxCapability": "unsupported-poi-name",
+      "expectEmpty": null
+    },
+    {
+      "id": "campus-address",
+      "kind": "geocode",
+      "poi": "cuc-campus",
+      "query": "Av. Universidad 203, Ixtapa, C.P. 48280, Puerto Vallarta, Jalisco",
+      "category": "street-number-neighborhood",
+      "measurement": "descriptive-only-no-approved-tolerance",
+      "mapboxCapability": "address-or-area-search",
+      "expectEmpty": null
+    },
+    {
+      "id": "campus-prefix",
+      "kind": "autocomplete",
+      "poi": "cuc-campus",
+      "query": "Av. Universidad 203, Ixtapa",
+      "category": "address-prefix",
+      "measurement": "descriptive-only-no-approved-tolerance",
+      "mapboxCapability": "address-or-area-search",
+      "expectEmpty": null
+    },
+    {
+      "id": "marina-area",
+      "kind": "geocode",
+      "poi": "marina-vallarta",
+      "query": "Marina Vallarta, Puerto Vallarta, Jalisco",
+      "category": "area-not-exact-address",
+      "measurement": "descriptive-only-no-approved-tolerance",
+      "mapboxCapability": "address-or-area-search",
+      "expectEmpty": null
+    },
+    {
+      "id": "marina-prefix",
+      "kind": "autocomplete",
+      "poi": "marina-vallarta",
+      "query": "Marina Vallarta, Puerto V",
+      "category": "area-prefix",
+      "measurement": "descriptive-only-no-approved-tolerance",
+      "mapboxCapability": "address-or-area-search",
+      "expectEmpty": null
+    },
+    {
+      "id": "ambiguous-universidad",
+      "kind": "geocode",
+      "poi": null,
+      "query": "Avenida Universidad",
+      "category": "homonymous-street-no-city",
+      "measurement": "descriptive-only-no-approved-tolerance",
+      "mapboxCapability": "address-or-area-search",
+      "expectEmpty": null
+    }
   ],
   "routeProposals": [
-    { "from": "naval-museum", "to": "los-muertos-pier", "status": "review-street-access-before-use" },
-    { "from": "los-muertos-pier", "to": "naval-museum", "status": "review-street-access-before-use" },
-    { "from": "pvr-airport", "to": "naval-museum", "status": "review-terminal-and-street-access-before-use" },
-    { "from": "naval-museum", "to": "pvr-airport", "status": "review-terminal-and-street-access-before-use" }
+    {
+      "from": "naval-museum",
+      "to": "los-muertos-pier",
+      "status": "review-street-access-before-use",
+      "reviewNeeds": [
+        "public-vehicle-access",
+        "motorcycle-legality",
+        "one-way-direction",
+        "turn-restrictions",
+        "field-confirmation"
+      ]
+    },
+    {
+      "from": "los-muertos-pier",
+      "to": "naval-museum",
+      "status": "review-street-access-before-use",
+      "reviewNeeds": [
+        "public-vehicle-access",
+        "motorcycle-legality",
+        "one-way-direction",
+        "turn-restrictions",
+        "field-confirmation"
+      ]
+    },
+    {
+      "from": "pvr-airport",
+      "to": "naval-museum",
+      "status": "review-terminal-and-street-access-before-use",
+      "reviewNeeds": [
+        "public-vehicle-access",
+        "motorcycle-legality",
+        "one-way-direction",
+        "turn-restrictions",
+        "field-confirmation"
+      ]
+    },
+    {
+      "from": "naval-museum",
+      "to": "pvr-airport",
+      "status": "review-terminal-and-street-access-before-use",
+      "reviewNeeds": [
+        "public-vehicle-access",
+        "motorcycle-legality",
+        "one-way-direction",
+        "turn-restrictions",
+        "field-confirmation"
+      ]
+    },
+    {
+      "to": "naval-museum",
+      "status": "review-public-vehicle-access-before-use",
+      "reviewNeeds": [
+        "exact-access-coordinate",
+        "one-way-direction",
+        "motorcycle-legality",
+        "turn-restrictions",
+        "field-confirmation"
+      ],
+      "from": "los-mangos-library"
+    },
+    {
+      "to": "los-mangos-library",
+      "status": "review-public-vehicle-access-before-use",
+      "reviewNeeds": [
+        "exact-access-coordinate",
+        "one-way-direction",
+        "motorcycle-legality",
+        "turn-restrictions",
+        "field-confirmation"
+      ],
+      "from": "naval-museum"
+    },
+    {
+      "to": "pvr-airport",
+      "status": "review-public-vehicle-access-before-use",
+      "reviewNeeds": [
+        "exact-access-coordinate",
+        "one-way-direction",
+        "motorcycle-legality",
+        "turn-restrictions",
+        "field-confirmation"
+      ],
+      "from": "marina-vallarta"
+    },
+    {
+      "to": "marina-vallarta",
+      "status": "review-public-vehicle-access-before-use",
+      "reviewNeeds": [
+        "exact-access-coordinate",
+        "one-way-direction",
+        "motorcycle-legality",
+        "turn-restrictions",
+        "field-confirmation"
+      ],
+      "from": "pvr-airport"
+    }
+  ],
+  "schemaVersion": 1,
+  "coverageLimitations": [
+    "Marina es un área, no un POI puntual ni acceso.",
+    "No hay accesos vehiculares confirmados; rutas y prueba de sentidos únicos pendientes.",
+    "Calles homónimas son pruebas de ambigüedad sin verdad de referencia; no se afirma un duplicado local concreto.",
+    "Muestra de conveniencia, sin cobertura estadística de todas las colonias ni exactitud en terreno."
   ]
 }

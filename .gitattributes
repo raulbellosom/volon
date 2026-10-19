@@ -1,0 +1,2 @@
+# Public benchmark proposal: stable UTF-8/LF bytes for human SHA-256 review.
+scripts/maps/public-reference-cases.json text eol=lf

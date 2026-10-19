@@ -5,6 +5,7 @@ import { COST_SCENARIOS, COST_SOURCES, estimateCost } from './cost.ts';
 import { SYNTHETIC_CASES, syntheticFetch } from './fixtures.ts';
 import { readRealConfiguration } from './real-config.ts';
 import type { Provider } from './types.ts';
+import { createPreflight } from './preflight.ts';
 
 const args = process.argv.slice(2);
 try {
@@ -20,6 +21,8 @@ try {
         name, assumptions: scenario, estimates: (['geoapify', 'google', 'mapbox'] as Provider[])
           .map((provider) => estimateCost(provider, scenario)),
       })) }, null, 2));
+  } else if (args.length === 1 && args[0] === '--preflight') {
+    console.log(createPreflight(await readFile(new URL('./public-reference-cases.json', import.meta.url), 'utf8')));
   } else if (args.length === 3 && args[0] === '--real' && args[1] === '--manifest' && args[2]) {
     if (process.env.CI !== undefined || process.env.GITHUB_ACTIONS !== undefined) throw new Error('Real evaluation disabled in CI');
     const path = args[2];

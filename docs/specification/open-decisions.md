@@ -33,6 +33,16 @@ No cambia almacenamiento existente ni habilita PII. ADR-0011 conserva estado
 Propuesta; KMS real, política de conservación, ledger/auditoría duraderos,
 reconciliation, licencias, purge y backup/restore requieren decisión humana.
 
+### Preflight de mapas — incremento #13
+
+Propuesta de seis referentes públicos, 22 búsquedas y ocho rutas pendientes;
+preflight sin red/secretos, costos por volumen y auditoría documental de tres
+adaptadores. [Contrato, fuentes y aprobación pendiente](../validation/map-provider-benchmark.md).
+DEC-07/09 no se cierran: no hay consultas reales, tolerancias/accesos aprobados,
+cuenta revisada ni selección. Manifiesto real v2 admite búsquedas observacionales
+con revisión humana explícita, sin aprobar rutas ni inventar aciertos. El dataset
+versionado continúa no ejecutable. No cambia cotización, Delivery ni privacidad.
+
 ### Evaluación de mapas y privacidad — incremento #12
 
 [Harness y protocolo](../validation/map-provider-benchmark.md) con tres adaptadores
