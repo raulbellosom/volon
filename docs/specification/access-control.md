@@ -36,7 +36,18 @@ uniforme. Un sujeto sin membresías conserva acceso a `/me` con lista vacía.
 No se derivan permisos de metadata ni se amplía acceso a sucursales hermanas.
 DTOs y semántica de errores: [contrato propietario](api-contracts.md).
 
+### Lecturas explícitas de ubicaciones (#11)
+
+Pickup de Branch y snapshots de Quote/Delivery reutilizan la misma membresía
+por sucursal, Merchant/Branch habilitados y rol delivery_api sujeto a RLS. Saber
+un ID no concede acceso. No exponer texto, indicaciones o coordenadas en los DTO
+de lista/historial; consultar únicamente mediante las rutas locations documentadas
+en [API](api-contracts.md). No hay permisos administrativos o claims de verificación
+aportados por el cliente. La ubicación autoritativa de sucursal no prueba que el
+domicilio haya sido geocodificado o verificado en terreno.
+
 ## Actores y scopes
+
 - `customer`: acceso a sus propios pedidos/enlaces de seguimiento válidos.
 - `merchant_owner`: configuración del Merchant y sucursales autorizadas.
 - `merchant_staff`: operaciones limitadas a Branch habilitada.

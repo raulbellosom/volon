@@ -22,3 +22,6 @@ export {
   DELIVERY_HISTORY_DEFAULT_LIMIT, DELIVERY_HISTORY_MAX_LIMIT,
   type DeliveryHistoryQuery, type DeliveryHistoryResponse,
 } from './delivery-history.ts';
+export { type DeliveryDestination } from './destination.ts';
+export { parsePickupLocationResponse, parseDeliveryLocationsResponse,
+  type PickupLocationResponse, type DeliveryLocationsResponse } from './locations.ts';

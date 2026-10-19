@@ -1,0 +1,146 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:delivery:contracts:locations:v1",
+  "$defs": {
+    "pickup": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "branchId",
+        "coordinates",
+        "source",
+        "verification"
+      ],
+      "properties": {
+        "branchId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "coordinates": {
+          "$ref": "delivery-quote.schema.json#/$defs/point"
+        },
+        "source": {
+          "const": "branch_record"
+        },
+        "verification": {
+          "const": "unverified"
+        }
+      }
+    },
+    "snapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "branchId",
+        "pickup",
+        "dropoff"
+      ],
+      "properties": {
+        "branchId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "pickup": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "coordinates",
+            "source",
+            "verification"
+          ],
+          "properties": {
+            "coordinates": {
+              "$ref": "delivery-quote.schema.json#/$defs/point"
+            },
+            "source": {
+              "enum": [
+                "branch_record",
+                "legacy_input"
+              ]
+            },
+            "verification": {
+              "const": "unverified"
+            }
+          }
+        },
+        "dropoff": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "coordinates",
+                "addressLine",
+                "instructions",
+                "source",
+                "verification"
+              ],
+              "properties": {
+                "coordinates": {
+                  "$ref": "delivery-quote.schema.json#/$defs/point"
+                },
+                "addressLine": {
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": "^(?!.*[\\u0000-\\u001f\\u007f-\\u009f\\uD800-\\uDFFF\\u2028\\u2029])\\S(?:.*\\S)?$",
+                  "maxLength": 240
+                },
+                "instructions": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "pattern": "^(?!.*[\\u0000-\\u001f\\u007f-\\u009f\\uD800-\\uDFFF\\u2028\\u2029])\\S(?:.*\\S)?$",
+                      "maxLength": 500
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "source": {
+                  "const": "synthetic"
+                },
+                "verification": {
+                  "const": "unverified"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "coordinates",
+                "addressLine",
+                "instructions",
+                "source",
+                "verification"
+              ],
+              "properties": {
+                "coordinates": {
+                  "$ref": "delivery-quote.schema.json#/$defs/point"
+                },
+                "addressLine": {
+                  "type": "null"
+                },
+                "instructions": {
+                  "type": "null"
+                },
+                "source": {
+                  "const": "legacy_input"
+                },
+                "verification": {
+                  "const": "unverified"
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}

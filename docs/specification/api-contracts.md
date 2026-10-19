@@ -6,7 +6,7 @@
 
 Contrato formal: [`delivery-quote.schema.json`](../../packages/contracts/delivery-quote.schema.json); solicitud en la raíz y respuesta en `#/$defs/response`. Validación runtime compartida en `@delivery/contracts`. El handler en `apps/api/src/app.ts` recibe adaptadores explícitos de identidad, autorización vigente por sucursal, cobertura/rutas/tarifa versionada y almacenamiento confirmado. La composición local añade Prisma/PostgreSQL, Supabase Auth y distancia geodésica sintética; no hay bypass de autenticación ni proveedor vial productivo.
 
-- Solicitud cerrada: `branchId` opaco (1–128 caracteres ASCII alfanuméricos, `_` o `-`), `pickup` y `dropoff` con únicamente `lat`/`lng` finitos dentro de rangos geográficos, y `serviceType: local_delivery`. Se rechazan campos extra, incluidos etiquetas/direcciones del ejemplo conceptual, precio, distancia, tarifa e identidad. No se recopilan destinatarios.
+- Solicitud cerrada: `branchId` opaco (1–128 caracteres ASCII alfanuméricos, `_` o `-`), `pickup` y `dropoff` con únicamente `lat`/`lng` finitos dentro de rangos geográficos, y `serviceType: local_delivery`. Admite `destination` opcional según el corte #11 descrito abajo. Se rechazan campos extra, precio, distancia, tarifa e identidad. No se recopilan nombres o teléfonos de destinatarios.
 - El adaptador de rutas debe verificar recogida contra la sucursal, cobertura de ambos puntos, modalidad y política vigente; la distancia y versión tarifaria proceden del servidor. Coordenadas válidas por sí solas no acreditan cobertura.
 - `201` solo después de confirmar almacenamiento del snapshot con sujeto, sucursal, solicitud, versión tarifaria y respuesta. ID generado por dependencia del servidor. TTL obligatorio, positivo y configurable; los fixtures usan 600000 ms conforme a DEC-12. El almacenamiento debe garantizar unicidad del ID.
 - Respuesta MXN en enteros seguros, suma de líneas `base_delivery` y `distance_delivery` (incluye cero), `quoteId`, `expiresAt` UTC y `coverage: eligible`. No incluye ETA, productos, impuestos ni cobros. `Cache-Control: no-store` en éxito y error.
@@ -16,6 +16,57 @@ Contrato formal: [`delivery-quote.schema.json`](../../packages/contracts/deliver
 Los ejemplos siguientes conservan su carácter conceptual; los esquemas formales gobiernan los cortes locales. ACC-015 se comprueba en las pruebas de snapshot de Delivery; no implica ajustes financieros comerciales implementados.
 
 ## Convenciones horizontales
+
+### Direcciones y ubicaciones sintéticas (issue #11)
+
+Corte aditivo local, sin proveedor comercial. `POST /v1/delivery-quotes` conserva
+branchId/pickup/dropoff/serviceType y admite `destination` opcional, cerrado:
+`{ addressLine: string, instructions?: string, source: "synthetic", verification: "unverified" }`.
+addressLine: 1–240 puntos de código Unicode; instructions: 1–500 si se incluye.
+Texto de una sola línea, sin controles, surrogates inválidos ni espacios externos;
+el cliente debe hacer trim. No se aceptan nombre/teléfono, IDs de proveedor,
+flags de verificación ni fuentes geocoded/user_selected/verified_service en este
+corte. Coordenadas siguen exclusivamente en dropoff (lat/lng finitos y en rango).
+Omitir destination preserva el contrato anterior; enviarlo vacío o malformado
+produce `422 INVALID_QUOTE_REQUEST`. Escribir una dirección no geocodifica ni
+verifica nada; cobertura sintética tampoco demuestra que una dirección exista.
+
+- `GET /v1/branches/{branchId}/pickup-location`: bearer verificado, membresía,
+  Merchant y Branch habilitados; `200 { branchId, coordinates: {lat,lng}, source:
+  "branch_record", verification: "unverified" }`. No devuelve dirección, perfil
+  ni metadatos privados. Fuente autoritativa no significa geocodificación validada.
+- El pickup enviado al cotizar es una aserción de compatibilidad: se coteja con
+  Branch con la tolerancia local existente de 1 m. Una vez aceptado, se calcula
+  y persiste exactamente la coordenada oficial del servidor. Antes de guardar
+  se revalida que Branch no cambió; fallo: `422 OUTSIDE_COVERAGE`. El servidor
+  añade `pickupOrigin: "branch_record"` únicamente al JSON privado persistido;
+  el cliente no puede enviar ese campo. No se acepta destination con un adaptador
+  que no aporte origen autoritativo. Siguen vigentes límites y tarifa sintéticos.
+- `GET /v1/delivery-quotes/{quoteId}/locations` y
+  `GET /v1/deliveries/{deliveryId}/locations`: `200 { branchId, pickup: {
+  coordinates: {lat,lng}, source: "branch_record" | "legacy_input", verification:
+  "unverified" }, dropoff: { coordinates: {lat,lng}, addressLine: string | null,
+  instructions: string | null, source: "synthetic" | "legacy_input", verification:
+  "unverified" } }`. Siempre leen el snapshot, no la ubicación actual de Branch.
+  En registros anteriores: texto/referencias null y procedencia legacy_input;
+  nunca se reconstruye ni se inventa una dirección o verificación histórica.
+- Los tres GET requieren Auth real y RLS vigente por sucursal en cada lectura.
+  `401 UNAUTHENTICATED`, `404 NOT_FOUND` uniforme para ajeno/inexistente/revocado/
+  deshabilitado, `405 METHOD_NOT_ALLOWED` con Allow GET, `503 SERVICE_UNAVAILABLE`
+  para infraestructura o snapshot malformado. Éxitos JSON, errores problem+json,
+  todos con Cache-Control no-store. No hay lecturas públicas ni acceso administrativo.
+- destination y pickupOrigin se conservan dentro de PricingQuote.request y
+  Delivery.routeSnapshot. RLS exige igualdad con la quote al INSERT; el trigger
+  existente impide UPDATE/DELETE de Delivery. Sin tablas duplicadas ni migración.
+  POST Delivery sigue aceptando solo branchId/quoteId: inyectar dirección se
+  rechaza; otra quote con la misma key conserva `409 IDEMPOTENCY_CONFLICT`.
+- Cotización/resumen de Delivery/historial conservan sus DTO exactos, sin agregar
+  domicilios o coordenadas a los listados. La lectura explícita de locations es
+  el único nuevo acceso a estos datos. Esquemas en `locations.schema.json` y
+  `delivery-quote.schema.json`; parsers compartidos en @delivery/contracts.
+
+Decisión: [ADR-0010](../decisions/0010-delivery-location-snapshots.md).
+Privacidad y retención propuesta: [seguridad](../architecture/security-and-privacy.md).
 
 ### Contexto de comercio: lectura local v1 (issue #9, RF-001, UC-01, ENG-009, ACC-010)
 

@@ -1,3 +1,5 @@
+import { parseDeliveryDestination, type DeliveryDestination } from './destination.ts';
+
 export interface QuotePoint {
   readonly lat: number;
   readonly lng: number;
@@ -8,6 +10,7 @@ export interface DeliveryQuoteRequest {
   readonly pickup: QuotePoint;
   readonly dropoff: QuotePoint;
   readonly serviceType: 'local_delivery';
+  readonly destination?: DeliveryDestination;
 }
 
 export interface DeliveryQuoteResponse {
@@ -47,15 +50,20 @@ function parsePoint(value: unknown): QuotePoint {
 
 /** Runtime boundary; keep aligned with delivery-quote.schema.json. */
 export function parseDeliveryQuoteRequest(value: unknown): DeliveryQuoteRequest {
-  if (!isRecord(value) || !hasExactKeys(value, ['branchId', 'pickup', 'dropoff', 'serviceType'])
+  if (!isRecord(value) || !hasExactKeys(value, ['branchId', 'pickup', 'dropoff', 'serviceType',
+    ...(Object.hasOwn(value, 'destination') ? ['destination'] : [])])
     || typeof value.branchId !== 'string' || !/^[A-Za-z0-9_-]{1,128}$/.test(value.branchId)
     || value.serviceType !== 'local_delivery') {
     throw new InvalidQuoteRequest();
   }
+  let destination: DeliveryDestination | undefined;
+  try { if (Object.hasOwn(value, 'destination')) destination = parseDeliveryDestination(value.destination); }
+  catch { throw new InvalidQuoteRequest(); }
   return Object.freeze({
     branchId: value.branchId,
     pickup: parsePoint(value.pickup),
     dropoff: parsePoint(value.dropoff),
     serviceType: value.serviceType,
+    ...(destination ? { destination } : {}),
   });
 }

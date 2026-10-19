@@ -8,6 +8,7 @@
     "./delivery-quote.schema.json": "./delivery-quote.schema.json",
     "./delivery.schema.json": "./delivery.schema.json",
     "./merchant-context.schema.json": "./merchant-context.schema.json",
-    "./delivery-history.schema.json": "./delivery-history.schema.json"
+    "./delivery-history.schema.json": "./delivery-history.schema.json",
+    "./locations.schema.json": "./locations.schema.json"
   }
 }

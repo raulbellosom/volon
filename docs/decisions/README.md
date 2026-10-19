@@ -13,7 +13,11 @@ Los ADR registran **propuestas** y aceptación explícita. Estado inicial de tod
 - [ADR-0008 — Stack de Volon UI web](0008-ui-web-stack.md) — React Aria Components, Tailwind 4 y Storybook; ajusta la elección candidata de ADR-0005.
 - [ADR-0009 — merchant-web con Vite y React Router](0009-merchant-web-stack.md) — SPA autenticada; proxy local y modo demostración solo en desarrollo.
 
+- [ADR-0010 — Direcciones y snapshots sintéticos](0010-delivery-location-snapshots.md)
+  — compatible con JSON existente; no adopta proveedor ni autoriza domicilios reales.
+
 ## Plantilla de nuevas decisiones
+
 Título, fecha, estado, contexto, motivación, alternativas, decisión, consecuencias, pruebas pendientes, reversibilidad y enlaces. Estados recomendados: Propuesta, Aceptada, Sustituida, Rechazada.
 
 La elección de tecnología no debe basarse exclusivamente en familiaridad; registrar pruebas que motiven su adopción.
