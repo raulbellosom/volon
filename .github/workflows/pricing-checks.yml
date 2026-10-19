@@ -48,6 +48,8 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - name: Official Supabase, Prisma migrations, seed and API Docker build
         run: pnpm local:up
+      - name: Additive migrations on a separate empty PostgreSQL cluster
+        run: node scripts/local/check-clean-migrations.mjs
       - name: Quotes, Delivery, idempotency, tenant isolation and transaction integration
         run: pnpm test:integration
       - name: Container health

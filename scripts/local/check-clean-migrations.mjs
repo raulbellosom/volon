@@ -39,9 +39,16 @@ try {
   const flags = sql(`SELECT count(*) FROM pg_class WHERE relnamespace = 'app'::regnamespace
     AND relname IN ('Courier', 'CourierShift', 'CourierAvailabilityCommand') AND relrowsecurity AND relforcerowsecurity;`).trim();
   if (flags !== '3') throw new Error('Missing Courier FORCE RLS');
+  const labFlags = sql(`SELECT count(*) FROM pg_class WHERE relnamespace = 'app'::regnamespace
+    AND relname IN ('DispatchLabScenario', 'DispatchLabOffer', 'DispatchLabAssignment', 'DispatchLabCommand', 'DispatchLabOutbox')
+    AND relrowsecurity AND relforcerowsecurity;`).trim();
+  if (labFlags !== '5') throw new Error('Missing DispatchLab FORCE RLS');
+  const exclusions = sql(`SELECT count(*) FROM pg_index WHERE indrelid = 'app."DispatchLabAssignment"'::regclass
+    AND indisunique AND indpred IS NOT NULL;`).trim();
+  if (exclusions !== '2') throw new Error('Missing DispatchLab exclusivity indexes');
   const isolated = sql(`SET ROLE delivery_api; SELECT count(*) FROM app."Courier";`).trim();
   if (!isolated.endsWith('0')) throw new Error('Unexpected unscoped data');
-  console.log(`${migrations.length} migraciones probadas en PostgreSQL limpio; 3 tablas Courier FORCE RLS; sin tocar el stack existente.`);
+  console.log(`${migrations.length} migraciones probadas en PostgreSQL limpio; 3 tablas Courier + 5 DispatchLab FORCE RLS; doble exclusión; sin tocar el stack existente.`);
 } catch (error) {
   mkdirSync('.local', { recursive: true });
   writeFileSync('.local/clean-migrations-error.log', String(error.stderr ?? error.message), { mode: 0o600 });

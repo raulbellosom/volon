@@ -31,6 +31,15 @@
 
 ## Evidencias necesarias
 
+### Núcleo interno de asignación (#18)
+
+Las suites dispatch-lab-{concurrency,transactions,security}.test.ts prueban con
+PostgreSQL y Auth reales: doble exclusión parcial, 24 aceptaciones concurrentes,
+expiración durante lock, revocaciones, replay, rollback diferido y outbox obligatorio.
+Son evidencia parcial de ACC-004/005/013/020/022, **no aceptación operativa**:
+sin PSP, Delivery dispatching, API, custodia, publicador ni privacidad de destino.
+Contrato y límites en [dispatch-lab](dispatch-lab.md).
+
 ### Historial paginado de Delivery (issue #9)
 
 La suite [delivery-history](../../apps/api/integration/delivery-history.test.ts)

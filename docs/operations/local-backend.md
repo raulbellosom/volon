@@ -121,7 +121,7 @@ La ruta es distancia geodésica PostGIS desde sucursales sintéticas en `(0, 0)`
 3. `pnpm test:integration`: incluye pruebas Courier con Auth/PostgreSQL reales.
    Pruebas focalizadas: `node --experimental-strip-types --test --test-concurrency=1
    apps/api/integration/courier-*.test.ts`.
-4. `node scripts/local/check-clean-migrations.mjs`: aplica los cinco SQL en cluster
+4. `node scripts/local/check-clean-migrations.mjs`: aplica todos los SQL en cluster
    PostgreSQL/PostGIS vacío del mismo image fijado que Supabase, sin puertos ni
    mounts del host (`--network none`), verifica FORCE RLS y elimina solo su
    contenedor UUID etiquetado. No usa/muta volúmenes existentes. Requiere imagen
@@ -138,3 +138,27 @@ Un reinicio del backend conserva disponibilidad y recibos en PostgreSQL.
 No conectar aún CourierGateway, no crear ofertas ni invocar Geoapify. Falta
 elegibilidad legal/vehicular, TTL, rate limits para despliegue, PSP y política de
 datos del destinatario. Disponible no equivale a elegible para asignación.
+
+## Núcleo de asignación interno #18
+
+Después de `pnpm local:up`, ejecutar desde la raíz:
+
+```sh
+node --experimental-strip-types --test --test-concurrency=1 apps/api/integration/dispatch-lab-*.test.ts
+node scripts/local/check-clean-migrations.mjs
+pnpm check
+pnpm test:integration
+```
+
+La sexta migración agrega cinco tablas DispatchLab sin cambiar Delivery ni sus
+triggers. El harness verifica Auth local, crea escenarios UUID con conexión de
+fixtures y compone un adaptador financiero sintético **solo dentro de tests**.
+Comandos de usuario usan delivery_api/RLS, no la conexión administrativa. Conserva
+historia y libera reservas artificiales mediante comandos auditados al repetir;
+no borra registros. Restaura grants/flags y retira únicamente sus triggers de
+fallo en finally. Usar un stack sintético exclusivo, una suite a la vez.
+
+No hay CLI operativa, endpoint, env/header de aprobación financiera, publicador,
+PSP ni conexión móvil. El default deniega. No usar IDs operativos como escenarios.
+Contrato exacto, estados y límites: [dispatch-lab](../specification/dispatch-lab.md).
+Conexión nueva comprueba durabilidad de commits; no es prueba de backup/restore.
