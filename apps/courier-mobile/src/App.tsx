@@ -8,10 +8,12 @@ import { StatusBar } from 'expo-status-bar';
 import { useState, type ReactNode } from 'react';
 import { View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { createLocalCourierApi } from './adapters/http/local-courier-api.ts';
 import { createSyntheticGateway } from './adapters/synthetic/synthetic-gateway.ts';
-import { DemoShell } from './app/DemoShell.tsx';
-import { BlockedModeScreen } from './app/BlockedModeScreen.tsx';
-import { resolveAppMode, type AppMode } from './config/app-mode.ts';
+import { DemoShell } from './shell/DemoShell.tsx';
+import { BlockedModeScreen } from './shell/BlockedModeScreen.tsx';
+import { resolveAppMode, type AppMode, type LocalConfig } from './config/app-mode.ts';
+import { LocalShell } from './local/LocalShell.tsx';
 import { ThemeProvider, useTheme } from './theme/ThemeProvider.tsx';
 
 function Themed({ children }: { children: ReactNode }) {
@@ -30,13 +32,21 @@ function DemoApp() {
   return <DemoShell {...services} />;
 }
 
+/** Local-lab wiring: only identity and availability talk to the backend. */
+function LocalApp({ config }: { config: LocalConfig }) {
+  const [api] = useState(() => createLocalCourierApi(config));
+  return <LocalShell api={api} />;
+}
+
 export function App({ mode = resolveAppMode() }: { mode?: AppMode }) {
   const [fontsReady] = useFonts({ PlusJakartaSans_400Regular, PlusJakartaSans_600SemiBold, PlusJakartaSans_700Bold, PlusJakartaSans_800ExtraBold });
   if (!fontsReady) return null;
   return (
     <SafeAreaProvider>
       <ThemeProvider>
-        <Themed>{mode.kind === 'demo' ? <DemoApp /> : <BlockedModeScreen requested={mode.requested} />}</Themed>
+        <Themed>
+          {mode.kind === 'demo' ? <DemoApp /> : mode.kind === 'local' ? <LocalApp config={mode.config} /> : <BlockedModeScreen requested={mode.requested} reason={mode.reason} />}
+        </Themed>
       </ThemeProvider>
     </SafeAreaProvider>
   );

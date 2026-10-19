@@ -29,7 +29,8 @@
     "maps:evaluate": "node --experimental-strip-types scripts/maps/cli.ts",
     "courier": "pnpm --filter @delivery/courier-mobile start",
     "courier:web": "pnpm --filter @delivery/courier-mobile web",
-    "courier:export": "pnpm --filter @delivery/courier-mobile export:android && pnpm --filter @delivery/courier-mobile export:web"
+    "courier:export": "pnpm --filter @delivery/courier-mobile export:android && pnpm --filter @delivery/courier-mobile export:web",
+    "courier:local-smoke": "node --experimental-strip-types apps/courier-mobile/scripts/local-smoke.mts"
   },
   "devDependencies": {
     "@prisma/client": "7.10.1",

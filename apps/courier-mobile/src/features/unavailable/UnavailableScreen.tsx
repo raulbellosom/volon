@@ -12,7 +12,7 @@ const FEATURES: readonly { icon: IconName; title: string; reason: string }[] = [
   { icon: 'camera-outline', title: 'Cámara y evidencia de entrega', reason: 'No se toman fotos ni firmas.' },
   { icon: 'notifications-outline', title: 'Notificaciones', reason: 'Las ofertas no llegan como avisos; se consultan en la lista.' },
   { icon: 'wallet-outline', title: 'Pagos y ganancias', reason: 'No se muestran ni se calculan cobros, propinas o pagos.' },
-  { icon: 'git-network-outline', title: 'Despacho real', reason: 'Las ofertas son ficticias: no hay asignaciones en el servidor.' },
+  { icon: 'git-network-outline', title: 'Despacho real', reason: 'El servidor todavía no genera ofertas ni asignaciones.' },
 ];
 
 /** What this demo deliberately does not do, so nobody assumes it works. */

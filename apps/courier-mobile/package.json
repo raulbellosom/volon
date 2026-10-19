@@ -8,11 +8,13 @@
     "web": "expo start --web",
     "typecheck": "tsc --project tsconfig.json",
     "test": "jest",
-    "export:android": "expo export --platform android --output-dir dist/android",
-    "export:web": "expo export --platform web --output-dir dist/web"
+    "export:android": "expo export --platform android --output-dir dist/android --clear && node scripts/verify-export.mjs dist/android",
+    "export:web": "expo export --platform web --output-dir dist/web --clear && node scripts/verify-export.mjs dist/web",
+    "local-smoke": "node --experimental-strip-types scripts/local-smoke.mts"
   },
   "dependencies": {
     "@delivery/branding": "workspace:*",
+    "@delivery/contracts": "workspace:*",
     "@delivery/design-tokens": "workspace:*",
     "@expo-google-fonts/plus-jakarta-sans": "0.4.2",
     "@expo/metro-runtime": "57.0.16",

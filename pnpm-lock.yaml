@@ -50,6 +50,9 @@ importers:
       '@delivery/branding':
         specifier: workspace:*
         version: link:../../packages/branding
+      '@delivery/contracts':
+        specifier: workspace:*
+        version: link:../../packages/contracts
       '@delivery/design-tokens':
         specifier: workspace:*
         version: link:../../packages/design-tokens

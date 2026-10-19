@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Switch, View } from 'react-native';
-import { useDemoControls } from '../../app/DemoServices.tsx';
+import { useDemoControls } from '../../shell/DemoServices.tsx';
 import type { GatewayErrorKind } from '../../ports/courier-gateway.ts';
 import { useCourier } from '../../state/CourierProvider.tsx';
 import { useTheme } from '../../theme/ThemeProvider.tsx';

@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import { ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../theme/ThemeProvider.tsx';
-import { DemoBanner } from './DemoBanner.tsx';
+import { useModeBanner } from './ModeBanner.tsx';
 
 export interface ScreenProps {
   children: ReactNode;
@@ -11,17 +11,18 @@ export interface ScreenProps {
    * They stay reachable with one hand however long the content is.
    */
   footer?: ReactNode;
-  /** Hides the demo banner (only for the blocked-mode screen). */
+  /** Hides the mode banner (only for the blocked-mode screen). */
   bare?: boolean;
 }
 
-/** Page frame: safe areas, scrolling body, demo banner and a sticky action footer. */
+/** Page frame: safe areas, scrolling body, mode banner and a sticky action footer. */
 export function Screen({ children, footer, bare }: ScreenProps) {
   const { theme } = useTheme();
   const insets = useSafeAreaInsets();
+  const banner = useModeBanner();
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
-      {!bare && <DemoBanner />}
+      {!bare && banner}
       <ScrollView
         contentContainerStyle={{ padding: theme.spacing[4], gap: theme.spacing[5], paddingBottom: footer ? theme.spacing[6] : insets.bottom + theme.spacing[6] }}
         keyboardShouldPersistTaps="handled"

@@ -1,7 +1,7 @@
 import { render, screen, userEvent } from '@testing-library/react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { createSyntheticGateway } from '../adapters/synthetic/synthetic-gateway.ts';
-import { DemoShell } from '../app/DemoShell.tsx';
+import { DemoShell } from '../shell/DemoShell.tsx';
 import type { CourierGateway } from '../ports/courier-gateway.ts';
 import { ThemeProvider, type ThemePreference } from '../theme/ThemeProvider.tsx';
 

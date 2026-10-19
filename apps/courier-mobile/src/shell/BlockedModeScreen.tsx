@@ -3,16 +3,16 @@ import { View } from 'react-native';
 import { useTheme } from '../theme/ThemeProvider.tsx';
 import { EmptyState } from '../ui/StateViews.tsx';
 
-/** Shown when the build asks for a mode other than demo: there is no courier backend yet. */
-export function BlockedModeScreen({ requested }: { requested: string }) {
+/** Shown when the configuration asks for a mode this build cannot run safely. Never falls back to demo. */
+export function BlockedModeScreen({ requested, reason }: { requested: string; reason: string }) {
   const { theme } = useTheme();
   const insets = useSafeAreaInsets();
   return (
     <View style={{ flex: 1, justifyContent: 'center', paddingTop: insets.top, paddingHorizontal: theme.spacing[4], backgroundColor: theme.colors.background }}>
       <EmptyState
         icon="lock-closed-outline"
-        title="Modo real no disponible"
-        description={`Esta versión solo funciona en modo demostración. Se pidió «${requested}», pero todavía no existe un servicio para repartidores, así que la app no se conecta a ningún servidor.`}
+        title="La app está bloqueada"
+        description={`Se pidió el modo «${requested}». ${reason} La app no se conecta a ningún servidor ni cambia sola al modo de demostración.`}
       />
     </View>
   );

@@ -106,8 +106,8 @@ describe('courier demo resilience', () => {
   });
 
   it('blocks any mode other than demo without building a gateway', async () => {
-    render(<App mode={{ kind: 'blocked', requested: 'real' }} />);
-    expect(await screen.findByText('Modo real no disponible')).toBeOnTheScreen();
+    render(<App mode={{ kind: 'blocked', requested: 'real', reason: 'Ese modo no existe en esta versión.' }} />);
+    expect(await screen.findByText('La app está bloqueada')).toBeOnTheScreen();
     expect(screen.queryByRole('button', { name: 'Entrar en modo demostración' })).not.toBeOnTheScreen();
   });
 });

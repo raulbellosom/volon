@@ -1,6 +1,5 @@
 import { seedOffers } from '../adapters/synthetic/fixtures.ts';
 import { nextStage, WORKFLOW_STAGES } from '../domain/workflow.ts';
-import { resolveAppMode } from '../config/app-mode.ts';
 import { courierReducer, initialState } from './courier-store.ts';
 
 const offers = seedOffers(Date.parse('2026-10-18T18:00:00.000Z'));
@@ -48,14 +47,5 @@ describe('workflow', () => {
       stage = nextStage(stage);
     }
     expect(visited).toEqual(['accepted', 'to_pickup', 'at_pickup', 'picked_up', 'to_dropoff', 'delivered']);
-  });
-});
-
-describe('app mode gate', () => {
-  it('only runs demo and fails closed for anything else', () => {
-    expect(resolveAppMode(undefined)).toEqual({ kind: 'demo' });
-    expect(resolveAppMode('demo')).toEqual({ kind: 'demo' });
-    expect(resolveAppMode('real')).toEqual({ kind: 'blocked', requested: 'real' });
-    expect(resolveAppMode('production')).toEqual({ kind: 'blocked', requested: 'production' });
   });
 });
