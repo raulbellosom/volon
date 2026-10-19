@@ -108,7 +108,7 @@ runtime compartida en `@delivery/contracts`.
 
 Contrato formal compartido: [`delivery.schema.json`](../../packages/contracts/delivery.schema.json), solicitud en raíz y respuesta en `#/$defs/response`; parser runtime en `@delivery/contracts`. El puerto transaccional de aplicación no importa Prisma; el adaptador usa la transacción contextual existente.
 
-Respuesta `201` tanto al crear como al repetir: `{ deliveryId, branchId, quoteId, status: requested, version: 1, createdAt, pricing: { amountMinor, currency, lines, rateVersion } }`. Snapshot persistido; no recalcula ni incorpora cambios posteriores de tarifa/quote. `GET /v1/deliveries/{deliveryId}` devuelve ese mismo DTO con `200`, o `404` uniforme si es ajena/inexistente. No devuelve claves, hashes, destinatarios ni coordenadas. Ambas operaciones requieren membresía habilitada y comercio/sucursal habilitados; se revalida en cada reintento/lectura.
+Respuesta `201` tanto al crear como al repetir: `{ deliveryId, publicReference, branchId, quoteId, status: requested, version: 1, createdAt, pricing: { amountMinor, currency, lines, rateVersion } }`. Snapshot persistido; no recalcula ni incorpora cambios posteriores de tarifa/quote. `GET /v1/deliveries/{deliveryId}` devuelve ese mismo DTO con `200`, o `404` uniforme si es ajena/inexistente. No devuelve claves, hashes, destinatarios ni coordenadas. Ambas operaciones requieren membresía habilitada y comercio/sucursal habilitados; se revalida en cada reintento/lectura. El folio es inmutable y no concede acceso; [lookup y rollout coordinado #19](delivery-public-reference.md).
 
 La clave se guarda como SHA-256 por sujeto+sucursal+operación; el hash del comando se calcula a partir del DTO normalizado (orden JSON irrelevante). Misma clave y comando devuelven exactamente el mismo recurso después de commit, aun si la quote ya expiró; misma clave con otro quoteId en la misma sucursal devuelve `409 IDEMPOTENCY_CONFLICT`. Otra sucursal/actor tiene namespace independiente, nunca visibilidad de comandos ajenos. Fallos no reservan la clave ni consumen la quote.
 
@@ -182,6 +182,7 @@ POST mantiene el contrato anterior. La composición PostgreSQL revalida membres�
 | `POST /v1/delivery-quotes` | Cotizar transporte sin persistir Delivery | Comercio / actor habilitado | Crea quote temporal |
 | `POST /v1/deliveries` | Crear solicitud usando quote vigente | Comercio/sucursal | Comando idempotente |
 | `GET /v1/deliveries/{deliveryId}` | Estado, datos según rol | Vinculado a recurso | Lectura |
+| `GET /v1/deliveries/by-reference/{reference}` | Mismo DTO con deliveryId y publicReference; lookup completo normalizado | Misma Auth/RLS por sucursal; folio no autoriza | Lectura local #19 |
 | `GET /v1/deliveries?branchId=...` | Historial por sucursal (contrato local arriba) | Member autorizado | Lectura paginada |
 | `POST /v1/deliveries/{deliveryId}/cancel` | Cancelar conforme a política | Actor permitido | Transición auditada |
 | `POST /v1/deliveries/{deliveryId}/milestones` | Declarar recogida/arribo/entrega con payload tipado | Courier asignado | Transición idempotente |
@@ -234,7 +235,7 @@ No devolver promesas de ETA sin datos/algoritmos fiables. La validación de cobe
   "dropoffInstructions": "Dejar con recepción"
 }
 ```
-Respuesta conceptual `201` con `deliveryId`, `status: requested`, `version: 1`, precios congelados, **eligibilidad de despacho derivada de pago real** y URLs de seguimiento **protegidas**, nunca permisos implícitos.
+Respuesta conceptual `201` con `deliveryId`, `publicReference`, `status: requested`, `version: 1`, precios congelados, **eligibilidad de despacho derivada de pago real** y URLs de seguimiento **protegidas**, nunca permisos implícitos.
 
 ## Errores
 Adoptar `application/problem+json` inspirado en RFC 9457, con `type`, `title`, `status`, `detail` segura y `instance` (correlation ID), más `code` estable para clientes. Ejemplos: `QUOTE_EXPIRED` (409/422 según semántica), `DELIVERY_STATE_CONFLICT` (409), `ACCESS_DENIED` (403), `RATE_LIMITED` (429).
