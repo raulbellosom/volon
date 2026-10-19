@@ -19,7 +19,10 @@ describe('HTTP adapter', () => {
   it('sends the bearer token and the idempotency key', async () => {
     const fetch = mockFetch(Response.json({
       deliveryId: 'd1', branchId: 'b1', quoteId: 'q1', status: 'requested', version: 1, createdAt: '2026-10-18T20:00:00Z',
-      pricing: { amountMinor: 100, currency: 'MXN', lines: [{ code: 'base_delivery', amountMinor: 100 }], rateVersion: 'r1' },
+      pricing: { amountMinor: 100, currency: 'MXN', lines: [
+        { code: 'base_delivery', amountMinor: 100 },
+        { code: 'distance_delivery', amountMinor: 0 },
+      ], rateVersion: 'r1' },
     }, { status: 201 }));
     const api = createHttpMerchantApi(() => 'token-1');
     await api.createDelivery({ branchId: 'b1', quoteId: 'q1', idempotencyKey: 'key-1' });
