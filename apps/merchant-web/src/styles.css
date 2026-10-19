@@ -1,0 +1,4 @@
+@import '@delivery/ui-web/styles.css';
+
+/* Let Tailwind see the classes used by this app's own components. */
+@source './';

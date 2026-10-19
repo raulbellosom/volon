@@ -7,7 +7,7 @@
     "node": ">=22.16.0"
   },
   "scripts": {
-    "test": "node --experimental-strip-types --test packages/pricing/tests/*.test.ts packages/contracts/tests/*.test.ts packages/branding/tests/*.test.ts packages/design-tokens/tests/*.test.ts apps/api/tests/*.test.ts scripts/tests/*.test.mjs && pnpm --filter @delivery/ui-web test",
+    "test": "node --experimental-strip-types --test packages/pricing/tests/*.test.ts packages/contracts/tests/*.test.ts packages/branding/tests/*.test.ts packages/design-tokens/tests/*.test.ts apps/api/tests/*.test.ts scripts/tests/*.test.mjs && pnpm --filter @delivery/ui-web test && pnpm --filter @delivery/merchant-web test",
     "check:lines": "node scripts/check-source-lengths.mjs",
     "check": "pnpm run db:generate && pnpm run db:validate && pnpm run check:lines && pnpm run typecheck && pnpm run typecheck:ui && pnpm run test",
     "typecheck": "tsc --project tsconfig.json",
@@ -21,8 +21,11 @@
     "local:stop": "node scripts/local/operations.mjs stop",
     "test:integration": "node --experimental-strip-types --test --test-concurrency=1 apps/api/integration/*.test.ts",
     "gallery": "pnpm --filter @delivery/ui-web gallery",
-    "typecheck:ui": "pnpm --filter @delivery/ui-web typecheck",
-    "gallery:build": "pnpm --filter @delivery/ui-web gallery:build"
+    "typecheck:ui": "pnpm --filter @delivery/ui-web typecheck && pnpm --filter @delivery/merchant-web typecheck",
+    "gallery:build": "pnpm --filter @delivery/ui-web gallery:build",
+    "merchant": "pnpm --filter @delivery/merchant-web dev",
+    "merchant:demo": "pnpm --filter @delivery/merchant-web dev:demo",
+    "merchant:build": "pnpm --filter @delivery/merchant-web build"
   },
   "devDependencies": {
     "@prisma/client": "7.10.1",

@@ -10,6 +10,7 @@
     "prisma.config.ts"
   ],
   "exclude": [
-    "packages/ui-web/**"
+    "packages/ui-web/**",
+    "apps/merchant-web/**"
   ]
 }
