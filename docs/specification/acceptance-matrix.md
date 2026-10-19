@@ -31,6 +31,17 @@
 
 ## Evidencias necesarias
 
+### Historial paginado de Delivery (issue #9)
+
+La suite [delivery-history](../../apps/api/integration/delivery-history.test.ts)
+verifica ACC-010 y el contrato de lectura paginada: orden descendente con empates
+de fecha, límites 20/100, lookahead, repetición de cursor, ausencia de duplicados
+tras insertar una entrega reciente, páginas vacías y DTO idéntico al detalle.
+También cubre RLS sin filtros de aplicación, aislamiento entre comercios y
+sucursales hermanas, revocación entre páginas, comercio/sucursal deshabilitados,
+query/cursor/token inválidos y fallos DB/Auth. Resultados y SHA en CI/entrega;
+no acredita GPS, despacho, dinero ni operación comercial.
+
 ### Cobertura local de contexto de comercio
 
 La suite [merchant-context](../../apps/api/integration/merchant-context.test.ts)

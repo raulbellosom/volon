@@ -24,6 +24,15 @@ Delivery añade `POST /v1/deliveries` y `GET /v1/deliveries/{deliveryId}` según
 
 ## Puertos y redes
 
+El historial `GET /v1/deliveries?branchId=...` usa el mismo bearer y devuelve
+páginas según el [contrato API](../specification/api-contracts.md), con DTOs y
+validadores exportados por `@delivery/contracts`. `pnpm test:integration` incluye
+pruebas de cursor, límites y RLS. Sus fixtures usan sucursales e identificadores
+UUID sintéticos propios; al terminar deshabilitan membresía y sucursal. Las
+entregas de prueba se conservan porque son inmutables: no se desactivan triggers
+ni se borran datos para limpiar la suite. No ejecutar suites simultáneamente
+sobre este stack, pues las pruebas restauran grants y flags temporales en finally.
+
 El portal puede consumir `GET /v1/me` y
 `GET /v1/merchants/{merchantId}/branches` con el mismo bearer de Supabase Auth.
 DTOs, campos y errores están definidos en el [contrato API](../specification/api-contracts.md).
