@@ -15,7 +15,7 @@
 
 - Tokens y marca se consumen como TypeScript de `@delivery/design-tokens` y `@delivery/branding`. No se usa DOM ni CSS de `ui-web`.
 - Los componentes nativos viven en `apps/courier-mobile/src/ui`. Se moverán a `packages/ui-native` cuando exista una segunda app nativa que los necesite.
-- La compuerta `EXPO_PUBLIC_COURIER_MODE` falla en cerrado: vacío o `demo` usa el adaptador sintético; cualquier otro valor bloquea la app.
+- La compuerta `EXPO_PUBLIC_COURIER_MODE` falla en cerrado: vacío o `demo` usa el adaptador sintético; `local` (#17) conecta solo identidad y disponibilidad ([ADR-0013](0013-courier-identity-and-availability.md)), únicamente en desarrollo, con URLs de loopback y una clave `sb_publishable_`; cualquier otro valor o configuración inválida bloquea la app. Los exports fallan si el bundle trae claves o URLs del laboratorio.
 
 ## Alternativas
 - **Expo SDK 58:** su primera versión publicada hace más de dos semanas (58.0.3) empaqueta `react-native 0.88.0-rc.3`, una versión preliminar. Se reevaluará al estabilizarse.
