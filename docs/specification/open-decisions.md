@@ -25,6 +25,16 @@
 | DEC-17 | Eventos y outbox | **Definido conceptualmente, prueba pendiente** | Backend autoridad; outbox para hechos durables; Broadcast privado efímero, snapshot tras reconexión. Test de versionado, permisos y consistencia. | Integraciones |
 | DEC-18 | Gestión de flotas múltiples | **Diferido a M2** | Modelo compatible con roles/tenants; no construir fleet-web ni split payouts en M0. Definir contratos/roles en M2. | Flotas |
 
+### Direcciones sintéticas — decisión del incremento #11
+
+El usuario autorizó conservar destinos e indicaciones exclusivamente sintéticos
+en JSON existente y leer pickup/snapshots mediante Auth/RLS, sin migración.
+[ADR-0010](../decisions/0010-delivery-location-snapshots.md) y [contrato API](api-contracts.md)
+definen el corte. La [comparación documental](../validation/address-provider-evaluation.md)
+propone evaluar Geoapify frente a Google/Mapbox; no selecciona ni activa proveedor.
+DEC-04/07/09 siguen abiertos para tarifas, rutas y cobertura reales. Retención
+implementada y licencia compatible con snapshots compartidos son previas a PII.
+
 ### Contexto mínimo de comercio — decisión del incremento #9
 
 Solicitud del usuario del 18-10-2026: implementar únicamente identidad y selector

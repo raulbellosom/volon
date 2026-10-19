@@ -91,4 +91,11 @@ El stop afecta solo `delivery-backend-local` y el proyecto Supabase `delivery-lo
 
 ## Límites del incremento
 
+El corte de direcciones #11 permite destino textual e indicaciones sintéticas
+opcionales en el snapshot existente y tres lecturas explícitas bajo Auth/RLS.
+Contrato y secuencia para Claude: [integración de ubicaciones](location-integration.md).
+Sin migraciones nuevas ni servicios comerciales. La integración prueba pickup
+autoritativo, destino inmutable, legacy, RLS y fallos de infraestructura.
+
+
 La ruta es distancia geodésica PostGIS desde sucursales sintéticas en `(0, 0)`, con recogida dentro de 1 m y radio máximo sintético de 8 km, sin ruta vial, ETA o tarifa comercial. El listener exige `LOCAL_SYNTHETIC_MODE=true`. Cotizar no crea Delivery ni cobra; el comando separado Delivery consume una quote vigente una sola vez y persiste `requested` con snapshot/idempotencia inmutables. No hay otras transiciones, pagos ni despacho; quedan pendientes auditoría completa/outbox, rate limiting, gestión completa de sesiones y retención. Realtime y Storage están disponibles sin flujos de negocio ni buckets/canales abiertos. Redis está disponible sin workers. Self-Hosted de producción, backups/restore y capacidad quedan fuera de esta entrega.
