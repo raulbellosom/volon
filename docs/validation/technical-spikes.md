@@ -54,6 +54,10 @@ Ejecución: [GitHub Actions #39136492484](https://github.com/raulbellosom/volon/
 
 ## Formato de reporte de prueba
 
+El issue #12 añade [harness de comparación offline y protocolo real opt-in](map-provider-benchmark.md).
+Los resultados artificiales prueban contratos/métricas/fallos; no son benchmark
+de Puerto Vallarta ni evidencia de disponibilidad de proveedores.
+
 La evaluación documental de direcciones, licencias, costos y perfiles moto del
 issue #11 está en [proveedores de direcciones y mapas](address-provider-evaluation.md).
 No sustituye el benchmark vial ni aprueba un proveedor o cobertura comercial.

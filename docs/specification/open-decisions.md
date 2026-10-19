@@ -25,6 +25,15 @@
 | DEC-17 | Eventos y outbox | **Definido conceptualmente, prueba pendiente** | Backend autoridad; outbox para hechos durables; Broadcast privado efímero, snapshot tras reconexión. Test de versionado, permisos y consistencia. | Integraciones |
 | DEC-18 | Gestión de flotas múltiples | **Diferido a M2** | Modelo compatible con roles/tenants; no construir fleet-web ni split payouts en M0. Definir contratos/roles en M2. | Flotas |
 
+### Evaluación de mapas y privacidad — incremento #12
+
+[Harness y protocolo](../validation/map-provider-benchmark.md) con tres adaptadores
+aislados y CI offline; no hay consultas reales ni selección de proveedor.
+DEC-07/09 requieren accesos/tolerancias y umbrales revisados, benchmark real,
+licencia de almacenamiento compartido y presupuesto. El ciclo de retención es
+[ADR-0011 propuesta](../decisions/0011-location-privacy-lifecycle.md), sin plazo
+predeterminado, migración o borrado real. No amplía operación ni permisos.
+
 ### Direcciones sintéticas — decisión del incremento #11
 
 El usuario autorizó conservar destinos e indicaciones exclusivamente sintéticos

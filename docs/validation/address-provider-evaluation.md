@@ -8,11 +8,14 @@ siguen pendientes para operación real; este documento no los aprueba.
 
 ## Comparación técnica
 
+Preparación reproducible del issue #12: [protocolo, CLI y dataset público](map-provider-benchmark.md).
+La elección permanece pendiente de evidencia real y autorización; no hay ganador.
+
 | Criterio | Mapbox | Google Maps Platform | OSM mediante Geoapify administrado |
 | --- | --- | --- | --- |
 | Dirección mexicana | Geocoding v6, filtro de país y proximidad; evaluar número, colonia, CP y precisión del resultado. | Geocoding/Places, restricciones regionales y componentes; contrastar resultados parciales y nivel de precisión. | Datos OSM/OpenAddresses y otras fuentes; filtros por país/área, confianza por edificio/calle. La completitud depende de los datos locales. |
 | Mapa y pin | Mapbox GL JS y marcador; un pin elegido no demuestra verificación. | Maps JavaScript y marcador; mismo límite de verificación. | MapLibre/Leaflet con tiles contratados Geoapify y marcador. No usar tiles comunitarios como infraestructura comercial implícita. |
-| Moto | Directions documenta driving, driving-traffic, walking, cycling; no perfil moto dedicado. | Routes TWO_WHEELER incluye México. | Routing documenta motorcycle y scooter por separado. |
+| Moto | Directions documenta driving, driving-traffic, walking, cycling; no perfil moto dedicado. | Routes TWO_WHEELER incluye México; es beta y exige advertencia visible. | Routing documenta motorcycle y scooter por separado. |
 | Persistencia | Temporary no permite guardar resultados; Permanent sí, con habilitación de cuenta/contrato y restricciones de redistribución. | Restricciones por producto y excepciones condicionadas; no asumir permiso de snapshot multiusuario indefinido. | Geocoding anuncia almacenamiento sin costo adicional; cumplir atribución/licencias de fuentes y contrato. |
 | Desarrollo/comercial | Desarrollo con token y facturación controlados; producción requiere contrato que permita conservar el resultado. | Proyecto con billing y APIs acotadas; aclarar licencia de persistencia y uso compartido comercio/courier. | Servicio operable con contrato, créditos, soporte y SLA de pago; no depende del Nominatim público. |
 
@@ -95,7 +98,7 @@ Fuentes: [Mapbox tokens](https://docs.mapbox.com/accounts/guides/tokens/),
 
 ## Recomendación y evidencia pendiente
 
-Proponer **Geoapify como primer candidato de evaluación**, por persistencia
+Mantener **Geoapify como candidato de evaluación**, por persistencia
 documentada, perfiles moto y servicio administrado. No es una adopción ni una
 afirmación de mejor precisión en Puerto Vallarta. Usar Google como comparación
 de calidad local y moto, con revisión de costos Enterprise y licencia compartida;
