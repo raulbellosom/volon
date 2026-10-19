@@ -135,6 +135,7 @@ model Branch {
   quotes      PricingQuote[]
   deliveries  Delivery[]
   privateLocations PrivateLocationEnvelope[]
+  paymentLabCases PaymentEvidenceLabCase[]
 
   @@unique([id, merchantId])
   @@index([merchantId])
@@ -179,6 +180,7 @@ model PricingQuote {
 }
 
 model Delivery {
+  paymentIntent ServicePaymentIntent?
   publicReference DeliveryPublicReference?
   id                  String       @id @default(uuid())
   subjectId           String       @db.Uuid
@@ -235,5 +237,83 @@ model PrivateLocationEnvelope {
 
   @@unique([subjectId, branchId, requestId])
   @@index([branchId, merchantId])
+  @@schema("app")
+}
+
+model ServicePaymentIntent {
+  id String @id @db.Uuid
+  deliveryId String @unique
+  amountMinor Int
+  currency String
+  status String @default("pending")
+  version Int @default(1)
+  createdAt DateTime @default(dbgenerated("clock_timestamp()")) @db.Timestamptz(3)
+  delivery Delivery @relation(fields: [deliveryId], references: [id], onDelete: Restrict, onUpdate: NoAction)
+  attempt ServicePaymentAttempt?
+  commands ServicePaymentCommand[]
+
+  @@schema("app")
+}
+
+model ServicePaymentAttempt {
+  id String @id @db.Uuid
+  intentId String @unique @db.Uuid
+  status String @default("not_submitted")
+  provider String?
+  providerPaymentId String?
+  version Int @default(1)
+  createdAt DateTime @default(dbgenerated("clock_timestamp()")) @db.Timestamptz(3)
+  intent ServicePaymentIntent @relation(fields: [intentId], references: [id], onDelete: Restrict, onUpdate: NoAction)
+
+  @@schema("app")
+}
+
+model ServicePaymentCommand {
+  subjectId String @db.Uuid
+  idempotencyKeyHash String @db.Char(64)
+  requestHash String @db.Char(64)
+  intentId String @db.Uuid
+  intent ServicePaymentIntent @relation(fields: [intentId], references: [id], onDelete: Restrict, onUpdate: NoAction)
+
+  @@id([subjectId, idempotencyKeyHash])
+  @@index([intentId])
+  @@schema("app")
+}
+
+model PaymentEvidenceLabCase {
+  id String @id @db.Uuid
+  branchId String
+  merchantId String
+  expectedAmountMinor Int
+  currency String
+  providerPaymentId String @unique
+  createdAt DateTime @default(dbgenerated("clock_timestamp()")) @db.Timestamptz(3)
+  branch Branch @relation(fields: [branchId, merchantId], references: [id, merchantId], onDelete: Restrict, onUpdate: NoAction)
+  events PaymentEvidenceLabEvent[]
+
+  @@index([branchId, merchantId])
+  @@schema("app")
+}
+
+model PaymentEvidenceLabEvent {
+  id String @id @db.Uuid
+  caseId String @db.Uuid
+  eventId String @unique
+  requestHash String @db.Char(64)
+  providerPaymentId String
+  source String
+  kind String
+  amountMinor Int
+  currency String
+  occurredAt DateTime @db.Timestamptz(3)
+  origin String
+  state String
+  disposition String
+  needsReconciliation Boolean
+  version Int
+  receivedAt DateTime @default(dbgenerated("clock_timestamp()")) @db.Timestamptz(3)
+  fixture PaymentEvidenceLabCase @relation(fields: [caseId], references: [id], onDelete: Restrict, onUpdate: NoAction)
+
+  @@unique([caseId, version])
   @@schema("app")
 }

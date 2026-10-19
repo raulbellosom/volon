@@ -67,7 +67,14 @@ try {
   if (referenceRls !== '1') throw new Error('Missing public reference FORCE RLS');
   const isolated = sql(`SET ROLE delivery_api; SELECT count(*) FROM app."Courier";`).trim();
   if (!isolated.endsWith('0')) throw new Error('Unexpected unscoped data');
-  console.log(`${migrations.length} migraciones probadas en PostgreSQL limpio; Courier/DispatchLab/folios FORCE RLS; doble exclusión y backfill; sin tocar el stack existente.`);
+  const financeRls = sql(`SELECT count(*) FROM pg_class WHERE relnamespace = 'app'::regnamespace
+    AND relname IN ('ServicePaymentIntent','ServicePaymentAttempt','ServicePaymentCommand','PaymentEvidenceLabCase','PaymentEvidenceLabEvent')
+    AND relrowsecurity AND relforcerowsecurity;`).trim();
+  if (financeRls !== '5') throw new Error('Missing financial FORCE RLS');
+  if (sql(`SELECT count(*) FROM app."ServicePaymentIntent";`).trim() !== '0') throw new Error('Unexpected payment backfill');
+  const unauthenticatedFinance = sql(`SET ROLE delivery_api; SELECT count(*) FROM app."ServicePaymentIntent";`).trim();
+  if (!unauthenticatedFinance.endsWith('0')) throw new Error('Unscoped financial data');
+  console.log(`${migrations.length} migraciones probadas en PostgreSQL limpio; Courier/DispatchLab/folios/finanzas FORCE RLS; doble exclusión y backfill íntegro, sin pagos inventados; sin tocar el stack existente.`);
 } catch (error) {
   mkdirSync('.local', { recursive: true });
   writeFileSync('.local/clean-migrations-error.log', String(error.stderr ?? error.message), { mode: 0o600 });
