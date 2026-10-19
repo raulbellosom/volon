@@ -21,6 +21,7 @@ async function reachQuote(options: Parameters<typeof renderApp>[1] = {}) {
   await user.click(screen.getByRole('button', { name: /Continuar/ }));
   expect(screen.getByRole('button', { name: /Cotizar envío/ })).toBeDisabled();
   await user.type(screen.getByRole('textbox', { name: /Dirección de entrega/ }), 'Av. México 1234');
+  await user.type(screen.getByRole('textbox', { name: /Indicaciones/ }), 'Portón azul');
   await user.click(screen.getByRole('button', { name: /Cotizar envío/ }));
   return app;
 }
@@ -34,7 +35,12 @@ describe('new delivery request', () => {
     expect(createQuote).toHaveBeenCalledWith(expect.objectContaining({ branchId: 'branch_demo_centro', serviceType: 'local_delivery' }));
     expect(await screen.findByText('$61.50')).toBeInTheDocument();
     expect(screen.getByText('Cargo por distancia')).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Revisa el precio' })).toHaveFocus();
+    expect(screen.getByRole('heading', { name: 'Revisa la cotización' })).toHaveFocus();
+    // The typed address is never presented as stored data, nor the notes as a time.
+    expect(screen.getByText('Indicaciones: Portón azul')).toBeInTheDocument();
+    expect(screen.getByText(/todavía no se guarda con el envío/)).toBeInTheDocument();
+    expect(screen.queryByText(/garantizad/i)).not.toBeInTheDocument();
+    expect(screen.getByText(/no son una tarifa comercial/)).toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: /Confirmar envío/ }));
     expect(await screen.findByText('No pudimos confirmar el envío')).toBeInTheDocument();
@@ -46,6 +52,7 @@ describe('new delivery request', () => {
     await user.click(screen.getByRole('button', { name: /Confirmar envío/ }));
 
     expect(await screen.findByRole('heading', { name: 'Solicitud enviada' })).toBeInTheDocument();
+    expect(screen.getByText('La dirección no se guardó con el envío')).toBeInTheDocument();
     const [first, retry] = createDelivery.mock.calls.map(([input]) => input as { idempotencyKey: string });
     expect(first?.idempotencyKey).toBeTruthy();
     expect(retry?.idempotencyKey).toBe(first?.idempotencyKey);
@@ -60,7 +67,7 @@ describe('new delivery request', () => {
     expect(await screen.findByText('La cotización venció')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Confirmar envío/ })).toBeDisabled();
     await user.click(screen.getAllByRole('button', { name: /Cotizar de nuevo/ })[0]!);
-    expect(await screen.findByText(/Precio garantizado por/)).toBeInTheDocument();
+    expect(await screen.findByText(/Cotización válida/)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Confirmar envío/ })).toBeEnabled();
   });
 
@@ -81,7 +88,7 @@ describe('new delivery request', () => {
 
   it('disables confirmation while the browser is offline', async () => {
     await reachQuote({ api: { createQuote: async () => QUOTE } });
-    await screen.findByText(/Precio garantizado por/);
+    await screen.findByText(/Cotización válida/);
     const onLine = vi.spyOn(navigator, 'onLine', 'get').mockReturnValue(false);
     act(() => void window.dispatchEvent(new Event('offline')));
     expect(screen.getByRole('status', { name: '' })).toBeInTheDocument();

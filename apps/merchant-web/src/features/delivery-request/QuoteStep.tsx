@@ -1,11 +1,22 @@
 import { Alert, Button, PriceBreakdown, RouteSummary, SkeletonText, SpinnerIcon } from '@delivery/ui-web';
 import { ArrowLeft, CircleCheck, RotateCw } from 'lucide-react';
+import { pricingSource } from '../../shared/pricing-notice.ts';
 import { problemCopy } from '../../shared/ProblemState.tsx';
 import { formatClock, useCountdown } from '../../shared/useCountdown.ts';
 import { useOnlineStatus } from '../../shared/useOnlineStatus.ts';
 import { priceLines } from './price-lines.ts';
 import type { DeliveryRequestState } from './useDeliveryRequest.ts';
 import { StepActions, StepSection } from './StepSection.tsx';
+
+/** Typed by the merchant and shown only here: the delivery contract does not store it yet. */
+function DropoffNote({ reference }: { reference: string }) {
+  return (
+    <>
+      {reference && <span className="block">Indicaciones: {reference}</span>}
+      <span className="block">Capturada en esta pantalla; todavía no se guarda con el envío.</span>
+    </>
+  );
+}
 
 interface QuoteStepProps {
   request: DeliveryRequestState;
@@ -21,10 +32,10 @@ export function QuoteStep({ request, branchName }: QuoteStepProps) {
   const requote = () => void request.requestQuote();
 
   return (
-    <StepSection title="Revisa el precio" description="El servidor calculó este precio para tu ruta. Confírmalo para solicitar el envío.">
+    <StepSection title="Revisa la cotización" description="Revisa el desglose y confírmalo para solicitar el envío.">
       <RouteSummary
-        pickup={{ name: branchName, address: 'Dirección registrada de la sucursal' }}
-        dropoff={{ name: 'Entrega', address: destination.address || 'Sin dirección', ...(destination.reference ? { time: destination.reference } : {}) }}
+        pickup={{ name: branchName, address: 'La dirección de la sucursal aún no está en el sistema' }}
+        dropoff={{ name: destination.address || 'Sin dirección', address: <DropoffNote reference={destination.reference} /> }}
       />
 
       {quote.status === 'loading' && (
@@ -36,7 +47,7 @@ export function QuoteStep({ request, branchName }: QuoteStepProps) {
 
       {quote.status === 'error' && (
         <Alert tone="danger" live="assertive" title={problemCopy(quote.error).title} actions={<Button size="sm" variant="secondary" leadingIcon={<RotateCw />} onPress={requote}>Cotizar de nuevo</Button>}>
-          {quote.error.kind === 'invalid' ? 'La dirección quedó fuera de la zona de servicio o no es válida.' : problemCopy(quote.error).description}
+          {quote.error.code === 'OUTSIDE_COVERAGE' ? 'El destino quedó fuera de la zona de servicio.' : problemCopy(quote.error).description}
         </Alert>
       )}
 
@@ -45,13 +56,13 @@ export function QuoteStep({ request, branchName }: QuoteStepProps) {
           lines={priceLines(quote.quote.lines)}
           totalMinor={quote.quote.amountMinor}
           totalLabel="Total del envío"
-          footnote={expired ? 'Este precio ya no es válido.' : `Precio garantizado por ${formatClock(secondsLeft)} min · Montos en MXN calculados por el servidor`}
+          footnote={`${expired ? 'Esta cotización ya no es válida' : `Cotización válida ${formatClock(secondsLeft)} min más`} · ${pricingSource()}.`}
         />
       )}
 
       {expired && (
         <Alert tone="warning" live="polite" title="La cotización venció" actions={<Button size="sm" variant="secondary" leadingIcon={<RotateCw />} onPress={requote}>Cotizar de nuevo</Button>}>
-          Los precios se garantizan por poco tiempo. Vuelve a cotizar para confirmar el envío.
+          Cada cotización vale solo unos minutos. Vuelve a cotizar para confirmar el envío.
         </Alert>
       )}
 

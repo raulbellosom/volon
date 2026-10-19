@@ -23,10 +23,10 @@ Ambos abren `http://127.0.0.1:5173`. Pruebas: `pnpm --filter @delivery/merchant-
 | cualquier otra | Página no encontrada | — |
 
 ## Estados cubiertos
-Carga (skeleton), error con reintento, acceso denegado (403), sin sucursal, no encontrado, sesión vencida (401 → vuelve a `/acceso` con aviso), cotización vencida (cuenta regresiva o `409 QUOTE_EXPIRED`), fuera de cobertura (`422`), servicio caído (`503`) y sin conexión (aviso global y confirmación deshabilitada). Los reintentos de confirmación reutilizan la misma `Idempotency-Key`, así que no duplican el envío.
+Los montos indican su origen: «ficticios» en demo y «de prueba con ruta sintética, no son una tarifa comercial» con el backend local. Carga (skeleton), error con reintento, acceso denegado (403), sin sucursal, no encontrado, sesión vencida (401 → vuelve a `/acceso` con aviso), cotización vencida (cuenta regresiva o `409 QUOTE_EXPIRED`), sesión guardada que ya venció (aviso al volver a entrar), fuera de cobertura (`422`), servicio caído (`503`) y sin conexión (aviso global y confirmación deshabilitada). Los reintentos de confirmación reutilizan la misma `Idempotency-Key`, así que no duplican el envío.
 
 ## Estructura
-- `src/api/`: puerto `MerchantApi`, adaptador HTTP, errores problem+json → `ApiError` y validación de respuestas. Las pantallas nunca llaman `fetch`.
+- `src/api/`: puerto `MerchantApi`, adaptador HTTP y errores problem+json → `ApiError`. Las respuestas se validan con los parsers de `@delivery/contracts`. Las pantallas nunca llaman `fetch`.
 - `src/demo/`: adaptador en memoria y fixtures, cargado solo con `--mode demo` en desarrollo.
 - `src/session/` y `src/workspace/`: sesión (token en `sessionStorage`) y sucursal activa.
 - `src/features/`: una carpeta por pantalla; `src/shared/`: estados de carga/error y hooks.
@@ -35,9 +35,8 @@ Carga (skeleton), error con reintento, acceso denegado (403), sin sucursal, no e
 ## Pendiente de backend o decisión
 | Falta | Efecto hoy |
 | --- | --- |
-| Listado de envíos por sucursal (`GET /v1/deliveries?branchId=`, #9) | «Envíos recientes» muestra un estado vacío y la consulta por folio. |
+| Listado de envíos por sucursal (`GET /v1/deliveries?branchId=`, #9; hoy responde 405) | «Envíos recientes» muestra un estado vacío y la consulta por folio. No se simula con datos falsos. |
 | Geocodificación y ubicación de sucursales en `/v1/me` | La cotización usa coordenadas sintéticas de desarrollo; en un build de producción el paso queda bloqueado con un aviso. |
-| Dirección e indicaciones en el contrato de entrega | Se capturan y se muestran en la pantalla, pero no se envían ni se guardan. |
+| Dirección e indicaciones en el contrato de entrega | Se capturan y se muestran solo en la cotización, marcadas como «todavía no se guarda». La confirmación y el estado avisan que el sistema no las registra. |
 | Estados posteriores a `requested`, asignación y seguimiento en vivo | La línea de tiempo marca «Solicitado» y lista los pasos siguientes como pendientes; no se finge seguimiento. |
-| Validadores de respuesta de cotización y entrega en `@delivery/contracts` | La app usa guardas locales en `src/api/response-guards.ts`. |
 | Gateway del mismo origen o CORS, renovación de token y hosting | Solo funciona con el proxy de desarrollo. |

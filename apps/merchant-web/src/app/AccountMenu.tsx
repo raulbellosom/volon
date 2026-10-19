@@ -9,8 +9,9 @@ export function AccountMenu() {
   const { currentBranch, branches } = useWorkspace();
   return (
     <MenuTrigger>
-      <Button variant="ghost" size="sm" leadingIcon={<CircleUser />} trailingIcon={<ChevronDown />} aria-label={`Cuenta: ${session?.email ?? ''}`}>
+      <Button variant="ghost" size="sm" leadingIcon={<CircleUser />} trailingIcon={<ChevronDown />}>
         <span className="max-w-40 truncate">{currentBranch?.branchName ?? 'Mi cuenta'}</span>
+        <span className="sr-only">, menú de cuenta</span>
       </Button>
       <Menu placement="bottom end" onAction={(key) => key === 'sign-out' && signOut()}>
         <MenuItem id="account" isDisabled description={session?.email ?? ''} icon={<CircleUser />}>Sesión iniciada</MenuItem>

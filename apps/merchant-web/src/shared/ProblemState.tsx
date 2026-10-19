@@ -22,7 +22,7 @@ const COPY: Record<ApiErrorKind, ProblemCopy> = {
   'not-found': { icon: <SearchX />, title: 'No lo encontramos', description: 'Puede que el folio esté mal escrito o que pertenezca a otra sucursal.', retryable: false },
   unavailable: { icon: <ServerCrash />, title: 'El servicio no responde', description: 'Estamos teniendo problemas para conectar. Intenta de nuevo en unos minutos.', retryable: true },
   unauthenticated: { icon: <KeyRound />, title: 'Tu sesión terminó', description: 'Vuelve a iniciar sesión para continuar.', retryable: false },
-  'quote-expired': { icon: <TimerOff />, title: 'La cotización venció', description: 'Los precios se garantizan por poco tiempo. Cotiza de nuevo para continuar.', retryable: false },
+  'quote-expired': { icon: <TimerOff />, title: 'La cotización venció', description: 'Cada cotización vale solo unos minutos. Cotiza de nuevo para continuar.', retryable: false },
   invalid: { icon: <TriangleAlert />, title: 'No pudimos procesar la solicitud', description: 'Revisa los datos e inténtalo otra vez.', retryable: false },
   conflict: { icon: <TriangleAlert />, title: 'La solicitud ya no es válida', description: 'Algo cambió mientras la preparabas. Empieza de nuevo para continuar.', retryable: false },
   unexpected: { icon: <TriangleAlert />, title: 'Algo salió mal', description: 'Recibimos una respuesta inesperada. Intenta de nuevo.', retryable: true },

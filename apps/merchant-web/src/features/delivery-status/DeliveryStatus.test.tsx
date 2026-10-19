@@ -27,6 +27,7 @@ describe('delivery status', () => {
     expect(screen.getAllByText('$61.50').length).toBeGreaterThan(0);
     expect(screen.getAllByText('Sucursal demo Marina').length).toBeGreaterThan(0);
     expect(screen.getByText('El seguimiento en vivo aún no está disponible')).toBeInTheDocument();
+    expect(screen.getByText('El sistema aún no la registra.')).toBeInTheDocument();
   });
 
   it('reports a delivery that does not exist', async () => {

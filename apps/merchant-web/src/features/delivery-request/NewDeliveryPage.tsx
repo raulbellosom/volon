@@ -36,7 +36,7 @@ function DeliveryRequestFlow({ branches, initialBranch, onRestart }: { branches:
 
   return (
     <div className="flex flex-col gap-8">
-      <Stepper steps={STEPS} currentIndex={request.step === 'done' ? STEPS.length : index} aria-label="Solicitud de envío" />
+      <Stepper steps={STEPS} currentIndex={index} aria-label="Solicitud de envío" />
       {request.step === 'origin' && <OriginStep request={request} branches={branches} />}
       {request.step === 'destination' && <DestinationStep request={request} locations={locations} />}
       {request.step === 'quote' && <QuoteStep request={request} branchName={branch.branchName} />}
@@ -52,7 +52,7 @@ export function NewDeliveryPage() {
   if (!currentBranch) return null;
   return (
     <>
-      <PageHeader overline={currentBranch.branchName} title="Nuevo envío" description="Cuatro pasos: origen, destino, precio y confirmación." />
+      <PageHeader overline={currentBranch.branchName} title="Nuevo envío" description="Cuatro pasos: origen, destino, cotización y confirmación." />
       <DeliveryRequestFlow key={run} branches={branches} initialBranch={currentBranch} onRestart={() => setRun((value) => value + 1)} />
     </>
   );

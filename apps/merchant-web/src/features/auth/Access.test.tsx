@@ -2,7 +2,8 @@ import { screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { ApiError } from '../../api/api-error.ts';
 import { DEMO_EMAILS, demoMe } from '../../demo/demo-fixtures.ts';
-import { renderApp } from '../../test/render-app.tsx';
+import { saveSession } from '../../session/session-storage.ts';
+import { renderApp, TEST_SESSION } from '../../test/render-app.tsx';
 
 describe('sign-in and access', () => {
   it('sends visitors without a session to the sign-in screen', async () => {
@@ -61,6 +62,13 @@ describe('sign-in and access', () => {
     expect(await screen.findByText('Tu sesión terminó')).toBeInTheDocument();
     expect(router.state.location.pathname).toBe('/acceso');
     expect(sessionStorage.getItem('volon-merchant-session')).toBeNull();
+  });
+
+  it('says why it asks to sign in when the stored session already expired', async () => {
+    saveSession({ ...TEST_SESSION, expiresAt: Date.now() - 1000 });
+    const { router } = renderApp('/', { signedIn: false });
+    expect(await screen.findByText('Tu sesión terminó')).toBeInTheDocument();
+    expect(router.state.location.pathname).toBe('/acceso');
   });
 
   it('renders a not-found page for unknown paths', async () => {

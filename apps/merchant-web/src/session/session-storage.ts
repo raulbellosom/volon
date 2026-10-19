@@ -30,15 +30,27 @@ function isSession(value: unknown): value is Session {
     && 'email' in value && typeof value.email === 'string';
 }
 
-export function loadSession(now: number = Date.now()): Session | null {
+function storedSession(): Session | null {
   const raw = read(SESSION_KEY);
   if (!raw) return null;
   try {
     const value: unknown = JSON.parse(raw);
-    return isSession(value) && value.expiresAt > now ? value : null;
+    return isSession(value) ? value : null;
   } catch {
     return null;
   }
+}
+
+/** The tab's session while its token is still valid. */
+export function loadSession(now: number = Date.now()): Session | null {
+  const session = storedSession();
+  return session && session.expiresAt > now ? session : null;
+}
+
+/** True when this tab kept a session whose token already expired (say why we ask to sign in). */
+export function hasExpiredSession(now: number = Date.now()): boolean {
+  const session = storedSession();
+  return session !== null && session.expiresAt <= now;
 }
 
 export function saveSession(session: Session | null): void {

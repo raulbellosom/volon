@@ -8,7 +8,7 @@ import { useSession } from '../../session/useSession.ts';
 import { LoginForm } from './LoginForm.tsx';
 
 const PROMISES = [
-  { icon: <ReceiptText />, text: 'Precio confirmado antes de pedir, con el desglose completo.' },
+  { icon: <ReceiptText />, text: 'Ves el costo del envío y su desglose antes de pedirlo.' },
   { icon: <MapPinned />, text: 'Envíos locales desde cada una de tus sucursales.' },
   { icon: <BadgeCheck />, text: 'La logística se cobra aparte y siempre la ves antes de confirmar.' },
 ];

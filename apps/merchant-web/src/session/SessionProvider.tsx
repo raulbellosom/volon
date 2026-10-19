@@ -2,7 +2,7 @@ import { createContext, useCallback, useMemo, useRef, useState, type ReactNode }
 import { ApiError } from '../api/api-error.ts';
 import type { MerchantApi, Session } from '../api/merchant-api.ts';
 import type { Services } from '../app/services.ts';
-import { loadSession, saveSession } from './session-storage.ts';
+import { hasExpiredSession, loadSession, saveSession } from './session-storage.ts';
 
 /** Why the user is looking at the sign-in screen, if not by choice. */
 export type SignOutReason = 'expired' | null;
@@ -38,7 +38,7 @@ function withSessionGuard(api: MerchantApi, onUnauthenticated: () => void): Merc
 
 export function SessionProvider({ services, children }: { services: Services; children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(() => loadSession());
-  const [signOutReason, setSignOutReason] = useState<SignOutReason>(null);
+  const [signOutReason, setSignOutReason] = useState<SignOutReason>(() => (hasExpiredSession() ? 'expired' : null));
   const sessionRef = useRef(session);
   sessionRef.current = session;
 
