@@ -31,6 +31,15 @@
 
 ## Evidencias necesarias
 
+### Folios públicos (#19)
+
+public-reference.test.ts prueba emisión concurrente, colisión con referencia
+oculta, agotamiento/rollback, replay/rebranding, Auth/RLS y fallos DB/Auth. El
+verificador de migraciones crea una Delivery antes de la séptima migración y
+compara íntegra la fila tras backfill y repetición. Merchant prueba confirmación,
+historial, detalle, búsqueda manual y copia/fallo de portapapeles. Cursor UUID,
+snapshots y las suites existentes permanecen como regresiones obligatorias.
+
 ### Núcleo interno de asignación (#18)
 
 Las suites dispatch-lab-{concurrency,transactions,security}.test.ts prueban con

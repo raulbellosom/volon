@@ -67,11 +67,27 @@ Después repetir `pnpm local:up`. El script verifica la regla en `ActiveStore`, 
 
 ## Credenciales y privilegios
 
+Folio público #19: `DELIVERY_REFERENCE_PREFIX` opcional (2–4 letras mayúsculas)
+en `.env.local`; ausente/vacío usa branding. Reconstruir con `pnpm local:up`.
+No cambia folios existentes. Ejemplo artificial de búsqueda autenticada:
+`GET /v1/deliveries/by-reference/VL267K9M2Q`; no copiar tokens a comandos o logs.
+El portal permite teclear el código y conserva navegación técnica por UUID.
+
 `.env.example` contiene únicamente nombres y valores no secretos. `.env.local` y `.local/` están ignorados por Git y excluidos del contexto Docker. El bootstrap toma las claves de la CLI sin imprimirlas, genera una contraseña aleatoria para `delivery_api` y otra para los dos usuarios de prueba (`merchant-a@example.test`, `merchant-b@example.test`). No se usan cuentas reales, coordenadas de personas ni service role en la API. No compartir `.env.local` ni los logs sin revisión.
 
 La conexión administrativa local `MIGRATION_DATABASE_URL` se usa solo en Prisma Migrate, seed y pruebas de rechazo. No se pasa al contenedor API. La API recibe `DATABASE_DOCKER_URL` con rol limitado y la clave publicable, valida su rol al arrancar y se ejecuta como usuario `node`, con filesystem de solo lectura, sin capabilities y sin acceso al socket Docker. Redis se ejecuta como usuario `redis` y no tiene consumidores ficticios.
 
 ## Esquema y migraciones
+
+La séptima migración agrega DeliveryPublicReference y pgcrypto, realiza backfill
+atómico bajo lock breve y exige mapping para nuevas entregas. No cambia ninguna
+fila Delivery. Migración y código/cliente deben actualizarse juntos: servidor
+anterior deja de poder confirmar inserts sin mapping y parsers cerrados antiguos
+rechazan el DTO ampliado. `pnpm local:up` migra y reconstruye la API; actualizar
+merchant-web en el mismo corte. No rollback destructivo ni regeneración histórica.
+`node scripts/local/check-clean-migrations.mjs` prueba también datos previos a
+migración, idempotencia del backfill y estabilidad ante otro prefijo en PostgreSQL
+aislado. `pnpm test:integration` incluye búsqueda, colisiones y transacciones.
 
 Prisma CLI/client/adapter 7.10.1 están fijados y son estables; [conexión mediante adapter PostgreSQL](https://www.prisma.io/docs/orm/prisma-client/setup-and-configuration/databases-connections/connection-pool), pool y tiempos acotados. `prisma/schema.prisma` declara solo `app`. Los esquemas `auth`, `storage`, `realtime` y demás internos pertenecen a Supabase y no se introspectan ni migran con Prisma.
 

@@ -33,7 +33,23 @@ try {
   const migrations = readdirSync('prisma/migrations', { withFileTypes: true }).filter((entry) => entry.isDirectory())
     .map((entry) => entry.name).sort();
   for (const migration of migrations) {
-    sql(`BEGIN;\n${readFileSync(`prisma/migrations/${migration}/migration.sql`, 'utf8')}\nCOMMIT;`);
+    let legacy;
+    if (migration === '202610190003_delivery_public_reference') {
+      sql(readFileSync('scripts/local/fixtures/delivery-before-reference.sql', 'utf8'));
+      legacy = sql(`SELECT to_jsonb(d)::text FROM app."Delivery" d WHERE id = 'legacy_delivery';`).trim();
+    }
+    const migrationSql = readFileSync(`prisma/migrations/${migration}/migration.sql`, 'utf8');
+    sql(migrationSql.trimStart().startsWith('BEGIN;') ? migrationSql : `BEGIN;\n${migrationSql}\nCOMMIT;`);
+    if (legacy) {
+      if (sql(`SELECT to_jsonb(d)::text FROM app."Delivery" d WHERE id = 'legacy_delivery';`).trim() !== legacy)
+        throw new Error('Backfill changed a historical Delivery');
+      const reference = sql(`SELECT "publicReference" FROM app."DeliveryPublicReference" WHERE "deliveryId" = 'legacy_delivery';`).trim();
+      if (!/^VL-\d{2}-[23456789ABCDEFGHJKMNPQRSTVWXYZ]{6}$/.test(reference)) throw new Error('Backfill missing');
+      if (!sql(`SELECT app.backfill_delivery_public_references('AB');`).trim().endsWith('0')) throw new Error('Backfill not idempotent');
+      if (sql(`SELECT "publicReference" FROM app."DeliveryPublicReference" WHERE "deliveryId" = 'legacy_delivery';`).trim() !== reference)
+        throw new Error('Rebranding changed historical reference');
+      console.log('Backfill histórico íntegro, idempotente y estable ante cambio de prefijo.');
+    }
     console.log(`Migración limpia correcta: ${migration}`);
   }
   const flags = sql(`SELECT count(*) FROM pg_class WHERE relnamespace = 'app'::regnamespace
@@ -46,9 +62,12 @@ try {
   const exclusions = sql(`SELECT count(*) FROM pg_index WHERE indrelid = 'app."DispatchLabAssignment"'::regclass
     AND indisunique AND indpred IS NOT NULL;`).trim();
   if (exclusions !== '2') throw new Error('Missing DispatchLab exclusivity indexes');
+  const referenceRls = sql(`SELECT count(*) FROM pg_class WHERE relnamespace = 'app'::regnamespace
+    AND relname = 'DeliveryPublicReference' AND relrowsecurity AND relforcerowsecurity;`).trim();
+  if (referenceRls !== '1') throw new Error('Missing public reference FORCE RLS');
   const isolated = sql(`SET ROLE delivery_api; SELECT count(*) FROM app."Courier";`).trim();
   if (!isolated.endsWith('0')) throw new Error('Unexpected unscoped data');
-  console.log(`${migrations.length} migraciones probadas en PostgreSQL limpio; 3 tablas Courier + 5 DispatchLab FORCE RLS; doble exclusión; sin tocar el stack existente.`);
+  console.log(`${migrations.length} migraciones probadas en PostgreSQL limpio; Courier/DispatchLab/folios FORCE RLS; doble exclusión y backfill; sin tocar el stack existente.`);
 } catch (error) {
   mkdirSync('.local', { recursive: true });
   writeFileSync('.local/clean-migrations-error.log', String(error.stderr ?? error.message), { mode: 0o600 });
