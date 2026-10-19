@@ -110,3 +110,31 @@ autoritativo, destino inmutable, legacy, RLS y fallos de infraestructura.
 
 
 La ruta es distancia geodésica PostGIS desde sucursales sintéticas en `(0, 0)`, con recogida dentro de 1 m y radio máximo sintético de 8 km, sin ruta vial, ETA o tarifa comercial. El listener exige `LOCAL_SYNTHETIC_MODE=true`. Cotizar no crea Delivery ni cobra; el comando separado Delivery consume una quote vigente una sola vez y persiste `requested` con snapshot/idempotencia inmutables. No hay otras transiciones, pagos ni despacho; quedan pendientes auditoría completa/outbox, rate limiting, gestión completa de sesiones y retención. Realtime y Storage están disponibles sin flujos de negocio ni buckets/canales abiertos. Redis está disponible sin workers. Self-Hosted de producción, backups/restore y capacidad quedan fuera de esta entrega.
+## Laboratorio Courier #16
+
+1. `pnpm local:up`: aplica quinta migración aditiva con Prisma y aprovisiona
+   courier-a@example.test / courier-b@example.test en Supabase local. No hay cuentas
+   públicas; contraseña local aleatoria en `.env.local`, nunca imprimirla.
+2. `node --experimental-strip-types scripts/local/courier.ts`: autentica el
+   fixture A, consulta perfil, modifica disponibilidad y verifica replay. Solo
+   loopback/puertos locales conocidos; no muestra token, clave ni contraseña.
+3. `pnpm test:integration`: incluye pruebas Courier con Auth/PostgreSQL reales.
+   Pruebas focalizadas: `node --experimental-strip-types --test --test-concurrency=1
+   apps/api/integration/courier-*.test.ts`.
+4. `node scripts/local/check-clean-migrations.mjs`: aplica los cinco SQL en cluster
+   PostgreSQL/PostGIS vacío del mismo image fijado que Supabase, sin puertos ni
+   mounts del host (`--network none`), verifica FORCE RLS y elimina solo su
+   contenedor UUID etiquetado. No usa/muta volúmenes existentes. Requiere imagen
+   `public.ecr.aws/supabase/postgres:17.11.0.004` ya disponible o acceso para pull.
+5. `node --env-file=.env.local node_modules/prisma/build/index.js migrate diff
+   --from-config-datasource --to-schema prisma/schema.prisma --exit-code`: verifica
+   ausencia de drift del modelo soportado por Prisma; constraints/RLS/triggers
+   se verifican con integración, no los infiere Prisma diff.
+
+El seed repetido no habilita perfiles revocados ni cambia turnos/versiones. Los
+tests dejan recibos sintéticos inmutables con claves únicas y restauran cambios
+temporales de grants/habilitación; no se ofrece limpieza destructiva del ledger.
+Un reinicio del backend conserva disponibilidad y recibos en PostgreSQL.
+No conectar aún CourierGateway, no crear ofertas ni invocar Geoapify. Falta
+elegibilidad legal/vehicular, TTL, rate limits para despliegue, PSP y política de
+datos del destinatario. Disponible no equivale a elegible para asignación.
