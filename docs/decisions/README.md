@@ -20,6 +20,9 @@ Los ADR registran **propuestas** y aceptación explícita. Estado inicial de tod
 - [ADR-0012 — courier-mobile con Expo SDK 57](0012-courier-mobile-stack.md) — demo sintética headless: React Navigation, jest-expo y `expo export`; ADR-0003 sigue condicionada a teléfonos reales.
   — propuesta, sin plazos aprobados ni borrado productivo.
 
+- [ADR-0013 — Identidad y disponibilidad Courier](0013-courier-identity-and-availability.md)
+  — laboratorio local sintético #16; no despacho, PII ni conexión móvil.
+
 ## Plantilla de nuevas decisiones
 
 Título, fecha, estado, contexto, motivación, alternativas, decisión, consecuencias, pruebas pendientes, reversibilidad y enlaces. Estados recomendados: Propuesta, Aceptada, Sustituida, Rechazada.

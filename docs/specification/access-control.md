@@ -92,3 +92,14 @@ solo usa fixtures artificiales y, con revisión explícita, POIs públicos.
 
 ## Escenarios de autorización adversaria
 A de Merchant X cambia branchId por una de Y; courier A acepta offer de B; cliente pide mapa de otro; exmiembro conserva socket; operario intenta exportar ubicaciones fuera de turno; webhook falso. Todos deben ser negados o tratados sin divulgar información.
+## Laboratorio Courier #16
+
+Courier se vincula por subject verificado, independiente de Membership comercial.
+Solo puede leer su perfil habilitado, su disponibilidad y sus recibos. FORCE RLS
+en las tres tablas; sin contexto devuelve cero filas. Cambios de identidad y
+aprovisionamiento no están disponibles al rol delivery_api. UPDATE limitado a
+status/version de su turno; PostgreSQL determina timestamp. Recibos inmutables.
+La existencia de perfil Courier no concede permisos de comercio, entregas,
+flotas ni PrivateLocationEnvelope. Si un subject tiene además Membership válida,
+solo conserva esos permisos previos independientes: no se crean por ser Courier.
+Acceso a un ID Courier ajeno no existe como endpoint; campos extra se rechazan.

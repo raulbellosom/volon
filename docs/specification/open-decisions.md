@@ -25,6 +25,15 @@
 | DEC-17 | Eventos y outbox | **Definido conceptualmente, prueba pendiente** | Backend autoridad; outbox para hechos durables; Broadcast privado efímero, snapshot tras reconexión. Test de versionado, permisos y consistencia. | Integraciones |
 | DEC-18 | Gestión de flotas múltiples | **Diferido a M2** | Modelo compatible con roles/tenants; no construir fleet-web ni split payouts en M0. Definir contratos/roles en M2. | Flotas |
 
+### Identidad Courier y disponibilidad — incremento #16
+
+DEC-11/16: corte reversible offline/available con Courier separado de Membership,
+Auth/RLS reales, CAS/ledger idempotente y revocación serializada. Contrato exacto
+en [API](api-contracts.md#courier-local-sintético--incremento-16) y motivos en
+[ADR-0013](../decisions/0013-courier-identity-and-availability.md). No se ratifica
+identidad productiva, elegibilidad laboral/vehicular, PSP, destinos, flotas ni
+despacho. Requested solo podrá ofertarse con elegibilidad financiera verificada.
+
 ### Sobre privado de laboratorio — incremento #14
 
 Autorizado local/sintético: tabla aditiva, RLS, cifrado y ledger simulados,

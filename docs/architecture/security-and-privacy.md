@@ -58,3 +58,20 @@ KMS/ledger simulados viven fuera de PostgreSQL, solo en memoria; si se pierden,
 no se recupera acceso desde una copia de DB. Las pruebas de fila archivada no
 equivalen a restauración física. Retención, KMS y ledger duraderos, auditoría,
 borrado físico y recuperación productiva requieren revisión y aprobación.
+## Courier local #16
+
+El subject procede exclusivamente de Auth verificada, no metadata del usuario.
+Courier habilitado es un recurso propio sin Membership comercial implícita.
+FORCE RLS también protege turno y recibos; rol runtime no puede aprovisionar,
+habilitar, editar identidad ni elegir reloj. Perfil revocado retorna 404 uniforme
+incluso ante replay de comando. Sin acceso a otros couriers, Merchant, Delivery
+o ubicaciones por existir un perfil. Los permisos comerciales explícitos de un
+subject de doble rol siguen siendo independientes.
+
+`app.subject_id` es contexto confiable del backend, no una credencial ni política
+para exponer PostgreSQL al cliente. Robar la contraseña del rol permitiría fijar
+ese contexto: proteger red/credencial del servidor sigue siendo obligatorio.
+Las pruebas directas SQL verifican RLS bajo subjects controlados, no prometen
+contención de un servidor completamente comprometido. La API rechaza conexiones
+administrativas en arranque y en cada operación Courier. Sin grants anon/authenticated.
+Contrato y límites productivos: [ADR-0013](../decisions/0013-courier-identity-and-availability.md).

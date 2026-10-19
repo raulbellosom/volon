@@ -36,6 +36,12 @@ Ramas:
 `active → completed | released | revoked`. Nunca reactivar una Assignment terminada; reintentos generan registro nuevo. Se requiere unicidad de actividad para evitar doble courier.
 
 ## CourierShift
+**Corte local #16:** solo `offline ↔ available`, con versión y reloj PostgreSQL.
+Estado inicial offline; cada comando nuevo aceptado incrementa versión. Replay
+no modifica estado. Deshabilitación del perfil invalida acceso y fuerza offline;
+reactivación mantiene offline. `busy` está reservado y es rechazado por API/DB.
+Disponible no prueba contratación, vehículo ni elegibilidad financiera de Delivery.
+
 `offline → available → busy → available/offline`. **Presence WebSocket no define este estado**. Disponibilidad autoritativa y reglas de seguridad pueden negar cambio mientras haya servicio activo.
 
 ## Order (fase marketplace)

@@ -23,5 +23,7 @@ export {
   type DeliveryHistoryQuery, type DeliveryHistoryResponse,
 } from './delivery-history.ts';
 export { type DeliveryDestination } from './destination.ts';
+export { parseCourierAvailabilityRequest, parseCourierMeResponse, InvalidCourierRequest, InvalidCourierResponse,
+  type CourierAvailabilityRequest, type CourierAvailabilityStatus, type CourierMeResponse } from './courier.ts';
 export { parsePickupLocationResponse, parseDeliveryLocationsResponse,
   type PickupLocationResponse, type DeliveryLocationsResponse } from './locations.ts';

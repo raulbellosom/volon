@@ -7,6 +7,40 @@ datasource db {
   schemas  = ["app"]
 }
 
+model Courier {
+  id        String @id
+  subjectId String @unique @db.Uuid
+  enabled   Boolean @default(true)
+  createdAt DateTime @default(dbgenerated("clock_timestamp()")) @db.Timestamptz(3)
+  shift     CourierShift?
+  commands  CourierAvailabilityCommand[]
+
+  @@schema("app")
+}
+
+model CourierShift {
+  courierId String @id
+  status    String @default("offline")
+  version   Int @default(1)
+  changedAt DateTime @default(dbgenerated("clock_timestamp()")) @db.Timestamptz(3)
+  courier   Courier @relation(fields: [courierId], references: [id], onDelete: Restrict, onUpdate: NoAction)
+
+  @@schema("app")
+}
+
+model CourierAvailabilityCommand {
+  courierId          String
+  idempotencyKeyHash String @db.Char(64)
+  requestHash        String @db.Char(64)
+  status             String
+  version            Int
+  changedAt          DateTime @db.Timestamptz(3)
+  courier            Courier @relation(fields: [courierId], references: [id], onDelete: Restrict, onUpdate: NoAction)
+
+  @@id([courierId, idempotencyKeyHash])
+  @@schema("app")
+}
+
 model Merchant {
   id          String       @id
   name        String

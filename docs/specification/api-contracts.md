@@ -249,3 +249,56 @@ Adoptar `application/problem+json` inspirado en RFC 9457, con `type`, `title`, `
 - Ninguna URL concreta de dominio de marca fijada en rutas de negocio.
 
 Referencia de formato de errores: https://www.rfc-editor.org/rfc/rfc9457
+## Courier local sintético — incremento #16
+
+Implementación interna v1 autorizada exclusivamente para laboratorio. Supabase
+Auth verifica bearer con `/auth/v1/user`; ni cuerpo, query ni metadata editable
+pueden seleccionar identidad. Courier se provisiona por seed local controlado,
+sin registro público. No consume el puerto demo ni conecta courier-mobile.
+
+- `GET /v1/couriers/me`: 200 con DTO mínimo siguiente. Sin query parameters.
+- `POST /v1/couriers/me/availability`: JSON exacto
+  `{ "status": "available", "expectedVersion": 1 }` y `Idempotency-Key`
+  obligatorio (1–128 caracteres `[A-Za-z0-9_-]`, contrato existente).
+  `status` acepta solamente `offline|available`; expectedVersion entero
+  1–2147483646. No acepta courierId/subjectId, timestamp, busy ni pagos.
+- Ambos devuelven JSON exacto `{ "courierId": "courier_synthetic_a",
+  "availability": { "status": "offline", "version": 1,
+  "changedAt": "2026-10-19T00:00:00.000Z" } }`.
+  POST devuelve 200 tras commit. Fechas UTC desde PostgreSQL; versión inicial 1.
+  Cada comando nuevo aceptado incrementa versión, incluso si repite estado.
+- Replay de misma clave/payload (incluida expectedVersion) devuelve el recibo
+  original sin cambiar el estado actual. Cliente compara versiones y puede GET
+  para refrescar; una respuesta idempotente antigua no rebobina disponibilidad.
+  Autorización se comprueba también antes de replay.
+- 401 token ausente/inválido/vencido; 404 uniforme Courier ausente/deshabilitado;
+  409 `VERSION_CONFLICT` o `IDEMPOTENCY_CONFLICT`; 422
+  `INVALID_COURIER_REQUEST`/`INVALID_IDEMPOTENCY_KEY`; 400 `INVALID_JSON`;
+  415 contenido no JSON; 405 método incorrecto; 503 `SERVICE_UNAVAILABLE`
+  para Auth/DB/configuración/rol inseguro. Errores application/problem+json y
+  todas las respuestas `Cache-Control: no-store`. Sin diagnósticos internos.
+  Contratos TS y JSON Schema en @delivery/contracts; respuesta validada al salir.
+
+Persistencia: Courier(id opaco, subjectId UUID único, enabled, createdAt),
+CourierShift(courierId PK/FK, status, version, changedAt) como agregado actual,
+no historial de jornadas laborales; CourierAvailabilityCommand(courierId,
+idempotencyKeyHash, requestHash, status/version/changedAt originales).
+Sin PII de presentación, vehículo, merchantId ni datos operativos. Ledger
+inmutable con clave compuesta; no almacena token ni clave de idempotencia cruda.
+Tablas nuevas con FORCE RLS, solo rol delivery_api. Admin/seed crea perfiles y
+estado inicial; runtime no puede insertar/habilitar Couriers ni borrar recibos.
+
+Un lock transaccional por subject serializa comandos y la revocación del perfil
+(trigger también en cambios administrativos). Tras esperar se relee enabled;
+UPDATE de disponibilidad usa CAS por versión; ledger y estado confirman juntos.
+Triggers fijan reloj, incremento unitario e identidad inmutable. Deshabilitar
+fuerza offline y aumenta versión; reactivar no restaura available automáticamente.
+GET usa una sola lectura coherente. Todo repositorio Courier rechaza conexiones
+que no sean delivery_api (current_user y session_user), sin superuser/BYPASSRLS/
+CREATEROLE/CREATEDB; SET ROLE desde un login administrativo tampoco es válido.
+
+No hay busy, Assignment, ofertas, eventos, GPS, acceso a Merchant/ubicaciones o
+transiciones Delivery. Futuras flotas usarán membresías independientes, nunca una
+FK permanente Courier→Merchant. Rate limiting, identidad/eligibilidad laboral,
+TTL de disponibilidad, política de auditoría/retención y PSP requieren un corte
+posterior; no publicar estos endpoints como servicio productivo.

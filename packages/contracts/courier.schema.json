@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://delivery.invalid/contracts/courier.schema.json",
+  "$defs": {
+    "availabilityRequest": {
+      "type": "object", "additionalProperties": false, "required": ["status", "expectedVersion"],
+      "properties": {
+        "status": { "enum": ["offline", "available"] },
+        "expectedVersion": { "type": "integer", "minimum": 1, "maximum": 2147483646 }
+      }
+    },
+    "meResponse": {
+      "type": "object", "additionalProperties": false, "required": ["courierId", "availability"],
+      "properties": {
+        "courierId": { "type": "string", "pattern": "^[A-Za-z0-9_-]{1,128}$" },
+        "availability": {
+          "type": "object", "additionalProperties": false, "required": ["status", "version", "changedAt"],
+          "properties": {
+            "status": { "enum": ["offline", "available"] },
+            "version": { "type": "integer", "minimum": 1, "maximum": 2147483647 },
+            "changedAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$" }
+          }
+        }
+      }
+    }
+  },
+  "$ref": "#/$defs/meResponse"
+}
