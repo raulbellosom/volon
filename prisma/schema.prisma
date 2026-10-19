@@ -28,6 +28,7 @@ model Branch {
   memberships Membership[]
   quotes      PricingQuote[]
   deliveries  Delivery[]
+  privateLocations PrivateLocationEnvelope[]
 
   @@unique([id, merchantId])
   @@index([merchantId])
@@ -94,5 +95,29 @@ model Delivery {
   @@unique([subjectId, branchId, idempotencyKeyHash])
   @@unique([quoteId, branchId, merchantId])
   @@index([branchId, merchantId, createdAt])
+  @@schema("app")
+}
+
+model PrivateLocationEnvelope {
+  id             String   @id @db.Uuid
+  subjectId      String   @db.Uuid
+  merchantId     String
+  branchId       String
+  requestId      String   @db.Uuid
+  version        Int      @default(1)
+  policyId       String
+  expiresAt      DateTime @db.Timestamptz(3)
+  keyRef         String   @unique @db.Uuid
+  iv             Bytes
+  tag            Bytes
+  ciphertext     Bytes
+  state          String   @default("active")
+  createdAt      DateTime @default(now()) @db.Timestamptz(3)
+  revokedAt      DateTime? @db.Timestamptz(3)
+  keyDestroyedAt DateTime? @db.Timestamptz(3)
+  branch         Branch   @relation(fields: [branchId, merchantId], references: [id, merchantId], onDelete: Restrict)
+
+  @@unique([subjectId, branchId, requestId])
+  @@index([branchId, merchantId])
   @@schema("app")
 }
