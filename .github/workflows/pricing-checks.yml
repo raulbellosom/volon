@@ -23,6 +23,8 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: Length, TypeScript, contracts and API tests
         run: pnpm run check
+      - name: Offline map evaluation (artificial transport, zero external queries)
+        run: pnpm maps:evaluate --offline
       - name: Build Volon UI gallery (Storybook)
         run: pnpm run gallery:build
       - name: Build merchant web (production bundle without demo fixtures)

@@ -1,0 +1,64 @@
+{
+  "status": "reference-only-not-approved-for-routing",
+  "reviewedOn": "2026-10-18",
+  "accessPointsReviewed": false,
+  "note": "Referentes de POIs públicos; no son accesos de motocicleta ni verdades de terreno. Tolerancias pendientes de revisión humana. No es un manifiesto real aprobado.",
+  "pois": [
+    {
+      "id": "pvr-airport",
+      "name": "Aeropuerto Internacional de Puerto Vallarta",
+      "address": "Km. 7.5 Carretera a Tepic, Puerto Vallarta, Jalisco, C.P. 48311",
+      "referencePoint": { "lat": 20.68, "lng": -105.25416666667 },
+      "coordinateRole": "airport-reference-not-terminal-access",
+      "accessToleranceMeters": null,
+      "coordinateLicense": "Wikidata structured data CC0",
+      "coordinateSource": "https://www.wikidata.org/w/index.php?title=Q2666312&oldid=2553274561",
+      "coordinateStatement": "P625",
+      "addressSource": "https://aeropuertosgap.com.mx/es/puerto-vallarta-3/109-contacto-puerto-vallarta.html",
+      "independentCoordinateSource": "https://www.aeropuertosgap.com.mx/es/puerto-vallarta-3/108-puerto-vallarta.html"
+    },
+    {
+      "id": "los-muertos-pier",
+      "name": "Muelle de Los Muertos, Puerto Vallarta",
+      "address": null,
+      "referencePoint": { "lat": 20.600555555555555, "lng": -105.23944444444444 },
+      "coordinateRole": "pier-structure-not-street-access",
+      "accessToleranceMeters": null,
+      "coordinateLicense": "Wikidata structured data CC0",
+      "coordinateSource": "https://www.wikidata.org/w/index.php?title=Q109292413&oldid=1902172606",
+      "coordinateStatement": "P625",
+      "addressSource": null
+    },
+    {
+      "id": "naval-museum",
+      "name": "Museo Histórico Naval de Puerto Vallarta",
+      "address": "Zaragoza 4, Centro, C.P. 48300, Puerto Vallarta, Jalisco",
+      "referencePoint": { "lat": 20.608534, "lng": -105.236349 },
+      "coordinateRole": "catalog-geocoordinate-not-surveyed-access",
+      "accessToleranceMeters": null,
+      "coordinateLicense": "Revisar condiciones de reutilización del catálogo SIC antes de redistribución ampliada",
+      "coordinateSource": "https://sic.cultura.gob.mx/ficha.php?table=museo&table_id=1256",
+      "coordinateStatement": "JSON-LD geo.latitude/geo.longitude de la ficha pública; no extraído de respuesta de Google Maps",
+      "addressSource": "https://sic.cultura.gob.mx/ficha.php?table=museo&table_id=1256"
+    }
+  ],
+  "queryProposals": [
+    { "id": "airport-name", "kind": "geocode", "poi": "pvr-airport", "query": "Aeropuerto Internacional de Puerto Vallarta", "category": "poi-name" },
+    { "id": "airport-address", "kind": "geocode", "poi": "pvr-airport", "query": "Km. 7.5 Carretera a Tepic, Puerto Vallarta, Jalisco, C.P. 48311", "category": "complete-address-kilometer" },
+    { "id": "museum-address", "kind": "geocode", "poi": "naval-museum", "query": "Zaragoza 4, Centro, C.P. 48300, Puerto Vallarta, Jalisco", "category": "street-number-neighborhood" },
+    { "id": "museum-no-accent", "kind": "geocode", "poi": "naval-museum", "query": "Museo Historico Naval de Puerto Vallarta", "category": "poi-name-no-accent" },
+    { "id": "museum-street", "kind": "geocode", "poi": "naval-museum", "query": "Zaragoza, Puerto Vallarta, Jalisco", "category": "street-without-number" },
+    { "id": "museum-neighborhood", "kind": "geocode", "poi": "naval-museum", "query": "Centro, Puerto Vallarta, Jalisco", "category": "neighborhood-not-exact-address" },
+    { "id": "ambiguous-street", "kind": "geocode", "poi": null, "query": "Zaragoza", "category": "ambiguous-no-location-context" },
+    { "id": "pier-name", "kind": "geocode", "poi": "los-muertos-pier", "query": "Muelle de Los Muertos, Puerto Vallarta", "category": "poi-name" },
+    { "id": "museum-prefix", "kind": "autocomplete", "poi": "naval-museum", "query": "Zaragoza 4, Puerto V", "category": "address-prefix" },
+    { "id": "airport-prefix", "kind": "autocomplete", "poi": "pvr-airport", "query": "Carretera a Tepic, Puerto V", "category": "address-prefix" },
+    { "id": "artificial-nonexistent", "kind": "geocode", "poi": null, "query": "POI SINTETICO INEXISTENTE EVAL-0000, Puerto Vallarta", "category": "artificial-negative-expectation-needs-review" }
+  ],
+  "routeProposals": [
+    { "from": "naval-museum", "to": "los-muertos-pier", "status": "review-street-access-before-use" },
+    { "from": "los-muertos-pier", "to": "naval-museum", "status": "review-street-access-before-use" },
+    { "from": "pvr-airport", "to": "naval-museum", "status": "review-terminal-and-street-access-before-use" },
+    { "from": "naval-museum", "to": "pvr-airport", "status": "review-terminal-and-street-access-before-use" }
+  ]
+}
