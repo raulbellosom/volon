@@ -24,7 +24,7 @@ test('Delivery HTTP: validates method, media type and JSON before calling persis
   assert.equal((await handler()(request('{}'))).status, 422);
   const method = await handler()(new Request('https://synthetic.invalid/v1/deliveries'));
   assert.equal(method.status, 405);
-  assert.equal(method.headers.get('allow'), 'POST');
+  assert.equal(method.headers.get('allow'), 'GET, POST');
 });
 
 test('Delivery HTTP: never reports success or leaks details after transaction failure', async () => {

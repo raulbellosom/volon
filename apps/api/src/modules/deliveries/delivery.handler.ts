@@ -18,7 +18,7 @@ export function createDeliveryHandler(dependencies: DeliveryHttpDependencies) {
     const method = id ? 'GET' : 'POST';
     if (request.method !== method) {
       const response = problem(405, 'METHOD_NOT_ALLOWED', 'Método no permitido.');
-      response.headers.set('allow', method);
+      response.headers.set('allow', id ? 'GET' : 'GET, POST');
       return response;
     }
     try {

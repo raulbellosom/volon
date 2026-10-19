@@ -1,20 +1,9 @@
 import { randomUUID } from 'node:crypto';
-import type { Delivery, PrismaClient } from '@prisma/client';
-import { parseDeliveryQuoteRequest, type DeliveryResponse } from '@delivery/contracts';
+import type { PrismaClient } from '@prisma/client';
+import { parseDeliveryQuoteRequest } from '@delivery/contracts';
 import { withSubject } from './database.ts';
 import type { DeliveryStore } from '../modules/deliveries/delivery.service.ts';
-
-function toResponse(row: Delivery): DeliveryResponse {
-  return { deliveryId: row.id, branchId: row.branchId, quoteId: row.quoteId,
-    status: 'requested', version: 1, createdAt: row.createdAt.toISOString(),
-    pricing: { amountMinor: row.amountMinor, currency: 'MXN', rateVersion: row.rateVersion,
-      lines: [
-        { code: 'base_delivery', amountMinor: row.baseAmountMinor },
-        { code: 'distance_delivery', amountMinor: row.distanceAmountMinor },
-      ],
-    },
-  };
-}
+import { toDeliveryResponse } from './delivery-response.ts';
 
 export function createDeliveryRepository(db: PrismaClient): DeliveryStore {
   return {
@@ -28,7 +17,7 @@ export function createDeliveryRepository(db: PrismaClient): DeliveryStore {
         const row = await tx.delivery.findUnique({ where: {
           subjectId_branchId_idempotencyKeyHash: { subjectId: actor.subjectId, branchId, idempotencyKeyHash },
         } });
-        return row ? { requestHash: row.requestHash, response: toResponse(row) } : null;
+        return row ? { requestHash: row.requestHash, response: toDeliveryResponse(row) } : null;
       },
       loadLockedQuote: async (id, branchId) => {
         // One lock per quote across actors/keys. No UPDATE privilege on PricingQuote is required.
@@ -44,7 +33,7 @@ export function createDeliveryRepository(db: PrismaClient): DeliveryStore {
         return clock.now;
       },
       quoteInUse: async (quoteId) => (await tx.delivery.count({ where: { quoteId } })) > 0,
-      insert: async (quote, idempotencyKeyHash, requestHash) => toResponse(await tx.delivery.create({ data: {
+      insert: async (quote, idempotencyKeyHash, requestHash) => toDeliveryResponse(await tx.delivery.create({ data: {
         id: randomUUID(), subjectId: actor.subjectId, branchId: quote.branchId, merchantId: quote.merchantId,
         quoteId: quote.id, amountMinor: quote.amountMinor, baseAmountMinor: quote.baseAmountMinor,
         distanceAmountMinor: quote.distanceAmountMinor, currency: quote.currency, rateVersion: quote.rateVersion,
@@ -54,7 +43,7 @@ export function createDeliveryRepository(db: PrismaClient): DeliveryStore {
     })),
     readDelivery: (actor, id) => withSubject(db, actor, async (tx) => {
       const row = await tx.delivery.findUnique({ where: { id } });
-      return row ? toResponse(row) : null;
+      return row ? toDeliveryResponse(row) : null;
     }),
   };
 }
