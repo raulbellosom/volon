@@ -26,7 +26,7 @@ export interface DeliveryListItemProps {
   href: string;
   /** Main line people scan for, usually the request date and time. */
   title: ReactNode;
-  /** Human-facing folio, kept complete on its own line on narrow screens. */
+  /** Human-facing folio, always shown complete (wraps rather than clipping on narrow screens). */
   reference: string;
   status: DeliveryStatusTone;
   /** Overrides the default status wording. */
@@ -36,30 +36,43 @@ export interface DeliveryListItemProps {
 }
 
 /**
- * One delivery as a single link: date, folio, status and amount. Stacks on phones and lines
- * up in columns from `sm`. Presentational only; the caller maps API data to props.
+ * One delivery as a single link. Layout comes from explicit groups, never grid auto-placement,
+ * and switches on a container query in rem (`@lg` = 32rem), so it reacts to both the space the
+ * list really has and the user's text size:
+ * - roomy: icon · (date over full folio) · status · amount · chevron in one compact row;
+ * - narrow or large text: icon · (date, folio, then status and amount on one wrapping line);
+ * - very narrow (under 16rem, e.g. a 320px phone at 200% text): the decorative icon steps aside for the text.
+ * `data-part` marks each piece for the browser geometry check (scripts/check-geometry.mjs).
+ * Presentational only; the caller maps API data to props.
  */
 export function DeliveryListItem({ href, title, reference, status, statusLabel, amountMinor }: DeliveryListItemProps) {
   return (
-    <li>
+    <li className="@container">
       <AriaLink
         href={href}
         className={cx(
-          'grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-4 gap-y-2 px-4 py-4 text-text-primary outline-none transition-colors sm:px-5',
-          'sm:grid-cols-[auto_minmax(0,1fr)_auto_auto_auto]',
+          'flex items-start gap-3 px-4 py-3 text-text-primary outline-none transition-colors @lg:items-center @lg:gap-4 @lg:px-5',
           'hover:bg-surface-hover data-focus-visible:focus-ring data-focus-visible:-outline-offset-2',
         )}
       >
-        <span aria-hidden="true" className="row-span-3 flex size-10 items-center justify-center rounded-full bg-surface-selected text-text-on-secondary sm:row-span-2 [&_svg]:size-5">
+        <span data-part="icon" aria-hidden="true" className="flex size-10 shrink-0 @max-[16rem]:hidden items-center justify-center rounded-full bg-surface-selected text-text-on-secondary [&_svg]:size-5">
           <Package />
         </span>
-        <span className="col-start-2 min-w-0 text-md font-semibold">{title}</span>
-        <span className="col-span-2 col-start-2 row-start-2 whitespace-nowrap font-mono text-xs text-text-secondary sm:col-span-1">
-          <span className="font-sans">Folio </span>{reference}
+        <span className="flex min-w-0 flex-1 flex-col gap-1.5 @lg:flex-row @lg:items-center @lg:gap-4">
+          <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+            <span data-part="title" className="text-md font-semibold">{title}</span>
+            <span data-part="reference" className="text-xs text-text-secondary [overflow-wrap:anywhere]">
+              Folio <span className="font-mono">{reference}</span>
+            </span>
+          </span>
+          <span className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 @lg:contents">
+            <span data-part="status" className="flex min-w-0 @lg:max-w-56 @lg:shrink-0">
+              <StatusBadge status={status} size="sm" wrap {...(statusLabel ? { label: statusLabel } : {})} />
+            </span>
+            <span data-part="amount" className="shrink-0 text-end text-md font-bold tabular-nums @lg:min-w-20">{formatMXN(amountMinor)}</span>
+          </span>
         </span>
-        <span className="col-start-3 row-start-1 text-end text-md font-bold tabular-nums sm:col-start-4 sm:row-span-2 sm:min-w-20">{formatMXN(amountMinor)}</span>
-        <StatusBadge status={status} size="sm" {...(statusLabel ? { label: statusLabel } : {})} className="col-start-2 row-start-3 sm:col-start-3 sm:row-span-2 sm:row-start-1" />
-        <ChevronRight aria-hidden="true" className="col-start-5 row-span-2 row-start-1 hidden size-5 text-text-secondary sm:block" />
+        <ChevronRight data-part="chevron" aria-hidden="true" className="hidden size-5 shrink-0 text-text-secondary @lg:block" />
       </AriaLink>
     </li>
   );

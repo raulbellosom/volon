@@ -32,17 +32,20 @@ export interface StatusBadgeProps {
   /** Overrides the default Spanish label (e.g. a more specific backend reason). */
   label?: string;
   size?: 'sm' | 'md';
+  /** Lets a long label wrap inside the chip instead of overflowing narrow containers. */
+  wrap?: boolean;
   className?: string;
 }
 
 /** Solid status chip; icon + text so meaning never depends on color alone. */
-export function StatusBadge({ status, label, size = 'md', className }: StatusBadgeProps) {
+export function StatusBadge({ status, label, size = 'md', wrap, className }: StatusBadgeProps) {
   const { label: defaultLabel, icon: Icon, classes, live } = STATUSES[status];
   return (
     <span
       className={cx(
-        'inline-flex w-fit items-center whitespace-nowrap rounded-full font-semibold',
-        size === 'sm' ? 'h-6 gap-1.5 px-2.5 text-xs [&_svg]:size-3.5' : 'h-8 gap-2 px-3 text-sm [&_svg]:size-4',
+        'inline-flex w-fit max-w-full items-center font-semibold',
+        wrap ? 'rounded-xl py-0.5 [&_svg]:shrink-0' : 'whitespace-nowrap rounded-full',
+        size === 'sm' ? 'min-h-6 gap-1.5 px-2.5 text-xs [&_svg]:size-3.5' : 'min-h-8 gap-2 px-3 text-sm [&_svg]:size-4',
         classes,
         className,
       )}
