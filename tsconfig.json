@@ -12,6 +12,7 @@
   ],
   "exclude": [
     "packages/ui-web/**",
-    "apps/merchant-web/**"
+    "apps/merchant-web/**",
+    "apps/courier-mobile/**"
   ]
 }
