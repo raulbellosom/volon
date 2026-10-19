@@ -37,21 +37,24 @@ export interface ProblemStateProps {
   onRetry?: () => void;
   /** Extra way out, e.g. a link back home. */
   actions?: ReactNode;
-  /** Overrides the default title for a screen-specific message. */
+  /** Override the default copy for a screen-specific message. */
   title?: string;
+  description?: string;
+  /** Overrides whether this kind of error offers «Reintentar». */
+  retryable?: boolean;
 }
 
 /** Full-width error, permission or offline state with the next step. */
-export function ProblemState({ error, onRetry, actions, title }: ProblemStateProps) {
+export function ProblemState({ error, onRetry, actions, title, description, retryable }: ProblemStateProps) {
   const copy = COPY[error.kind];
-  const retry = copy.retryable && onRetry;
+  const retry = (retryable ?? copy.retryable) && onRetry;
   return (
     <div role="alert">
       <EmptyState
         tone={error.kind === 'offline' || error.kind === 'forbidden' ? 'neutral' : 'danger'}
         icon={copy.icon}
         title={title ?? copy.title}
-        description={copy.description}
+        description={description ?? copy.description}
         {...(retry || actions
           ? { actions: <>{retry && <Button variant="secondary" leadingIcon={<RotateCw />} onPress={onRetry}>Reintentar</Button>}{actions}</> }
           : {})}

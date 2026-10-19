@@ -1,4 +1,4 @@
-import type { DeliveryQuoteResponse, MeResponse } from '../api/merchant-api.ts';
+import type { DeliveryQuoteResponse, DeliveryResponse, MeResponse } from '../api/merchant-api.ts';
 
 // Synthetic data for local design work only. Names say «demo» on purpose so no screen
 // rendered from them can be mistaken for a real merchant, branch or price.
@@ -41,4 +41,29 @@ export function demoQuote(sequence: number, now: number): DeliveryQuoteResponse 
     ],
     coverage: 'eligible',
   };
+}
+
+/** Branch with enough synthetic history to page through; the other demo branch starts empty. */
+export const DEMO_HISTORY_BRANCH = 'branch_demo_centro';
+const DEMO_HISTORY_SIZE = 23;
+
+/** Past synthetic requests, newest first, spaced 97 minutes apart. Only `requested` exists today. */
+export function demoHistory(now: number): DeliveryResponse[] {
+  return Array.from({ length: DEMO_HISTORY_SIZE }, (_, index) => {
+    const distance = 1500 + (index % 3) * 1000;
+    return {
+      deliveryId: `delivery_demo_h${String(index + 1).padStart(2, '0')}`,
+      branchId: DEMO_HISTORY_BRANCH,
+      quoteId: `quote_demo_h${index + 1}`,
+      status: 'requested',
+      version: 1,
+      createdAt: new Date(now - (index + 1) * 97 * 60_000).toISOString(),
+      pricing: {
+        amountMinor: 3500 + distance,
+        currency: 'MXN',
+        lines: [{ code: 'base_delivery', amountMinor: 3500 }, { code: 'distance_delivery', amountMinor: distance }],
+        rateVersion: 'demo',
+      },
+    };
+  });
 }

@@ -71,6 +71,50 @@ describe('HTTP adapter', () => {
   });
 });
 
+describe('HTTP delivery history', () => {
+  const row = (branchId: string) => ({
+    deliveryId: 'd1', branchId, quoteId: 'q1', status: 'requested', version: 1, createdAt: '2026-10-18T20:00:00Z',
+    pricing: { amountMinor: 100, currency: 'MXN', lines: [
+      { code: 'base_delivery', amountMinor: 100 },
+      { code: 'distance_delivery', amountMinor: 0 },
+    ], rateVersion: 'r1' },
+  });
+
+  it('asks for one branch page with bearer, limit and cursor', async () => {
+    const fetch = mockFetch(Response.json({ items: [row('b1')], nextCursor: 'next_1' }));
+    const page = await createHttpMerchantApi(() => 'token-1').listDeliveries({ branchId: 'b1', limit: 20, cursor: 'abc_1' });
+
+    const [path, init] = fetch.mock.calls[0]!;
+    expect(path).toBe('/v1/deliveries?branchId=b1&limit=20&cursor=abc_1');
+    expect(init?.method).toBe('GET');
+    expect(init?.headers).toMatchObject({ authorization: 'Bearer token-1' });
+    expect(page.nextCursor).toBe('next_1');
+    expect(page.items[0]?.pricing.amountMinor).toBe(100);
+  });
+
+  it('omits the cursor on the first page', async () => {
+    const fetch = mockFetch(Response.json({ items: [], nextCursor: null }));
+    await createHttpMerchantApi(() => 't').listDeliveries({ branchId: 'b1', limit: 20, cursor: null });
+    expect(fetch.mock.calls[0]![0]).toBe('/v1/deliveries?branchId=b1&limit=20');
+  });
+
+  it.each([
+    ['extra fields', { items: [], nextCursor: null, total: 3 }],
+    ['a cursor on an empty page', { items: [], nextCursor: 'x' }],
+    ['a bad row', { items: [{ deliveryId: 'd1' }], nextCursor: null }],
+    ['a row from another branch', { items: [row('other')], nextCursor: null }],
+  ])('rejects a page with %s', async (_name, body) => {
+    mockFetch(Response.json(body));
+    await expect(createHttpMerchantApi(() => 't').listDeliveries({ branchId: 'b1', limit: 20, cursor: null }))
+      .rejects.toMatchObject({ kind: 'unexpected', code: 'MALFORMED_RESPONSE' });
+  });
+
+  it.each([[404, 'NOT_FOUND', 'not-found'], [422, 'INVALID_DELIVERY_HISTORY_QUERY', 'invalid']])('maps %i to %s', async (status, code, kind) => {
+    mockFetch(problem(status, code));
+    await expect(createHttpMerchantApi(() => 't').listDeliveries({ branchId: 'b1', limit: 20, cursor: null })).rejects.toMatchObject({ kind });
+  });
+});
+
 describe('location source', () => {
   it('only exists in development builds', () => {
     expect(locationSource(true)?.kind).toBe('synthetic');

@@ -1,12 +1,14 @@
 import type {
   BranchSummary,
+  DeliveryHistoryQuery,
+  DeliveryHistoryResponse,
   DeliveryQuoteRequest,
   DeliveryQuoteResponse,
   DeliveryResponse,
   MeResponse,
 } from '@delivery/contracts';
 
-export type { BranchSummary, DeliveryQuoteResponse, DeliveryResponse, MeResponse };
+export type { BranchSummary, DeliveryHistoryQuery, DeliveryHistoryResponse, DeliveryQuoteResponse, DeliveryResponse, MeResponse };
 
 /** Bearer session issued by the identity provider (Supabase Auth). */
 export interface Session {
@@ -29,6 +31,8 @@ export interface MerchantApi {
   createQuote(request: DeliveryQuoteRequest): Promise<DeliveryQuoteResponse>;
   createDelivery(input: { branchId: string; quoteId: string; idempotencyKey: string }): Promise<DeliveryResponse>;
   getDelivery(deliveryId: string): Promise<DeliveryResponse>;
+  /** One page of a branch's deliveries, newest first; `nextCursor` is `null` on the last page. */
+  listDeliveries(query: DeliveryHistoryQuery): Promise<DeliveryHistoryResponse>;
 }
 
 /** How the app is wired: the real backend, or synthetic fixtures for local design work. */

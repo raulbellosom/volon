@@ -1,6 +1,6 @@
 import {
-  parseDeliveryQuoteResponse, parseDeliveryResponse,
-  type DeliveryQuoteResponse, type DeliveryResponse,
+  parseDeliveryHistoryResponse, parseDeliveryQuoteResponse, parseDeliveryResponse,
+  type DeliveryHistoryResponse, type DeliveryQuoteResponse, type DeliveryResponse,
 } from '@delivery/contracts';
 import { ApiError } from './api-error.ts';
 
@@ -15,3 +15,10 @@ export const readQuote = (value: unknown): DeliveryQuoteResponse =>
 
 export const readDelivery = (value: unknown): DeliveryResponse =>
   parse(parseDeliveryResponse, value);
+
+/** A page must also belong to the branch that was asked for; anything else is never shown. */
+export function readHistory(value: unknown, branchId: string): DeliveryHistoryResponse {
+  const page = parse(parseDeliveryHistoryResponse, value);
+  if (page.items.some((item) => item.branchId !== branchId)) throw new ApiError('unexpected', null, 'MALFORMED_RESPONSE');
+  return page;
+}

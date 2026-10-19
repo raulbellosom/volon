@@ -2,7 +2,7 @@ import { parseMeResponse } from '@delivery/contracts';
 import { ApiError } from './api-error.ts';
 import { requestJson } from './http-client.ts';
 import type { AuthApi, MerchantApi, Session } from './merchant-api.ts';
-import { readDelivery, readQuote } from './response-guards.ts';
+import { readDelivery, readHistory, readQuote } from './response-guards.ts';
 
 function parsed<T>(parse: (value: unknown) => T, value: unknown): T {
   try {
@@ -31,6 +31,11 @@ export function createHttpMerchantApi(getToken: () => string | null): MerchantAp
       })),
     getDelivery: async (deliveryId) =>
       readDelivery(await requestJson(`/v1/deliveries/${encodeURIComponent(deliveryId)}`, { headers: authorized() })),
+    listDeliveries: async ({ branchId, limit, cursor }) => {
+      const params = new URLSearchParams({ branchId, limit: String(limit) });
+      if (cursor) params.set('cursor', cursor);
+      return readHistory(await requestJson(`/v1/deliveries?${params}`, { headers: authorized() }), branchId);
+    },
   };
 }
 

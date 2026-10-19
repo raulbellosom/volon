@@ -1,6 +1,6 @@
 import { ApiError } from '../api/api-error.ts';
 import type { AuthApi, DeliveryQuoteResponse, DeliveryResponse, MerchantApi } from '../api/merchant-api.ts';
-import { DEMO_DELIVERY_ERRORS, DEMO_EMAILS, demoMe, demoQuote } from './demo-fixtures.ts';
+import { DEMO_DELIVERY_ERRORS, DEMO_EMAILS, demoHistory, demoMe, demoQuote } from './demo-fixtures.ts';
 
 export interface DemoOptions {
   /** Artificial latency so loading states are visible; 0 in tests. */
@@ -15,10 +15,11 @@ export interface DemoOptions {
 export function createDemoApis({ latencyMs = 450, now = Date.now }: DemoOptions = {}): { auth: AuthApi; api: MerchantApi } {
   const wait = () => new Promise<void>((resolve) => setTimeout(resolve, latencyMs));
   const quotes = new Map<string, DeliveryQuoteResponse>();
-  const deliveries = new Map<string, DeliveryResponse>();
+  const deliveries = new Map<string, DeliveryResponse>(demoHistory(now()).map((delivery) => [delivery.deliveryId, delivery]));
   const byIdempotencyKey = new Map<string, DeliveryResponse>();
   let signedInAs = '';
   let sequence = 0;
+  let created = 0;
 
   const auth: AuthApi = {
     async signIn(email) {
@@ -50,7 +51,7 @@ export function createDemoApis({ latencyMs = 450, now = Date.now }: DemoOptions 
       if (!quote) throw new ApiError('not-found', 404, 'QUOTE_NOT_FOUND');
       if (Date.parse(quote.expiresAt) <= now()) throw new ApiError('quote-expired', 409, 'QUOTE_EXPIRED');
       const delivery: DeliveryResponse = {
-        deliveryId: `delivery_demo_${deliveries.size + 1}`,
+        deliveryId: `delivery_demo_${++created}`,
         branchId,
         quoteId,
         status: 'requested',
@@ -69,6 +70,18 @@ export function createDemoApis({ latencyMs = 450, now = Date.now }: DemoOptions 
       const delivery = deliveries.get(deliveryId);
       if (!delivery) throw new ApiError('not-found', 404, 'NOT_FOUND');
       return delivery;
+    },
+    async listDeliveries({ branchId, limit, cursor }) {
+      await wait();
+      // Same shape as the API: newest first and an opaque cursor (here, the next offset).
+      const rows = [...deliveries.values()]
+        .filter((delivery) => delivery.branchId === branchId)
+        .sort((a, b) => b.createdAt.localeCompare(a.createdAt) || b.deliveryId.localeCompare(a.deliveryId));
+      const offset = cursor ? Number(cursor.slice(1)) : 0;
+      if (!Number.isSafeInteger(offset) || offset < 0) throw new ApiError('invalid', 422, 'INVALID_DELIVERY_HISTORY_QUERY');
+      const items = rows.slice(offset, offset + limit);
+      const next = offset + limit;
+      return { items, nextCursor: items.length > 0 && next < rows.length ? `o${next}` : null };
     },
   };
 
