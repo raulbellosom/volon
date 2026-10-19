@@ -75,3 +75,13 @@ Las pruebas directas SQL verifican RLS bajo subjects controlados, no prometen
 contención de un servidor completamente comprometido. La API rechaza conexiones
 administrativas en arranque y en cada operación Courier. Sin grants anon/authenticated.
 Contrato y límites productivos: [ADR-0013](../decisions/0013-courier-identity-and-availability.md).
+
+## Asignación de laboratorio #18
+
+[ADR-0014](../decisions/0014-dispatch-lab.md) separa escenarios sintéticos de
+Delivery. No se alteran snapshots ni grants comerciales. Sin HTTP, service role,
+SECURITY DEFINER o publicadores. Cinco tablas FORCE RLS; runtime no aprovisiona
+escenarios. El puerto financiero deniega y el adaptador positivo vive solo en
+tests. IDs/estado no conceden datos del destinatario. Locks cooperan con revocación
+Courier; índices y outbox obligatorio protegen commits concurrentes. Reservas de
+perfiles deshabilitados se conservan, no se liberan ni reasignan automáticamente.

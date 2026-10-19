@@ -1,5 +1,8 @@
 # Despacho, asignación y localización
 
+**Corte #18:** [contrato del laboratorio interno](dispatch-lab.md), aislado de
+Delivery y sin endpoints. No habilita el flujo operativo propuesto abajo.
+
 **Estado:** algoritmo inicial por confirmar con operaciones de repartidores. Diseñar primero seguridad y corrección, luego optimización.
 
 ## Despacho del piloto

@@ -29,6 +29,9 @@ Este dossier especifica *cómo* deben mantenerse las invariantes y contratos. Pa
 
 ## Cómo leer los contratos
 
+El [núcleo de despacho de laboratorio](dispatch-lab.md) define contratos internos
+del corte #18. No abre API ni habilita despacho de Delivery operativa.
+
 El [laboratorio privado de ubicaciones](private-location-lab.md) define el corte
 interno sintético #14. No agrega rutas HTTP ni sustituye snapshots de Delivery.
 - **MUST / Debe:** garantía deseada del producto si se aprueba la especificación; no significa que ya existe.

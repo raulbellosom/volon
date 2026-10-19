@@ -22,8 +22,16 @@
 | DEC-14 | Aplicaciones iniciales | **Definido para diseño** | `merchant-web`, `courier-mobile`, `admin-web`, tracking web mínimo, `marketing`, `api`, `worker`; **sin app nativa comprador ni fleet-web M0**. | P2 |
 | DEC-15 | Marca final | **Identidad aprobada para desarrollo** | Nombre comercial «Volon» (sin acento) e identidad visual en [identity](../brand/identity.md), 17-10-2026. Sigue siendo reemplazable; registro marcario, dominios y SVG finales pendientes. | Lanzamiento |
 | DEC-16 | Backend, ORM y DB físico | **Elegido para desarrollo local** | Node HTTP + handler Fetch modular, Prisma 7 estable como único migrador de `app`, PostgreSQL 17 de Supabase y PostGIS. Decisión del usuario: [ADR-0007](../decisions/0007-local-backend.md). Operación productiva pendiente. | P2 |
-| DEC-17 | Eventos y outbox | **Definido conceptualmente, prueba pendiente** | Backend autoridad; outbox para hechos durables; Broadcast privado efímero, snapshot tras reconexión. Test de versionado, permisos y consistencia. | Integraciones |
+| DEC-17 | Eventos y outbox | **Laboratorio interno #18; producto pendiente** | Persistencia atómica y deduplicación del agregado sintético; publicación/consumidores, Broadcast privado y recuperación de producto pendientes. [Contrato](dispatch-lab.md). | Integraciones |
 | DEC-18 | Gestión de flotas múltiples | **Diferido a M2** | Modelo compatible con roles/tenants; no construir fleet-web ni split payouts en M0. Definir contratos/roles en M2. | Flotas |
+
+### Asignación exclusiva — incremento #18
+
+DEC-03/11/16/17: [ADR-0014](../decisions/0014-dispatch-lab.md) autoriza solamente
+la prueba de exclusión/outbox con escenarios artificiales separados. Delivery
+conserva su inmutabilidad. Pendientes: evidencia PSP transaccional/revocación,
+estado logístico separado del snapshot, protocolo de custodia y acceso temporal
+a destino antes de conectar ofertas a HTTP/móvil. No se confirma pago por un test.
 
 ### Identidad Courier y disponibilidad — incremento #16
 

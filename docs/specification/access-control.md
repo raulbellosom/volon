@@ -48,6 +48,11 @@ domicilio haya sido geocodificado o verificado en terreno.
 
 ## Actores y scopes
 
+El [laboratorio de asignación #18](dispatch-lab.md) exige contexto interno y
+Courier propio habilitado. No concede acceso a Delivery, PricingQuote, Merchant
+o PrivateLocationEnvelope. Los escenarios raíz se aprovisionan solo en fixtures
+de integración; no hay rol dispatcher, ruta ni permiso operativo nuevo.
+
 Laboratorio #14: la tabla privada solo concede SELECT/INSERT y UPDATE de los tres
 campos de retiro a delivery_api; sin DELETE, acceso anon/authenticated o exposición
 PostgREST. RLS consulta Branch/Merchant/membresía actuales y requiere contexto

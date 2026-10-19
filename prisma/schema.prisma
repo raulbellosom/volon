@@ -14,7 +14,79 @@ model Courier {
   createdAt DateTime @default(dbgenerated("clock_timestamp()")) @db.Timestamptz(3)
   shift     CourierShift?
   commands  CourierAvailabilityCommand[]
+  labOffers DispatchLabOffer[]
+  labCommands DispatchLabCommand[]
+  labEvents DispatchLabOutbox[]
 
+  @@schema("app")
+}
+
+model DispatchLabScenario {
+  id String @id @db.Uuid
+  createdAt DateTime @default(dbgenerated("clock_timestamp()")) @db.Timestamptz(3)
+  offers DispatchLabOffer[]
+  events DispatchLabOutbox[]
+
+  @@schema("app")
+}
+
+model DispatchLabOffer {
+  id String @id @db.Uuid
+  syntheticDeliveryRef String @db.Uuid
+  courierId String
+  status String @default("offered")
+  version Int @default(1)
+  expiresAt DateTime @db.Timestamptz(3)
+  changedAt DateTime @default(dbgenerated("clock_timestamp()")) @db.Timestamptz(3)
+  scenario DispatchLabScenario @relation(fields: [syntheticDeliveryRef], references: [id], onDelete: Restrict, onUpdate: NoAction)
+  courier Courier @relation(fields: [courierId], references: [id], onDelete: Restrict, onUpdate: NoAction)
+  assignment DispatchLabAssignment?
+
+  @@unique([id, syntheticDeliveryRef, courierId])
+  @@index([courierId], map: "dispatch_lab_offer_courier")
+  @@schema("app")
+}
+
+model DispatchLabAssignment {
+  id String @id @db.Uuid
+  offerId String @unique @db.Uuid
+  syntheticDeliveryRef String @db.Uuid
+  courierId String
+  status String @default("active")
+  version Int @default(1)
+  changedAt DateTime @default(dbgenerated("clock_timestamp()")) @db.Timestamptz(3)
+  offer DispatchLabOffer @relation(fields: [offerId, syntheticDeliveryRef, courierId], references: [id, syntheticDeliveryRef, courierId], onDelete: Restrict, onUpdate: NoAction)
+
+  // Partial active indexes are owned by SQL migration, not ordinary unique indexes.
+  @@unique([offerId, syntheticDeliveryRef, courierId])
+  @@schema("app")
+}
+
+model DispatchLabCommand {
+  courierId String
+  idempotencyKeyHash String @db.Char(64)
+  requestHash String @db.Char(64)
+  receipt Json
+  courier Courier @relation(fields: [courierId], references: [id], onDelete: Restrict, onUpdate: NoAction)
+
+  @@id([courierId, idempotencyKeyHash])
+  @@schema("app")
+}
+
+model DispatchLabOutbox {
+  id String @id @db.Uuid
+  courierId String
+  syntheticDeliveryRef String @db.Uuid
+  aggregateKind String
+  aggregateId String @db.Uuid
+  aggregateVersion Int
+  eventType String
+  occurredAt DateTime @db.Timestamptz(3)
+  courier Courier @relation(fields: [courierId], references: [id], onDelete: Restrict, onUpdate: NoAction)
+  scenario DispatchLabScenario @relation(fields: [syntheticDeliveryRef], references: [id], onDelete: Restrict, onUpdate: NoAction)
+
+  @@unique([aggregateKind, aggregateId, aggregateVersion])
+  @@index([courierId], map: "dispatch_lab_outbox_courier")
   @@schema("app")
 }
 

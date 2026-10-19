@@ -28,3 +28,7 @@ Los ADR registran **propuestas** y aceptación explícita. Estado inicial de tod
 Título, fecha, estado, contexto, motivación, alternativas, decisión, consecuencias, pruebas pendientes, reversibilidad y enlaces. Estados recomendados: Propuesta, Aceptada, Sustituida, Rechazada.
 
 La elección de tecnología no debe basarse exclusivamente en familiaridad; registrar pruebas que motiven su adopción.
+## ADR de laboratorio #18
+
+[ADR-0014 — Asignación exclusiva aislada](0014-dispatch-lab.md): aceptada solo
+para pruebas locales/sintéticas, no para operación comercial.

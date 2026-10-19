@@ -3,6 +3,10 @@
 **Estado:** contrato propuesto. Diferenciar hechos durables de notificaciones efímeras.
 
 ## Tres clases de comunicación
+
+El corte #18 persiste [outbox de laboratorio](dispatch-lab.md) sin publicador ni
+consumidores. Su namespace de agregado es DispatchLab; sus tipos internos no
+activan el catálogo operativo siguiente ni acreditan entrega de mensajes.
 1. **Comandos HTTP**: solicitan cambio, backend valida/autoriza, usa transacción y devuelve resultado.
 2. **Domain events durables**: hechos después del commit; se insertan en OutboxEvent en la misma transacción que cambio persistente. Worker procesa al menos una vez, con reintentos y consumidores idempotentes.
 3. **Realtime Broadcast/Presence**: actualización de UI de baja latencia; no es autoridad ni garantía de entrega. Snapshot/re-sync por API ante reconexión.

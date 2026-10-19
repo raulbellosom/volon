@@ -30,9 +30,15 @@ Ramas:
 - `delivered/cancelled/failed` terminales para flujo normal. Correcciones administrativas deben ser movimientos auditados y compensatorios, no edición directa.
 
 ## AssignmentOffer
+
+El [laboratorio #18](dispatch-lab.md) implementa un agregado aislado con entrada
+offered y terminales accepted/declined/expired/withdrawn. No cambia Delivery.
 `created → offered → accepted | declined | expired | withdrawn`. Solo `offered` puede convertirse en `accepted`; validación por expiración de servidor y pertenencia del courier; aceptar no asigna si la Delivery ya fue tomada.
 
 ## Assignment
+
+Solo el laboratorio aislado implementa active→revoked. Completed/released,
+custodia y reasignación operativa siguen pendientes.
 `active → completed | released | revoked`. Nunca reactivar una Assignment terminada; reintentos generan registro nuevo. Se requiere unicidad de actividad para evitar doble courier.
 
 ## CourierShift
