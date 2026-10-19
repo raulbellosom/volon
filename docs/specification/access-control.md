@@ -18,6 +18,14 @@ POST y GET reutilizan la identidad verificada y la membresía vigente por Branch
 
 ### Contexto mínimo del portal (issue #9)
 
+El historial `GET /v1/deliveries?branchId=...` exige la misma membresía vigente
+por sucursal en cada página. RLS protege Branch y Delivery incluso sin filtros
+de aplicación. Un cursor solo delimita orden y está ligado a la sucursal; no
+acredita identidad ni autorización. Visibilidad y página se leen con el mismo
+snapshot SQL. Sucursal no visible produce 404 indistinguible de inexistente;
+una sucursal visible sin entregas devuelve una página vacía. Se proyecta solo
+el DTO Delivery existente. No hay acceso administrativo ni service role.
+
 `GET /v1/me` proyecta exclusivamente el UUID autenticado y las parejas
 Merchant/Branch visibles mediante la política `branch_member` existente. No lee
 perfiles Auth ni retorna directamente filas Membership, cuya política propia no

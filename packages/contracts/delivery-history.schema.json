@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:delivery:contracts:delivery-history:v1",
+  "title": "Historial de entregas por sucursal: query normalizada",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["branchId", "limit", "cursor"],
+  "properties": {
+    "branchId": { "$ref": "urn:delivery:contracts:delivery:v1#/$defs/id" },
+    "limit": { "type": "integer", "minimum": 1, "maximum": 100, "default": 20 },
+    "cursor": { "oneOf": [{ "$ref": "#/$defs/cursor" }, { "type": "null" }], "default": null }
+  },
+  "$defs": {
+    "cursor": { "type": "string", "minLength": 1, "maxLength": 1024, "pattern": "^[A-Za-z0-9_-]{1,1024}$" },
+    "response": {
+      "type": "object", "additionalProperties": false,
+      "required": ["items", "nextCursor"],
+      "properties": {
+        "items": { "type": "array", "maxItems": 100, "items": { "$ref": "urn:delivery:contracts:delivery:v1#/$defs/response" } },
+        "nextCursor": { "oneOf": [{ "$ref": "#/$defs/cursor" }, { "type": "null" }] }
+      },
+      "if": { "properties": { "items": { "maxItems": 0 } } },
+      "then": { "properties": { "nextCursor": { "type": "null" } } }
+    }
+  }
+}

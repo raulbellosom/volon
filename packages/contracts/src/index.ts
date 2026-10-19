@@ -17,3 +17,8 @@ export {
 export {
   InvalidDeliveryResponse, parseDeliveryQuoteResponse, parseDeliveryResponse,
 } from './response.ts';
+export {
+  parseDeliveryHistoryQuery, parseDeliveryHistoryResponse, InvalidDeliveryHistoryQuery,
+  DELIVERY_HISTORY_DEFAULT_LIMIT, DELIVERY_HISTORY_MAX_LIMIT,
+  type DeliveryHistoryQuery, type DeliveryHistoryResponse,
+} from './delivery-history.ts';

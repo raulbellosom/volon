@@ -20,7 +20,7 @@ Los ejemplos siguientes conservan su carácter conceptual; los esquemas formales
 ### Contexto de comercio: lectura local v1 (issue #9, RF-001, UC-01, ENG-009, ACC-010)
 
 Primer corte autorizado para desarrollo sintético: `GET /v1/me` y
-`GET /v1/merchants/{merchantId}/branches`. El historial de entregas queda fuera.
+`GET /v1/merchants/{merchantId}/branches`. El historial tiene su propio contrato más abajo.
 DTOs cerrados en `packages/contracts/merchant-context.schema.json`, con validación
 runtime compartida en `@delivery/contracts`.
 
@@ -65,6 +65,49 @@ Quote inexistente, ajena o de otra sucursal: `404 QUOTE_NOT_FOUND`; sucursal no 
 
 Una transacción Prisma establece subject, serializa por clave y por quote mediante advisory locks transaccionales, verifica membresía/vigencia y persiste una Delivery con snapshot y metadatos de idempotencia. Índices únicos y FKs compuestas refuerzan unicidad y pertenencia; RLS impide lecturas/escrituras cruzadas. No hay retención/limpieza automática de claves ni escrituras UPDATE/DELETE de Delivery en este corte. Nunca se crea Payment, Assignment, Order ni evento de despacho.
 
+### Historial de Delivery por sucursal (issue #9, RF-001/014, ACC-010)
+
+`GET /v1/deliveries?branchId=branch_synthetic_a&limit=20&cursor=...` es una lectura
+autenticada, sin cambios de estado. Contrato formal en
+[`delivery-history.schema.json`](../../packages/contracts/delivery-history.schema.json):
+raíz = query normalizada; `#/$defs/response` = respuesta. Parsers compartidos en
+`@delivery/contracts`, reutilizando `parseDeliveryResponse` de cada item.
+
+- Query cerrada: `branchId` obligatorio `[A-Za-z0-9_-]{1,128}`; `limit` opcional,
+  entero decimal de 1 a 100, predeterminado 20; `cursor` opcional. Se rechazan
+  campos extra, parámetros repetidos, valores vacíos, espacios, signos, ceros a
+  la izquierda y formatos no decimales de limit. DTO normalizado:
+  `{ branchId: string, limit: number, cursor: string | null }`.
+- Orden: `createdAt DESC, id COLLATE "C" DESC`. La siguiente página usa comparación
+  estricta con el par del último item devuelto; obtiene hasta `limit + 1` filas
+  para determinar continuación. No usa OFFSET ni depende de que siga existiendo
+  la fila del cursor. `createdAt` conserva la precisión TIMESTAMPTZ(3) existente.
+- `200 { items: DeliveryResponse[], nextCursor: string | null }`; máximo 100 items.
+  Cada item conserva exactamente el DTO de GET individual, sin hashes, claves,
+  subjectId, merchantId, coordenadas o columnas internas. Lista vacía o última
+  página: `nextCursor: null`; sucursal visible sin entregas: `items: []`.
+- Cursor opaco para clientes: base64url canónico sin padding, máximo 1024
+  caracteres, versión interna 1 y frontera UTC con milisegundos ligada a branchId.
+  Se valida encoding, estructura cerrada, versión, fecha e identificadores; uno
+  emitido para otra sucursal se rechaza. No es credencial, firma ni cifrado:
+  una frontera construida válidamente solo cambia el punto de lectura y jamás
+  concede permisos. El cliente debe reenviar el token sin interpretarlo.
+- Cada página vuelve a verificar bearer real y membresía vigente, Merchant y
+  Branch habilitados mediante las políticas RLS existentes y `delivery_api`.
+  Visibilidad de Branch y selección de Delivery usan el mismo snapshot de una
+  sentencia SQL en transacción contextual. Un cursor no conserva acceso revocado.
+- Sucursal inexistente, ajena, deshabilitada, comercio deshabilitado o membresía
+  revocada: `404 NOT_FOUND` uniforme. Token ausente/inválido/vencido:
+  `401 UNAUTHENTICATED`. Query/cursor inválidos: `422 INVALID_DELIVERY_HISTORY_QUERY`,
+  después de autenticar. DB/Auth indisponible o DTO almacenado inválido:
+  `503 SERVICE_UNAVAILABLE` sin detalles internos. Métodos no admitidos en la
+  colección: `405 METHOD_NOT_ALLOWED`, `Allow: GET, POST`.
+- Éxitos `application/json`, errores `application/problem+json`; todos `no-store`.
+  No se promete snapshot entre solicitudes: inserciones más recientes que la
+  frontera no desplazan ni duplican elementos posteriores; para verlas se debe
+  reiniciar desde la primera página. No hay totalCount, filtros de estado ni
+  paginación inversa. No requiere migraciones o ampliación de privilegios.
+
 ### Extensión backend local (ADR-0007)
 
 El listener Node publica solo en loopback del host a través de Compose. `GET /health` devuelve 200 si PostgreSQL responde con el rol limitado, o 503 seguro. `GET /v1/delivery-quotes/{quoteId}` exige bearer verificado en Supabase Auth y membresía vigente en la sucursal de la quote; devuelve el mismo DTO v1 persistido o 404 uniforme para inexistente/ajena. No divulga solicitud ni coordenadas. Las quotes vencidas se pueden consultar como histórico; esto no autoriza consumirlas para Delivery.
@@ -88,7 +131,7 @@ POST mantiene el contrato anterior. La composición PostgreSQL revalida membres�
 | `POST /v1/delivery-quotes` | Cotizar transporte sin persistir Delivery | Comercio / actor habilitado | Crea quote temporal |
 | `POST /v1/deliveries` | Crear solicitud usando quote vigente | Comercio/sucursal | Comando idempotente |
 | `GET /v1/deliveries/{deliveryId}` | Estado, datos según rol | Vinculado a recurso | Lectura |
-| `GET /v1/deliveries?branchId=...` | Historial/pedidos activos filtrados | Actor de scope | Lectura paginada |
+| `GET /v1/deliveries?branchId=...` | Historial por sucursal (contrato local arriba) | Member autorizado | Lectura paginada |
 | `POST /v1/deliveries/{deliveryId}/cancel` | Cancelar conforme a política | Actor permitido | Transición auditada |
 | `POST /v1/deliveries/{deliveryId}/milestones` | Declarar recogida/arribo/entrega con payload tipado | Courier asignado | Transición idempotente |
 | `GET /v1/deliveries/{deliveryId}/tracking` | Snapshot ubicación autorizada + freshness | Actor/seguimiento válido | Lectura |

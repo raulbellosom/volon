@@ -31,7 +31,10 @@ Solicitud del usuario del 18-10-2026: implementar únicamente identidad y select
 de sucursales sobre el modelo local vigente (DEC-16/ADR-0007). Sin nuevos roles,
 estados, tablas ni permisos: membresía habilitada por sucursal, comercio y
 sucursal habilitados. Respuesta mínima y 404 anti-enumeración definidos en
-[API](api-contracts.md). Historial paginado diferido al próximo incremento;
+[API](api-contracts.md). Historial paginado autorizado en el segundo corte de #9:
+20 items predeterminados, máximo 100, orden descendente por createdAt/id y cursor
+opaco ligado a sucursal con reautorización RLS en cada página. Sin cambios de
+modelo/estados, migraciones ni privilegios. Semántica completa en el contrato API;
 roles/vigencias temporales y autorización productiva continúan pendientes.
 
 ## Interpretación obligatoria
