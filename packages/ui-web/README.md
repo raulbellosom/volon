@@ -43,6 +43,8 @@ Una prueba falla si `tokens.css` queda desincronizado; otra falla si algún par 
 
 Tener archivo e historia **no** basta para «probado»: la prueba debe renderizar el componente y ejercer su comportamiento (teclado, roles, estados, axe).
 
+jsdom no calcula layout. Para `DeliveryList`, `pnpm gallery:build && pnpm gallery:geometry` abre el Storybook compilado en Chrome o Edge y mide cada fila en 320–1440 px, en ambos temas y con texto al 100% y 200%. Falla si hay desbordamiento, si el folio se recorta o se separa de la fecha, si el orden o la alineación cambian, si las filas de escritorio pasan de 84 px o si no se ve el foco. CI lo ejecuta con Chrome; localmente usa `GEOMETRY_BROWSER_CHANNEL=msedge` si no tienes Chrome. Pasar esta prueba no sustituye la aprobación visual.
+
 ## Agregar un componente
 1. Revisa [la matriz de cobertura](src/coverage.ts) y [las normas de componentes](../../docs/conventions/ui-components.md).
 2. Construye sobre la primitiva de React Aria si existe; exporta una API pequeña y tipada.
