@@ -13,7 +13,7 @@ const quote = {
   currency: 'MXN', amountMinor: 3700, lines: breakdown, coverage: 'eligible',
 };
 const delivery = {
-  deliveryId: 'd1', branchId: 'b1', quoteId: 'quote_a', status: 'requested',
+  deliveryId: 'd1', publicReference: 'VL-26-7K9M2Q', branchId: 'b1', quoteId: 'quote_a', status: 'requested',
   version: 1, createdAt: '2026-10-18T23:00:00.000Z',
   pricing: { amountMinor: 3700, currency: 'MXN', lines: breakdown, rateVersion: 'synthetic-v1' },
 };

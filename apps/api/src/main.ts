@@ -17,7 +17,7 @@ const db = createDatabase(config.databaseUrl);
 await assertRuntimeRole(db);
 const api = createApi({
   ...createQuoteRepository(db), resolveRoute: createSyntheticRouteAdapter(db),
-  deliveries: createDeliveryRepository(db),
+  deliveries: createDeliveryRepository(db, { prefix: config.referencePrefix }),
   couriers: createCourierRepository(db),
   deliveryHistory: createDeliveryHistoryRepository(db),
   locations: createLocationRepository(db),

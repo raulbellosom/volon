@@ -15,8 +15,9 @@ export function createDeliveryHistoryRepository(db: PrismaClient): DeliveryHisto
           SELECT coalesce(jsonb_agg(to_jsonb(page) ORDER BY page."createdAt" DESC, page.id COLLATE "C" DESC), '[]'::jsonb)
           FROM (
             SELECT d.id, d."branchId", d."quoteId", d.status, d.version, d."createdAt",
-              d."amountMinor", d.currency, d."baseAmountMinor", d."distanceAmountMinor", d."rateVersion"
+              d."amountMinor", d.currency, d."baseAmountMinor", d."distanceAmountMinor", d."rateVersion", r."publicReference"
             FROM app."Delivery" d
+            JOIN app."DeliveryPublicReference" r ON r."deliveryId" = d.id
             WHERE d."branchId" = b.id AND d."merchantId" = b."merchantId"
               AND (${boundary?.createdAt ?? null}::timestamptz IS NULL
                 OR (d."createdAt", d.id COLLATE "C") <

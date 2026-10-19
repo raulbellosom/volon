@@ -11,6 +11,7 @@ services:
       NODE_ENV: development
       LOCAL_SYNTHETIC_MODE: "true"
       PORT: "3100"
+      DELIVERY_REFERENCE_PREFIX: ${DELIVERY_REFERENCE_PREFIX:-}
       DATABASE_URL: ${DATABASE_DOCKER_URL:?Run pnpm local:up}
       SUPABASE_URL: http://supabase_kong_delivery-local:8000
       SUPABASE_PUBLISHABLE_KEY: ${SUPABASE_PUBLISHABLE_KEY:?Run pnpm local:up}

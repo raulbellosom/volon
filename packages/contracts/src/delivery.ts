@@ -7,6 +7,7 @@ export interface CreateDeliveryRequest {
 
 export interface DeliveryResponse {
   readonly deliveryId: string;
+  readonly publicReference: string;
   readonly branchId: string;
   readonly quoteId: string;
   readonly status: 'requested';

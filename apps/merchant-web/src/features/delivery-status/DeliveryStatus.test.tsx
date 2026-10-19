@@ -6,7 +6,7 @@ import { legacyLocations } from '../../demo/demo-fixtures.ts';
 import { renderApp } from '../../test/render-app.tsx';
 
 const DELIVERY: DeliveryResponse = {
-  deliveryId: 'delivery_test',
+  deliveryId: 'delivery_test', publicReference: 'VL-26-7K9M2Q',
   branchId: 'branch_demo_marina',
   quoteId: 'quote_test',
   status: 'requested',
@@ -22,6 +22,8 @@ describe('delivery status', () => {
 
     expect(await screen.findByRole('heading', { name: 'Estado del envío' })).toBeInTheDocument();
     expect(getDelivery).toHaveBeenCalledWith('delivery_test');
+    expect(screen.getByText(DELIVERY.publicReference)).toBeInTheDocument();
+    expect(screen.queryByText(DELIVERY.deliveryId)).not.toBeInTheDocument();
     const timeline = screen.getByRole('list', { name: 'Avance del envío' });
     expect(within(timeline).getByText('Solicitado').closest('li')).toHaveAttribute('aria-current', 'step');
     expect(within(timeline).getByText('Entregado')).toBeInTheDocument();
@@ -76,10 +78,38 @@ describe('delivery status', () => {
   });
 
   it('opens a delivery from the home lookup', async () => {
-    const { user, router } = renderApp('/', { api: { getDelivery: async () => DELIVERY } });
-    await user.type(await screen.findByRole('textbox', { name: /Folio del envío/ }), 'delivery_test');
+    const { user, router } = renderApp('/', { api: { getDelivery: async () => DELIVERY, getDeliveryByReference: async () => DELIVERY } });
+    await user.type(await screen.findByRole('textbox', { name: /Folio del envío/ }), 'vl267k9m2q');
     await user.click(screen.getByRole('button', { name: /Ver estado/ }));
     expect(await screen.findByRole('heading', { name: 'Estado del envío' })).toBeInTheDocument();
     expect(router.state.location.pathname).toBe('/envios/delivery_test');
+  });
+
+  it('validates typed folios, normalizes them and resolves through authenticated lookup before UUID navigation', async () => {
+    const getDeliveryByReference = vi.fn().mockResolvedValue(DELIVERY);
+    const { user, router } = renderApp('/', { api: { getDeliveryByReference, getDelivery: async () => DELIVERY } });
+    const input = await screen.findByRole('textbox', { name: /Folio del envío/ });
+    await user.type(input, 'VL-26-7K9');
+    await user.click(screen.getByRole('button', { name: /Ver estado/ }));
+    expect(await screen.findByText(/Escribe el folio completo/)).toBeInTheDocument();
+    expect(getDeliveryByReference).not.toHaveBeenCalled();
+    await user.clear(input);
+    await user.type(input, 'vl267k9m2q');
+    await user.click(screen.getByRole('button', { name: /Ver estado/ }));
+    expect(await screen.findByRole('heading', { name: 'Estado del envío' })).toBeInTheDocument();
+    expect(getDeliveryByReference).toHaveBeenCalledWith('VL-26-7K9M2Q');
+    expect(router.state.location.pathname).toBe('/envios/delivery_test');
+  });
+
+  it.each([
+    [new ApiError('not-found', 404), 'Puede que el folio esté mal escrito o que pertenezca a otra sucursal.'],
+    [new ApiError('unavailable', 503), 'Estamos teniendo problemas para conectar. Intenta de nuevo en unos minutos.'],
+  ])('keeps the search editable after lookup failure', async (failure, message) => {
+    const { user, router } = renderApp('/', { api: { getDeliveryByReference: () => Promise.reject(failure) } });
+    await user.type(await screen.findByRole('textbox', { name: /Folio del envío/ }), 'VL-26-7K9M2Q');
+    await user.click(screen.getByRole('button', { name: /Ver estado/ }));
+    expect(await screen.findByText(message)).toBeInTheDocument();
+    expect(screen.getByRole('textbox', { name: /Folio del envío/ })).toBeEnabled();
+    expect(router.state.location.pathname).toBe('/');
   });
 });

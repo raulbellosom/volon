@@ -1,3 +1,6 @@
+import { brand } from '@delivery/branding';
+import { validateReferencePrefix } from './modules/deliveries/public-reference.ts';
+
 export function readConfig(env: NodeJS.ProcessEnv = process.env) {
   function required(key: string): string {
     const value = env[key];
@@ -11,5 +14,6 @@ export function readConfig(env: NodeJS.ProcessEnv = process.env) {
   if (env.LOCAL_SYNTHETIC_MODE !== 'true') throw new Error('Only synthetic local mode is supported');
   const port = Number(env.PORT ?? '3100');
   if (!Number.isInteger(port) || port < 1 || port > 65535) throw new Error('Invalid PORT');
-  return { databaseUrl, supabaseUrl, publishableKey: required('SUPABASE_PUBLISHABLE_KEY'), port };
+  const referencePrefix = validateReferencePrefix(env.DELIVERY_REFERENCE_PREFIX || brand.deliveryReferencePrefix);
+  return { databaseUrl, supabaseUrl, publishableKey: required('SUPABASE_PUBLISHABLE_KEY'), port, referencePrefix };
 }

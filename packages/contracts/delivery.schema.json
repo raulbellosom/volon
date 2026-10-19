@@ -14,9 +14,10 @@
     "idempotencyKey": { "$ref": "#/$defs/id" },
     "response": {
       "type": "object", "additionalProperties": false,
-      "required": ["deliveryId", "branchId", "quoteId", "status", "version", "createdAt", "pricing"],
+      "required": ["deliveryId", "publicReference", "branchId", "quoteId", "status", "version", "createdAt", "pricing"],
       "properties": {
         "deliveryId": { "$ref": "#/$defs/id" },
+        "publicReference": { "type": "string", "pattern": "^[A-Z]{2,4}-[0-9]{2}-[23456789ABCDEFGHJKMNPQRSTVWXYZ]{6,10}$" },
         "branchId": { "$ref": "#/$defs/id" },
         "quoteId": { "$ref": "#/$defs/id" },
         "status": { "const": "requested" },

@@ -33,6 +33,7 @@ function withSessionGuard(api: MerchantApi, onUnauthenticated: () => void): Merc
     createQuote: guard(api.createQuote),
     createDelivery: guard(api.createDelivery),
     getDelivery: guard(api.getDelivery),
+    getDeliveryByReference: guard(api.getDeliveryByReference),
     listDeliveries: guard(api.listDeliveries),
     getPickupLocation: guard(api.getPickupLocation),
     getQuoteLocations: guard(api.getQuoteLocations),

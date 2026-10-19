@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 import { parseDeliveryHistoryResponse, type DeliveryHistoryResponse } from '@delivery/contracts';
 import { admin, base, login } from './delivery-fixtures.ts';
+import { generatePublicReference } from '../src/modules/deliveries/public-reference.ts';
 
 export async function historyPage(token: string, branchId: string, limit?: number, cursor?: string) {
   const query = new URLSearchParams({ branchId });
@@ -41,7 +42,8 @@ export async function withHistoryFixture<T>(operation: (fixture: {
         ...price, request: route, expiresAt: new Date('2099-01-01T00:00:00.000Z') } });
       await tx.delivery.create({ data: { id, quoteId, branchId, merchantId, subjectId: identity.subjectId,
         ...price, routeSnapshot: route, idempotencyKeyHash: randomUUID().replaceAll('-', '').repeat(2),
-        requestHash: 'a'.repeat(64), createdAt: new Date(timestamp) } });
+        requestHash: 'a'.repeat(64), createdAt: new Date(timestamp),
+        publicReference: { create: { publicReference: generatePublicReference(new Date()) } } } });
     });
     return id;
   };

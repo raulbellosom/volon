@@ -4,7 +4,7 @@ import { readFile } from 'node:fs/promises';
 import { parseDeliveryHistoryQuery, parseDeliveryHistoryResponse,
   InvalidDeliveryHistoryQuery, InvalidDeliveryResponse } from '../src/index.ts';
 
-const item = { deliveryId: 'delivery_a', branchId: 'branch_a', quoteId: 'quote_a',
+const item = { deliveryId: 'delivery_a', publicReference: 'VL-26-7K9M2Q', branchId: 'branch_a', quoteId: 'quote_a',
   status: 'requested', version: 1, createdAt: '2026-10-18T00:00:00.000Z',
   pricing: { amountMinor: 100, currency: 'MXN', rateVersion: 'synthetic-v1',
     lines: [{ code: 'base_delivery', amountMinor: 100 }, { code: 'distance_delivery', amountMinor: 0 }] } };

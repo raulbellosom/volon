@@ -1,5 +1,6 @@
 import {
   parseCreateDeliveryRequest, parseIdempotencyKey, InvalidDeliveryRequest, InvalidIdempotencyKey,
+  normalizePublicReference, InvalidPublicReference,
 } from '@delivery/contracts';
 import type { QuoteActor } from '../pricing/quote.service.ts';
 import { createDeliveryService, DeliveryFailure, type DeliveryStore } from './delivery.service.ts';
@@ -13,17 +14,28 @@ export function createDeliveryHandler(dependencies: DeliveryHttpDependencies) {
   const create = createDeliveryService(dependencies);
   return async (request: Request): Promise<Response> => {
     const path = new URL(request.url).pathname;
+    const referencePath = path.startsWith('/v1/deliveries/by-reference/');
     const id = /^\/v1\/deliveries\/([A-Za-z0-9_-]{1,128})$/.exec(path)?.[1];
-    if (path !== '/v1/deliveries' && !id) return problem(404, 'NOT_FOUND', 'Recurso no encontrado.');
-    const method = id ? 'GET' : 'POST';
+    if (path !== '/v1/deliveries' && !id && !referencePath) return problem(404, 'NOT_FOUND', 'Recurso no encontrado.');
+    const method = id || referencePath ? 'GET' : 'POST';
     if (request.method !== method) {
       const response = problem(405, 'METHOD_NOT_ALLOWED', 'Método no permitido.');
-      response.headers.set('allow', id ? 'GET' : 'GET, POST');
+      response.headers.set('allow', id || referencePath ? 'GET' : 'GET, POST');
       return response;
     }
     try {
       const actor = await dependencies.authenticate(request);
       if (!actor?.subjectId) return problem(401, 'UNAUTHENTICATED', 'Autenticación requerida.');
+      if (referencePath) {
+        let reference: string;
+        try {
+          if (new URL(request.url).search) throw new InvalidPublicReference();
+          reference = normalizePublicReference(decodeURIComponent(path.slice('/v1/deliveries/by-reference/'.length)));
+        } catch { throw new InvalidPublicReference(); }
+        const result = await dependencies.readByReference?.(actor, reference);
+        return result ? Response.json(result, { headers: { 'cache-control': 'no-store' } })
+          : problem(404, 'NOT_FOUND', 'Recurso no encontrado.');
+      }
       if (id) {
         const result = await dependencies.readDelivery(actor, id);
         return result ? Response.json(result, { headers: { 'cache-control': 'no-store' } })
@@ -39,6 +51,7 @@ export function createDeliveryHandler(dependencies: DeliveryHttpDependencies) {
       const result = await create(actor, parseCreateDeliveryRequest(body), key);
       return Response.json(result, { status: 201, headers: { 'cache-control': 'no-store' } });
     } catch (error) {
+      if (error instanceof InvalidPublicReference) return problem(422, 'INVALID_PUBLIC_REFERENCE', error.message);
       if (error instanceof InvalidDeliveryRequest) return problem(422, 'INVALID_DELIVERY_REQUEST', error.message);
       if (error instanceof InvalidIdempotencyKey) return problem(422, 'INVALID_IDEMPOTENCY_KEY', error.message);
       if (error instanceof DeliveryFailure) {

@@ -72,11 +72,13 @@ describe('new delivery request', () => {
     await user.click(screen.getByRole('button', { name: /Confirmar envío/ }));
     expect(await screen.findByText('No pudimos confirmar el envío')).toBeInTheDocument();
     createDelivery.mockResolvedValueOnce({
-      deliveryId: 'delivery_test', branchId: 'branch_demo_centro', quoteId: QUOTE.quoteId, status: 'requested', version: 1,
+      deliveryId: 'delivery_test', publicReference: 'VL-26-7K9M2Q', branchId: 'branch_demo_centro', quoteId: QUOTE.quoteId, status: 'requested', version: 1,
       createdAt: new Date().toISOString(), pricing: { amountMinor: QUOTE.amountMinor, currency: 'MXN', lines: QUOTE.lines, rateVersion: 'test' },
     });
     await user.click(screen.getByRole('button', { name: /Confirmar envío/ }));
     expect(await screen.findByRole('heading', { name: 'Solicitud enviada' })).toBeInTheDocument();
+    expect(screen.getByText('VL-26-7K9M2Q')).toBeInTheDocument();
+    expect(screen.queryByText('delivery_test')).not.toBeInTheDocument();
 
     const [first, retry] = createDelivery.mock.calls.map(([input]) => input as Record<string, string>);
     expect(Object.keys(first ?? {}).sort()).toEqual(['branchId', 'idempotencyKey', 'quoteId']);

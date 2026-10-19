@@ -16,12 +16,12 @@ export const History: Story = {
   render: (args) => (
     <Section
       title="Historial de envíos"
-      description="Cada fila es un solo enlace al detalle. En teléfono se apila; desde sm se alinea en columnas. El folio largo se recorta en pantalla pero se lee completo."
+      description="Cada fila enlaza al detalle por su ID técnico. El folio corto se muestra completo en su propia línea, también en teléfono."
     >
       <DeliveryList aria-label={args['aria-label']}>
-        <DeliveryListItem href="#a" title="18 oct 2026, 2:05 p.m." reference="35855628-1965-4f53-9743-2cd76a27a6bf" status="requested" statusLabel="Solicitado" amountMinor={6150} />
-        <DeliveryListItem href="#b" title="18 oct 2026, 1:40 p.m." reference="e9ed07fb-7495-4ecd-afb2-96d720dac5b9" status="in-transit" amountMinor={4800} />
-        <DeliveryListItem href="#c" title="17 oct 2026, 7:12 p.m." reference="PV-1042" status="delivered" amountMinor={3500} />
+        <DeliveryListItem href="#a" title="18 oct 2026, 2:05 p.m." reference="VL-26-7K9M2Q" status="requested" statusLabel="Solicitado" amountMinor={6150} />
+        <DeliveryListItem href="#b" title="18 oct 2026, 1:40 p.m." reference="VL-26-8N3R4T" status="in-transit" amountMinor={4800} />
+        <DeliveryListItem href="#c" title="17 oct 2026, 7:12 p.m." reference="VL-26-9P4S5V" status="delivered" amountMinor={3500} />
       </DeliveryList>
     </Section>
   ),

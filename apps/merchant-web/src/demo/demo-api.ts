@@ -1,4 +1,4 @@
-import { parseDeliveryQuoteRequest } from '@delivery/contracts';
+import { normalizePublicReference, parseDeliveryQuoteRequest, PUBLIC_REFERENCE_ALPHABET } from '@delivery/contracts';
 import { ApiError } from '../api/api-error.ts';
 import type { AuthApi, DeliveryLocationsResponse, DeliveryQuoteRequest, DeliveryQuoteResponse, DeliveryResponse, MerchantApi } from '../api/merchant-api.ts';
 import { DEMO_DELIVERY_ERRORS, DEMO_EMAILS, demoHistory, demoMe, demoQuote, legacyLocations } from './demo-fixtures.ts';
@@ -7,6 +7,17 @@ export interface DemoOptions {
   /** Artificial latency so loading states are visible; 0 in tests. */
   latencyMs?: number;
   now?: () => number;
+}
+
+/** Deterministic per tab, explicitly synthetic; not the server allocator. */
+function demoReference(sequence: number, now: number): string {
+  let value = sequence;
+  let suffix = '';
+  for (let index = 0; index < 6; index++) {
+    suffix = PUBLIC_REFERENCE_ALPHABET[value % 30] + suffix;
+    value = Math.floor(value / 30);
+  }
+  return `VL-${String(new Date(now).getUTCFullYear()).slice(-2)}-${suffix}`;
 }
 
 /**
@@ -78,6 +89,7 @@ export function createDemoApis({ latencyMs = 450, now = Date.now }: DemoOptions 
       if (Date.parse(quote.expiresAt) <= now()) throw new ApiError('quote-expired', 409, 'QUOTE_EXPIRED');
       const delivery: DeliveryResponse = {
         deliveryId: `delivery_demo_${++created}`,
+        publicReference: demoReference(created, now()),
         branchId,
         quoteId,
         status: 'requested',
@@ -95,6 +107,15 @@ export function createDemoApis({ latencyMs = 450, now = Date.now }: DemoOptions 
       if (deliveryId === DEMO_DELIVERY_ERRORS.forbidden) throw new ApiError('forbidden', 403, 'ACCESS_DENIED');
       if (deliveryId === DEMO_DELIVERY_ERRORS.unavailable) throw new ApiError('unavailable', 503, 'SERVICE_UNAVAILABLE');
       const delivery = deliveries.get(deliveryId);
+      if (!delivery) throw new ApiError('not-found', 404, 'NOT_FOUND');
+      return delivery;
+    },
+    async getDeliveryByReference(reference) {
+      await wait();
+      let normalized: string;
+      try { normalized = normalizePublicReference(reference); }
+      catch { throw new ApiError('invalid', 422, 'INVALID_PUBLIC_REFERENCE'); }
+      const delivery = [...deliveries.values()].find((row) => row.publicReference === normalized);
       if (!delivery) throw new ApiError('not-found', 404, 'NOT_FOUND');
       return delivery;
     },

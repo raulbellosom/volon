@@ -27,3 +27,4 @@ export { parseCourierAvailabilityRequest, parseCourierMeResponse, InvalidCourier
   type CourierAvailabilityRequest, type CourierAvailabilityStatus, type CourierMeResponse } from './courier.ts';
 export { parsePickupLocationResponse, parseDeliveryLocationsResponse,
   type PickupLocationResponse, type DeliveryLocationsResponse } from './locations.ts';
+export { normalizePublicReference, InvalidPublicReference, PUBLIC_REFERENCE_PATTERN, PUBLIC_REFERENCE_ALPHABET } from './public-reference.ts';

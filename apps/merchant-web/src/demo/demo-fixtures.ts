@@ -53,6 +53,7 @@ export function demoHistory(now: number): DeliveryResponse[] {
     const distance = 1500 + (index % 3) * 1000;
     return {
       deliveryId: `delivery_demo_h${String(index + 1).padStart(2, '0')}`,
+      publicReference: `VL-26-7K9M${'23456789ABCDEFGHJKMNPQRSTVWXYZ'[Math.floor(index / 30)]}${'23456789ABCDEFGHJKMNPQRSTVWXYZ'[index % 30]}`,
       branchId: DEMO_HISTORY_BRANCH,
       quoteId: `quote_demo_h${index + 1}`,
       status: 'requested',

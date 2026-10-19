@@ -18,7 +18,7 @@ afterEach(() => vi.restoreAllMocks());
 describe('HTTP adapter', () => {
   it('sends the bearer token and the idempotency key', async () => {
     const fetch = mockFetch(Response.json({
-      deliveryId: 'd1', branchId: 'b1', quoteId: 'q1', status: 'requested', version: 1, createdAt: '2026-10-18T20:00:00Z',
+      deliveryId: 'd1', publicReference: 'VL-26-7K9M2Q', branchId: 'b1', quoteId: 'q1', status: 'requested', version: 1, createdAt: '2026-10-18T20:00:00Z',
       pricing: { amountMinor: 100, currency: 'MXN', lines: [
         { code: 'base_delivery', amountMinor: 100 },
         { code: 'distance_delivery', amountMinor: 0 },
@@ -73,7 +73,7 @@ describe('HTTP adapter', () => {
 
 describe('HTTP delivery history', () => {
   const row = (branchId: string) => ({
-    deliveryId: 'd1', branchId, quoteId: 'q1', status: 'requested', version: 1, createdAt: '2026-10-18T20:00:00Z',
+    deliveryId: 'd1', publicReference: 'VL-26-7K9M2Q', branchId, quoteId: 'q1', status: 'requested', version: 1, createdAt: '2026-10-18T20:00:00Z',
     pricing: { amountMinor: 100, currency: 'MXN', lines: [
       { code: 'base_delivery', amountMinor: 100 },
       { code: 'distance_delivery', amountMinor: 0 },
@@ -167,4 +167,12 @@ describe('location source', () => {
     expect(locationSource(true)?.kind).toBe('synthetic');
     expect(locationSource(false)).toBeNull();
   });
+});
+it('looks up an encoded public reference with bearer and validates the full Delivery DTO', async () => {
+  const body = { deliveryId: 'd1', publicReference: 'VL-26-7K9M2Q', branchId: 'b1', quoteId: 'q1',
+    status: 'requested', version: 1, createdAt: '2026-10-19T00:00:00.000Z', pricing: { currency: 'MXN', amountMinor: 0,
+      lines: [{ code: 'base_delivery', amountMinor: 0 }, { code: 'distance_delivery', amountMinor: 0 }], rateVersion: 'test' } };
+  const fetcher = vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(JSON.stringify(body), { status: 200 }));
+  expect(await createHttpMerchantApi(() => 'token').getDeliveryByReference('vl 26 7k9m2q')).toEqual(body);
+  expect(fetcher.mock.calls[0]?.[0]).toBe('/v1/deliveries/by-reference/vl%2026%207k9m2q');
 });

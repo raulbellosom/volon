@@ -32,6 +32,9 @@ importers:
 
   apps/api:
     dependencies:
+      '@delivery/branding':
+        specifier: workspace:*
+        version: link:../../packages/branding
       '@delivery/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts

@@ -31,6 +31,8 @@ export function createHttpMerchantApi(getToken: () => string | null): MerchantAp
       })),
     getDelivery: async (deliveryId) =>
       readDelivery(await requestJson(`/v1/deliveries/${encodeURIComponent(deliveryId)}`, { headers: authorized() })),
+    getDeliveryByReference: async (reference) =>
+      readDelivery(await requestJson(`/v1/deliveries/by-reference/${encodeURIComponent(reference)}`, { headers: authorized() })),
     listDeliveries: async ({ branchId, limit, cursor }) => {
       const params = new URLSearchParams({ branchId, limit: String(limit) });
       if (cursor) params.set('cursor', cursor);

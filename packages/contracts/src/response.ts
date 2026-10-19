@@ -1,5 +1,6 @@
 import type { DeliveryQuoteResponse } from './delivery-quote.ts';
 import type { DeliveryResponse } from './delivery.ts';
+import { PUBLIC_REFERENCE_PATTERN } from './public-reference.ts';
 
 /** Response boundary shared by the API and clients; never trust JSON based on TypeScript alone. */
 export class InvalidDeliveryResponse extends Error {
@@ -81,7 +82,8 @@ export function parseDeliveryQuoteResponse(value: unknown): DeliveryQuoteRespons
 
 export function parseDeliveryResponse(value: unknown): DeliveryResponse {
   const row = shape(value,
-    ['deliveryId', 'branchId', 'quoteId', 'status', 'version', 'createdAt', 'pricing']);
+    ['deliveryId', 'publicReference', 'branchId', 'quoteId', 'status', 'version', 'createdAt', 'pricing']);
+  if (typeof row.publicReference !== 'string' || !PUBLIC_REFERENCE_PATTERN.test(row.publicReference)) throw new InvalidDeliveryResponse();
   if (row.status !== 'requested' || row.version !== 1) throw new InvalidDeliveryResponse();
   const price = shape(row.pricing, ['amountMinor', 'currency', 'lines', 'rateVersion']);
   if (price.currency !== 'MXN') throw new InvalidDeliveryResponse();
@@ -90,6 +92,7 @@ export function parseDeliveryResponse(value: unknown): DeliveryResponse {
   assertTotal(amountMinor, parsedLines);
   return Object.freeze({
     deliveryId: nonEmpty(row.deliveryId, 128),
+    publicReference: row.publicReference,
     branchId: nonEmpty(row.branchId, 128),
     quoteId: nonEmpty(row.quoteId, 128),
     status: 'requested',

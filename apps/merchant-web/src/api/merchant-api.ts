@@ -34,6 +34,7 @@ export interface MerchantApi {
   createQuote(request: DeliveryQuoteRequest): Promise<DeliveryQuoteResponse>;
   createDelivery(input: { branchId: string; quoteId: string; idempotencyKey: string }): Promise<DeliveryResponse>;
   getDelivery(deliveryId: string): Promise<DeliveryResponse>;
+  getDeliveryByReference(reference: string): Promise<DeliveryResponse>;
   /** One page of a branch's deliveries, newest first; `nextCursor` is `null` on the last page. */
   listDeliveries(query: DeliveryHistoryQuery): Promise<DeliveryHistoryResponse>;
   /** Branch pickup coordinates from its record (not geocoded, never a street address). */

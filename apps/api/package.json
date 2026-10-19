@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "dependencies": {
+    "@delivery/branding": "workspace:*",
     "@delivery/contracts": "workspace:*",
     "@delivery/pricing": "workspace:*",
     "@prisma/adapter-pg": "7.10.1",

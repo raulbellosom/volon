@@ -4,7 +4,7 @@ import { commandDigest, createDeliveryService, DeliveryFailure,
   type DeliveryStore, type DeliveryTransaction } from '../src/modules/deliveries/delivery.service.ts';
 import type { DeliveryResponse } from '@delivery/contracts';
 
-const response: DeliveryResponse = { deliveryId: 'delivery_test', branchId: 'branch_test', quoteId: 'quote_test',
+const response: DeliveryResponse = { deliveryId: 'delivery_test', publicReference: 'VL-26-7K9M2Q', branchId: 'branch_test', quoteId: 'quote_test',
   status: 'requested', version: 1, createdAt: '2026-10-17T00:00:00.000Z', pricing: {
     amountMinor: 3000, currency: 'MXN', rateVersion: 'synthetic-v1', lines: [
       { code: 'base_delivery', amountMinor: 3000 }, { code: 'distance_delivery', amountMinor: 0 },

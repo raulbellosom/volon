@@ -85,7 +85,7 @@ export function DeliveryHistory({ branch }: { branch: BranchOption }) {
                 key={delivery.deliveryId}
                 href={`/envios/${encodeURIComponent(delivery.deliveryId)}`}
                 title={formatDateTime(delivery.createdAt)}
-                reference={delivery.deliveryId}
+                reference={delivery.publicReference}
                 status="requested"
                 statusLabel="Solicitado"
                 amountMinor={delivery.pricing.amountMinor}

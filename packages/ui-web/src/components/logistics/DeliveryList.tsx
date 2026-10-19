@@ -26,7 +26,7 @@ export interface DeliveryListItemProps {
   href: string;
   /** Main line people scan for, usually the request date and time. */
   title: ReactNode;
-  /** Full folio; truncated on screen but read in full by assistive tech. */
+  /** Human-facing folio, kept complete on its own line on narrow screens. */
   reference: string;
   status: DeliveryStatusTone;
   /** Overrides the default status wording. */
@@ -50,18 +50,16 @@ export function DeliveryListItem({ href, title, reference, status, statusLabel, 
           'hover:bg-surface-hover data-focus-visible:focus-ring data-focus-visible:-outline-offset-2',
         )}
       >
-        <span aria-hidden="true" className="row-span-2 flex size-10 items-center justify-center rounded-full bg-surface-selected text-text-on-secondary sm:row-span-1 [&_svg]:size-5">
+        <span aria-hidden="true" className="row-span-3 flex size-10 items-center justify-center rounded-full bg-surface-selected text-text-on-secondary sm:row-span-2 [&_svg]:size-5">
           <Package />
         </span>
-        <span className="flex min-w-0 flex-col">
-          <span className="text-md font-semibold">{title}</span>
-          <span className="truncate font-mono text-xs text-text-secondary">
-            <span className="font-sans">Folio </span>{reference}
-          </span>
+        <span className="col-start-2 min-w-0 text-md font-semibold">{title}</span>
+        <span className="col-span-2 col-start-2 row-start-2 whitespace-nowrap font-mono text-xs text-text-secondary sm:col-span-1">
+          <span className="font-sans">Folio </span>{reference}
         </span>
-        <span className="text-end text-md font-bold tabular-nums sm:order-last sm:min-w-20">{formatMXN(amountMinor)}</span>
-        <StatusBadge status={status} size="sm" {...(statusLabel ? { label: statusLabel } : {})} className="col-start-2 sm:col-start-auto" />
-        <ChevronRight aria-hidden="true" className="hidden size-5 text-text-secondary sm:order-last sm:block" />
+        <span className="col-start-3 row-start-1 text-end text-md font-bold tabular-nums sm:col-start-4 sm:row-span-2 sm:min-w-20">{formatMXN(amountMinor)}</span>
+        <StatusBadge status={status} size="sm" {...(statusLabel ? { label: statusLabel } : {})} className="col-start-2 row-start-3 sm:col-start-3 sm:row-span-2 sm:row-start-1" />
+        <ChevronRight aria-hidden="true" className="col-start-5 row-span-2 row-start-1 hidden size-5 text-text-secondary sm:block" />
       </AriaLink>
     </li>
   );

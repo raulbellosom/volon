@@ -5,6 +5,7 @@ import { formatDateTime, formatTime } from '../../shared/format-date.ts';
 import { pricingSource } from '../../shared/pricing-notice.ts';
 import { priceLines } from '../delivery-request/price-lines.ts';
 import { DeliveryLocations } from './DeliveryLocations.tsx';
+import { PublicReference } from '../../shared/PublicReference.tsx';
 
 const LATER = 'Aparecerá cuando la asignación de repartidores esté disponible.';
 
@@ -41,7 +42,7 @@ export function DeliveryDetails({ delivery, branchName }: { delivery: DeliveryRe
           <DescriptionList
             layout="stacked"
             items={[
-              { term: 'Folio', icon: <Hash />, description: <span className="break-all font-mono text-sm">{delivery.deliveryId}</span> },
+              { term: 'Folio', icon: <Hash />, description: <PublicReference value={delivery.publicReference} /> },
               { term: 'Sucursal', icon: <Store />, description: branchName },
               { term: 'Solicitado', icon: <CalendarClock />, description: formatDateTime(delivery.createdAt) },
             ]}

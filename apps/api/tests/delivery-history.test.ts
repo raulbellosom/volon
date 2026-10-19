@@ -7,7 +7,7 @@ import { createDeliveryHistoryService } from '../src/modules/deliveries/delivery
 
 const actor = { subjectId: '11111111-1111-4111-8111-111111111111' };
 const boundary = { createdAt: '2026-10-18T00:00:00.123Z', deliveryId: 'delivery_b' };
-const item = (id: string): DeliveryResponse => ({ deliveryId: id, branchId: 'branch_a', quoteId: `quote_${id}`,
+const item = (id: string): DeliveryResponse => ({ deliveryId: id, publicReference: 'VL-26-7K9M2Q', branchId: 'branch_a', quoteId: `quote_${id}`,
   status: 'requested', version: 1, createdAt: boundary.createdAt,
   pricing: { amountMinor: 100, currency: 'MXN', rateVersion: 'synthetic-v1',
     lines: [{ code: 'base_delivery', amountMinor: 100 }, { code: 'distance_delivery', amountMinor: 0 }] } });

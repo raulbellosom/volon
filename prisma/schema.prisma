@@ -179,6 +179,7 @@ model PricingQuote {
 }
 
 model Delivery {
+  publicReference DeliveryPublicReference?
   id                  String       @id @default(uuid())
   subjectId           String       @db.Uuid
   merchantId          String
@@ -201,6 +202,15 @@ model Delivery {
   @@unique([subjectId, branchId, idempotencyKeyHash])
   @@unique([quoteId, branchId, merchantId])
   @@index([branchId, merchantId, createdAt])
+  @@schema("app")
+}
+
+model DeliveryPublicReference {
+  deliveryId String @id
+  publicReference String @unique
+  issuedAt DateTime @default(dbgenerated("clock_timestamp()")) @db.Timestamptz(3)
+  delivery Delivery @relation(fields: [deliveryId], references: [id], onDelete: Restrict, onUpdate: NoAction)
+
   @@schema("app")
 }
 

@@ -37,6 +37,7 @@ export interface DeliveryTransaction {
 }
 
 export interface DeliveryStore {
+  readonly readByReference?: (actor: QuoteActor, reference: string) => Promise<DeliveryResponse | null>;
   readonly transaction: <T>(actor: QuoteActor, operation: (tx: DeliveryTransaction) => Promise<T>) => Promise<T>;
   readonly readDelivery: (actor: QuoteActor, deliveryId: string) => Promise<DeliveryResponse | null>;
 }

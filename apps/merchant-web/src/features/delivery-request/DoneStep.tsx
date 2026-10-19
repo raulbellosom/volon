@@ -2,6 +2,7 @@ import { Alert, Button, DescriptionList, IconChip, LinkButton, formatMXN } from 
 import { CalendarClock, CircleCheckBig, Hash, PackagePlus, Radar, Wallet } from 'lucide-react';
 import type { DeliveryResponse } from '../../api/merchant-api.ts';
 import { formatDateTime } from '../../shared/format-date.ts';
+import { PublicReference } from '../../shared/PublicReference.tsx';
 
 export function DoneStep({ delivery, onRestart }: { delivery: DeliveryResponse; onRestart: () => void }) {
   return (
@@ -17,7 +18,7 @@ export function DoneStep({ delivery, onRestart }: { delivery: DeliveryResponse; 
         layout="grid"
         className="w-full"
         items={[
-          { term: 'Folio', icon: <Hash />, description: <span className="break-all font-mono text-sm">{delivery.deliveryId}</span> },
+          { term: 'Folio', icon: <Hash />, description: <PublicReference value={delivery.publicReference} /> },
           { term: 'Total del envío', icon: <Wallet />, description: formatMXN(delivery.pricing.amountMinor) },
           { term: 'Solicitado', icon: <CalendarClock />, description: formatDateTime(delivery.createdAt) },
         ]}

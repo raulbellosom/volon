@@ -6,7 +6,7 @@ import { renderApp } from '../../test/render-app.tsx';
 
 function delivery(id: string, branchId = 'branch_demo_centro', minutesAgo = 10): DeliveryResponse {
   return {
-    deliveryId: id, branchId, quoteId: `q_${id}`, status: 'requested', version: 1,
+    deliveryId: id, publicReference: 'VL-26-7K9M2Q', branchId, quoteId: `q_${id}`, status: 'requested', version: 1,
     createdAt: new Date(Date.now() - minutesAgo * 60_000).toISOString(),
     pricing: { amountMinor: 4500, currency: 'MXN', lines: [{ code: 'base_delivery', amountMinor: 4500 }], rateVersion: 'test' },
   };
@@ -27,6 +27,8 @@ describe('delivery history', () => {
     expect(rows()).toHaveLength(20);
     expect(rows()[0]).toHaveAttribute('href', '/envios/delivery_demo_h01');
     expect(rows()[0]).toHaveTextContent('Solicitado');
+    expect(rows()[0]).toHaveTextContent('Folio VL-26-7K9M22');
+    expect(rows()[0]).not.toHaveTextContent('delivery_demo_h01');
 
     await user.click(screen.getByRole('button', { name: /Cargar más/ }));
     expect(await screen.findByText('No hay más envíos en esta sucursal.')).toBeInTheDocument();
