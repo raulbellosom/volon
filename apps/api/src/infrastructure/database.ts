@@ -17,9 +17,9 @@ export function withSubject<T>(db: PrismaClient, actor: QuoteActor,
   }, { timeout: 7000 });
 }
 
-export async function assertRuntimeRole(db: PrismaClient): Promise<void> {
+export async function assertRuntimeRole(db: Pick<PrismaClient, '$queryRaw'>): Promise<void> {
   const [role] = await db.$queryRaw<{ safe: boolean }[]>`
-    SELECT current_user = 'delivery_api' AND NOT rolsuper AND NOT rolbypassrls
+    SELECT current_user = 'delivery_api' AND session_user = 'delivery_api' AND NOT rolsuper AND NOT rolbypassrls
       AND NOT rolcreaterole AND NOT rolcreatedb AS safe
     FROM pg_roles WHERE rolname = current_user`;
   if (!role?.safe) throw new Error('Runtime database role is not restricted');
