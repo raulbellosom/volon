@@ -1,9 +1,10 @@
 import { DescriptionList, PriceBreakdown, Timeline, type TimelineEvent } from '@delivery/ui-web';
-import { CalendarClock, Hash, MapPinOff, Store } from 'lucide-react';
+import { CalendarClock, Hash, Store } from 'lucide-react';
 import type { DeliveryResponse } from '../../api/merchant-api.ts';
 import { formatDateTime, formatTime } from '../../shared/format-date.ts';
 import { pricingSource } from '../../shared/pricing-notice.ts';
 import { priceLines } from '../delivery-request/price-lines.ts';
+import { DeliveryLocations } from './DeliveryLocations.tsx';
 
 const LATER = 'Aparecerá cuando la asignación de repartidores esté disponible.';
 
@@ -27,10 +28,13 @@ function timeline(delivery: DeliveryResponse): TimelineEvent[] {
 export function DeliveryDetails({ delivery, branchName }: { delivery: DeliveryResponse; branchName: string }) {
   return (
     <div className="grid gap-10 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
-      <section aria-labelledby="progress-title" className="flex flex-col gap-4">
-        <h2 id="progress-title" className="text-lg font-bold">Avance</h2>
-        <Timeline events={timeline(delivery)} aria-label="Avance del envío" />
-      </section>
+      <div className="flex flex-col gap-10">
+        <section aria-labelledby="progress-title" className="flex flex-col gap-4">
+          <h2 id="progress-title" className="text-lg font-bold">Avance</h2>
+          <Timeline events={timeline(delivery)} aria-label="Avance del envío" />
+        </section>
+        <DeliveryLocations deliveryId={delivery.deliveryId} branchName={branchName} />
+      </div>
       <div className="flex flex-col gap-8">
         <section aria-labelledby="facts-title" className="flex flex-col gap-4">
           <h2 id="facts-title" className="text-lg font-bold">Datos del envío</h2>
@@ -40,7 +44,6 @@ export function DeliveryDetails({ delivery, branchName }: { delivery: DeliveryRe
               { term: 'Folio', icon: <Hash />, description: <span className="break-all font-mono text-sm">{delivery.deliveryId}</span> },
               { term: 'Sucursal', icon: <Store />, description: branchName },
               { term: 'Solicitado', icon: <CalendarClock />, description: formatDateTime(delivery.createdAt) },
-              { term: 'Dirección de entrega', icon: <MapPinOff />, description: <span className="font-normal text-text-secondary">El sistema aún no la registra.</span> },
             ]}
           />
         </section>

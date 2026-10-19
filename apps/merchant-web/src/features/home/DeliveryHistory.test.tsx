@@ -140,9 +140,11 @@ describe('delivery history', () => {
   it('lists a new delivery first after requesting it', async () => {
     const { user } = renderApp('/envios/nuevo');
     await user.click(await screen.findByRole('button', { name: /Continuar/ }));
-    await user.type(screen.getByRole('textbox', { name: /Dirección de entrega/ }), 'Calle sintética 1');
+    await user.type(await screen.findByRole('textbox', { name: /Dirección de prueba/ }), 'Calle sintética 1');
+    await screen.findByText(/registro de la sucursal/);
     await user.click(screen.getByRole('button', { name: /Cotizar envío/ }));
-    await user.click(await screen.findByRole('button', { name: /Confirmar envío/ }));
+    await screen.findByText('Calle sintética 1');
+    await user.click(screen.getByRole('button', { name: /Confirmar envío/ }));
     await screen.findByRole('heading', { name: 'Solicitud enviada' });
 
     await user.click(within(screen.getByRole('navigation', { name: 'Principal' })).getByRole('link', { name: 'Inicio' }));

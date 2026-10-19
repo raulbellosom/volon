@@ -22,8 +22,8 @@ export function DoneStep({ delivery, onRestart }: { delivery: DeliveryResponse; 
           { term: 'Solicitado', icon: <CalendarClock />, description: formatDateTime(delivery.createdAt) },
         ]}
       />
-      <Alert tone="warning" title="La dirección no se guardó con el envío" className="w-full">
-        El sistema todavía no registra la dirección ni las indicaciones de entrega. Compártelas con tu equipo por otro medio mientras tanto.
+      <Alert tone="info" title="La dirección de prueba quedó guardada" className="w-full">
+        Se conserva con la cotización que confirmaste y la verás en el detalle del envío. Sigue sin verificarse.
       </Alert>
       <div className="flex w-full flex-col gap-3 sm:flex-row">
         <LinkButton href={`/envios/${encodeURIComponent(delivery.deliveryId)}`} variant="primary" size="lg" leadingIcon={<Radar />}>
