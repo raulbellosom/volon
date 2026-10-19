@@ -1,8 +1,9 @@
 # ADR-0011 — Ciclo de vida separado de ubicaciones personales
 
 Estado: **Propuesta**, 18-10-2026, issue #12. Requiere aprobación de arquitectura,
-seguridad, operación y revisión jurídica/licencias. No hay migración, worker,
-endpoint de borrado ni tratamiento de domicilios reales implementado.
+seguridad, operación y revisión jurídica/licencias. El issue #14 autoriza un corte
+técnico separado de laboratorio, descrito al final; no acepta esta ADR para PII.
+Sin worker, endpoint de borrado o tratamiento de domicilios reales implementado.
 
 ## Problema
 
@@ -82,7 +83,7 @@ fundamento, autorización, límite, revisiones y reglas ante vencimiento.
 
 ## Compatibilidad, alternativas y transición
 
-No migrar ni destruir datos en este corte. Snapshots actuales siguen funcionando
+El corte conceptual #12 no migró ni destruyó datos. Snapshots actuales siguen funcionando
 solo con datos sintéticos. Antes de aceptar PII: migración aditiva y contrato
 versionado de sobre, RLS/grants y tests transaccionales aprobados; conservar reader
 legacy limitado. La interfaz futura distinguirá disponible, no capturado y
@@ -108,3 +109,29 @@ RLS, KMS, borrado físico, recuperación productiva ni cumplimiento jurídico.
 RLS real existente sigue cubierto por `pnpm test:integration` sin ampliar permisos.
 Antes de PII se requieren tests reales de aislamiento, eliminación concurrente,
 fallos parciales KMS/DB, backup/restore y ausencia de PII en telemetría.
+
+## Laboratorio ejecutable autorizado en #14
+
+Se añade únicamente `app.PrivateLocationEnvelope` por Prisma Migrate, con RLS
+FORCE, scope actual de Branch y permisos mínimos del rol restringido. No se
+modifican Quote/Delivery, DTOs ni su inmutabilidad. Contrato propietario:
+[private-location-lab](../specification/private-location-lab.md).
+
+El módulo autentica con Supabase real; admite solo dos fixtures fijos, políticas
+synthetic-* explícitas y expiresAt sin valor predeterminado. El simulador AES-GCM
+y el ledger son puertos independientes en memoria, nunca composición productiva.
+Estados DB active/revoked/key_destroyed; key_destroyed solo confirma al simulador.
+Ciphertext permanece conservado y protegido; no se ha aprobado purge físico.
+
+Las integraciones del laboratorio prueban RLS real, manipulación, revocación
+durante decrypt, fallos parciales, replay, caducidad, compensación y reproducción
+de fila histórica archivada en tabla temporal PostgreSQL. Esto amplía la evidencia
+del modelo en memoria de #12, pero **no prueba backup/restore físico ni KMS real**.
+Reinicio sin ledger o claves niega acceso. No reconstruir automáticamente esos
+registros desde DB. Métricas locales revisables: conteos por estado, pendientes
+revoked y tiempos entre revokedAt/keyDestroyedAt; nunca contabilizar key_destroyed
+como eliminación productiva confirmada. Auditoría durable de actor de retiro y
+ledger externo, reconciliation de huérfanos y observabilidad operativa siguen pendientes.
+
+Rollback seguro del laboratorio: dejar de construirlo y conservar tabla/filas;
+sin down, borrado, desactivación de triggers ni modificaciones a datos anteriores.

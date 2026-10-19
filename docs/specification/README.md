@@ -28,6 +28,9 @@ Este dossier especifica *cómo* deben mantenerse las invariantes y contratos. Pa
 13. [Preguntas que debemos cerrar](open-decisions.md)
 
 ## Cómo leer los contratos
+
+El [laboratorio privado de ubicaciones](private-location-lab.md) define el corte
+interno sintético #14. No agrega rutas HTTP ni sustituye snapshots de Delivery.
 - **MUST / Debe:** garantía deseada del producto si se aprueba la especificación; no significa que ya existe.
 - **SHOULD / Preferible:** recomendación justificada con margen de adaptación.
 - **Ejemplo ilustrativo:** JSON, IDs y rutas que orientan implementación, todavía sin OpenAPI compilado.

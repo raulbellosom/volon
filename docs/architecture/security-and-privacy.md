@@ -48,3 +48,13 @@ aprobado de redacción o sobre sensible con ciclo de vida separado, manejo de
 respaldos y prueba de borrado. Tampoco existen cierres operativos reales en este
 corte. No simular cumplimiento mediante un flag, ni desactivar el trigger para
 limpiar datos. Los fixtures sintéticos persistentes no son autorización para PII.
+
+### Laboratorio privado de ubicaciones (#14)
+
+La implementación separada añade almacenamiento cifrado con RLS, Auth verificada,
+gate local/sintético y ledger obligatorio. No sustituye los JSON anteriores ni
+acepta entrada libre. [Contrato y límites](../specification/private-location-lab.md).
+KMS/ledger simulados viven fuera de PostgreSQL, solo en memoria; si se pierden,
+no se recupera acceso desde una copia de DB. Las pruebas de fila archivada no
+equivalen a restauración física. Retención, KMS y ledger duraderos, auditoría,
+borrado físico y recuperación productiva requieren revisión y aprobación.

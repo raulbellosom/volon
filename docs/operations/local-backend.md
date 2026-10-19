@@ -91,6 +91,17 @@ El stop afecta solo `delivery-backend-local` y el proyecto Supabase `delivery-lo
 
 ## Límites del incremento
 
+El issue #14 añade una cuarta migración exclusivamente aditiva para el
+[laboratorio privado](../specification/private-location-lab.md). Ejecutar
+`pnpm local:up` y `pnpm test:integration`; los archivos private-location-*.test.ts
+componen Auth, repositorio, KMS y ledger simulados dentro del proceso de pruebas.
+No hay servidor, endpoint ni flag que lo conecte al cotizador. Solo fixtures
+predefinidos. La tabla no conserva claves/ledger; reiniciar simuladores cierra
+acceso. No reconstruirlos desde DB ni interpretar key_destroyed como purge real.
+No hay rollback destructivo: para retirar el laboratorio conservar su tabla y
+dejar de construir el módulo. Copias temporales de pruebas no son backups reales.
+
+
 El corte de direcciones #11 permite destino textual e indicaciones sintéticas
 opcionales en el snapshot existente y tres lecturas explícitas bajo Auth/RLS.
 Contrato y secuencia para Claude: [integración de ubicaciones](location-integration.md).

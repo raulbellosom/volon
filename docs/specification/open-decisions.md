@@ -25,6 +25,14 @@
 | DEC-17 | Eventos y outbox | **Definido conceptualmente, prueba pendiente** | Backend autoridad; outbox para hechos durables; Broadcast privado efímero, snapshot tras reconexión. Test de versionado, permisos y consistencia. | Integraciones |
 | DEC-18 | Gestión de flotas múltiples | **Diferido a M2** | Modelo compatible con roles/tenants; no construir fleet-web ni split payouts en M0. Definir contratos/roles en M2. | Flotas |
 
+### Sobre privado de laboratorio — incremento #14
+
+Autorizado local/sintético: tabla aditiva, RLS, cifrado y ledger simulados,
+pruebas de retiros/fallos y filas antiguas. [Contrato](private-location-lab.md).
+No cambia almacenamiento existente ni habilita PII. ADR-0011 conserva estado
+Propuesta; KMS real, política de conservación, ledger/auditoría duraderos,
+reconciliation, licencias, purge y backup/restore requieren decisión humana.
+
 ### Evaluación de mapas y privacidad — incremento #12
 
 [Harness y protocolo](../validation/map-provider-benchmark.md) con tres adaptadores

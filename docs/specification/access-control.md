@@ -48,9 +48,17 @@ domicilio haya sido geocodificado o verificado en terreno.
 
 ## Actores y scopes
 
-El sobre sensible y acceso temporal de futuros couriers están propuestos en
+Laboratorio #14: la tabla privada solo concede SELECT/INSERT y UPDATE de los tres
+campos de retiro a delivery_api; sin DELETE, acceso anon/authenticated o exposición
+PostgREST. RLS consulta Branch/Merchant/membresía actuales y requiere contexto
+opt-in de laboratorio. Ese GUC no reemplaza autenticación ni es autorización
+frente a quien ya posea la credencial de servidor. KMS y ledger se verifican en
+aplicación; SELECT sobre ciphertext no concede descifrado. Sin nuevos roles de
+negocio ni permisos de courier. [Contrato](private-location-lab.md).
+
+El sobre productivo y acceso temporal de futuros couriers siguen propuestos en
 [ADR-0011](../decisions/0011-location-privacy-lifecycle.md), sin implementación ni
-grants nuevos. El harness #12 no recibe bearer de comercios ni acceso a su DB;
+grants productivos. El harness #12 no recibe bearer de comercios ni acceso a su DB;
 solo usa fixtures artificiales y, con revisión explícita, POIs públicos.
 
 - `customer`: acceso a sus propios pedidos/enlaces de seguimiento válidos.
