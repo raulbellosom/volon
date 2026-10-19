@@ -29,6 +29,9 @@ Este dossier especifica *cómo* deben mantenerse las invariantes y contratos. Pa
 
 ## Cómo leer los contratos
 
+Los [folios públicos de Delivery](delivery-public-reference.md) documentan la
+referencia humana, backfill y búsqueda autenticada del incremento #19.
+
 El [núcleo de despacho de laboratorio](dispatch-lab.md) define contratos internos
 del corte #18. No abre API ni habilita despacho de Delivery operativa.
 

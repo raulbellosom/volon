@@ -12,6 +12,11 @@ La conexión administrativa local solo se usa en migración/seed/pruebas de rech
 
 ## Aplicación local de Delivery
 
+DeliveryPublicReference (#19) hereda visibilidad de Delivery mediante FORCE RLS.
+Conocer un folio no concede acceso; lookup autenticado devuelve 404 indistinguible
+fuera de membresía/sucursal/comercio habilitados. Sin lectura anónima ni grants
+de modificación/borrado. [Contrato](delivery-public-reference.md).
+
 POST y GET reutilizan la identidad verificada y la membresía vigente por Branch/Merchant. Una quote puede haber sido cotizada por otro miembro autorizado de la misma sucursal; no concede acceso a otra sucursal ni tenant. La clave de idempotencia pertenece al actor y scope: otro actor no obtiene un replay ajeno por conocerla. Revocación impide también los reintentos previamente exitosos.
 
 `Delivery` tiene RLS SELECT por Branch visible e INSERT por subject propio, quote visible/vigente y snapshot coincidente. Sin permisos UPDATE/DELETE ni acceso desde PostgREST; un trigger privado INVOKER conserva inmutabilidad. FKs compuestas y unicidad de quote refuerzan las reglas fuera del repositorio. No se conceden permisos sobre pagos/asignaciones y no existe un campo cliente que autorice despacho.

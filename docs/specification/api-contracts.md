@@ -302,3 +302,9 @@ transiciones Delivery. Futuras flotas usarán membresías independientes, nunca 
 FK permanente Courier→Merchant. Rate limiting, identidad/eligibilidad laboral,
 TTL de disponibilidad, política de auditoría/retención y PSP requieren un corte
 posterior; no publicar estos endpoints como servicio productivo.
+## Folios de envío — incremento #19
+
+El [contrato de folios públicos](delivery-public-reference.md) agrega
+publicReference requerido al DTO Delivery y la búsqueda autenticada exacta
+GET /v1/deliveries/by-reference/{reference}. Creación, detalle e historial se
+actualizan junto con merchant-web; deliveryId y cursores conservan su identidad.

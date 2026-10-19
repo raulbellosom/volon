@@ -33,6 +33,13 @@ conserva su inmutabilidad. Pendientes: evidencia PSP transaccional/revocación,
 estado logístico separado del snapshot, protocolo de custodia y acceso temporal
 a destino antes de conectar ofertas a HTTP/móvil. No se confirma pago por un test.
 
+### Folios públicos — incremento #19
+
+DEC-12/16: referencia humana separada e inmutable, tabla 1:1 con backfill y búsqueda
+autenticada, [ADR-0015](../decisions/0015-delivery-public-reference.md). UUID,
+snapshots, tarifas, estado y cursor permanecen. Prefijo configurable afecta solo
+emisiones nuevas; no implica marca legal definitiva ni token público de acceso.
+
 ### Identidad Courier y disponibilidad — incremento #16
 
 DEC-11/16: corte reversible offline/available con Courier separado de Membership,

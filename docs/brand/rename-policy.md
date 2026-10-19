@@ -25,4 +25,9 @@ Elegir package name Android y bundle identifier iOS técnicos y estables antes d
 7. Registrar ADR del cambio y plan reversible donde sea viable.
 
 ## Regla
+
+Los folios públicos ya emitidos conservan su prefijo histórico para siempre.
+Cambiar `brand.deliveryReferencePrefix` o `DELIVERY_REFERENCE_PREFIX` afecta solo
+nuevas emisiones; no ejecutar UPDATE/backfill para renombrar referencias. La
+identidad técnica y enlaces UUID no cambian. [Contrato](../specification/delivery-public-reference.md).
 No incluir el nombre Volón en nombres de tabla ni eventos de negocio, ni codificar volon.mx como constante. Este documento podrá renombrarse sin alterar contratos del backend.
