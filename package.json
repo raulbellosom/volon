@@ -33,7 +33,8 @@
     "courier:local-smoke": "node --experimental-strip-types apps/courier-mobile/scripts/local-smoke.mts",
     "gallery:geometry": "pnpm --filter @delivery/ui-web gallery:geometry",
     "merchant:geometry": "pnpm --filter @delivery/merchant-web geometry:shell",
-    "stripe:sandbox:preflight": "node --experimental-strip-types scripts/local/stripe-preflight.ts"
+    "stripe:sandbox:preflight": "node --experimental-strip-types scripts/local/stripe-preflight.ts",
+    "stripe:sandbox:trial": "node --experimental-strip-types scripts/local/stripe-trial.ts"
   },
   "devDependencies": {
     "@prisma/client": "7.10.1",

@@ -17,7 +17,7 @@ export function stripeSandboxPreflight(env: Readonly<Record<string, string | und
     blockers: ['Aprobación separada de llamadas Stripe Test y plan con límites de transacciones.',
       'Cuenta Test y secretos de prueba mediante gestor seguro; no pegarlos en conversaciones.',
       'Revisión humana de persistencia PostgreSQL sandbox y recuperación; no mutar not_submitted.',
-      'Transporte HTTPS acotado y revisado; este corte no incluye transporte de red.',
+      'Aprobación separada del transporte HTTPS opt-in y hash del plan manual; no se activa aquí.',
       'Recepción privada de webhooks y política de privacidad/retención revisadas.'],
     operationalEligibility: false,
     guide: 'docs/specification/stripe-checkout-test.md',

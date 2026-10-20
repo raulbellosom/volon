@@ -25,6 +25,8 @@ jobs:
         run: pnpm run check
       - name: Offline Stripe sandbox preflight (no credentials or provider calls)
         run: pnpm stripe:sandbox:preflight
+      - name: Manual Stripe trial preflight stays offline in CI
+        run: pnpm stripe:sandbox:trial --preflight
       - name: Offline map evaluation (artificial transport, zero external queries)
         run: pnpm maps:evaluate --offline
       - name: Build Volon UI gallery (Storybook)
