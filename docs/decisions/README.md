@@ -25,6 +25,9 @@ Los ADR registran **propuestas** y aceptación explícita. Estado inicial de tod
 
 ## Plantilla de nuevas decisiones
 
+- [ADR-0019 — Preparación HTTPS Stripe Test](0019-stripe-test-https-preparation.md):
+  ejecución manual local, secretos sin eco y receptor loopback temporal.
+
 - [ADR-0018 — Persistencia Stripe sandbox](0018-stripe-sandbox-persistence.md):
   reservas/CAS fuera de esperas del proveedor, FORCE RLS y eventos inmutables.
 

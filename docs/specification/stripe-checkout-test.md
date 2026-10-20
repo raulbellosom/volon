@@ -1,4 +1,4 @@
-# Stripe Checkout — contrato offline #23 / persistencia #24
+# Stripe Checkout — laboratorio #23 / persistencia #24 / preparación HTTPS #25
 
 Estado: código de sandbox aislado autorizado por el fundador el 2026-10-19;
 **cero llamadas externas**, sin credenciales ni cobros en este incremento.
@@ -11,7 +11,8 @@ StripeCheckoutTestAdapter implementa SandboxCheckoutPort, separado del futuro
 PaymentProviderPort: devuelve observaciones marcadas `scope: 'offline-test'` y
 `eligible: false`, nunca VerifiedProviderEvidence. Sin wiring en app/main, HTTP,
 portal, courier, dispatcher o tablas ServicePayment*. El transporte predeterminado
-deniega; no hay implementación fetch ni SDK con red. Solo test doubles lo ejercitan.
+deniega. #25 añade un transporte HTTPS opt-in preparado, sin activación ni llamadas
+a Stripe en este corte; sus pruebas utilizan servidores controlados loopback.
 API Stripe fija `2026-09-30.endive`, verificada en stripe-node v23.0.0. No dependencia
 nueva: HMAC SHA-256 equivalente al protocolo documentado, crypto de Node fijado por
 el proyecto. Ningún valor de webhook, metadata o redirect concede permisos.
@@ -27,8 +28,8 @@ pertenencia efectiva en cada operación, antes de replay. No hay autenticación 
 El puerto de almacén carga exclusivamente fixtures aislados del servidor: propósito
 explícito, intentId sin FK a Delivery, importe MXN entero de 1,000–99,999,999 centavos,
 binding inmutable de sesión/PaymentIntent/charge, comando y eventos. No se reutiliza
-ServicePaymentAttempt.not_submitted para representar envío. Solo existen almacenes
-en memoria dentro de tests en #23. Ese almacén se sustituye en #24 por el protocolo descrito abajo.
+ServicePaymentAttempt.not_submitted para representar envío. El almacén en memoria
+de #23 fue sustituido por PostgreSQL en #24 mediante el protocolo siguiente.
 La persistencia no autoriza sandbox remoto.
 
 ## Persistencia aislada #24
@@ -42,7 +43,7 @@ version/changedAt servidor) y `StripeSandboxEvent` (cuenta/eventId único, FK al
 escenario, digest, state del recibo, version, receivedAt). Sin FK a Delivery.
 Los escenarios se aprovisionan únicamente con fixtures administrativos locales.
 
-Todas FORCE RLS: contexto stripe-sandbox-v1, subject propietario exacto y Branch
+Todas FORCE RLS: contexto offline-test-v1, subject propietario exacto y Branch
 visible por membresía vigente/comercio/sucursal habilitados; escenario habilitado.
 El rol runtime restringido no crea ni cambia escenarios, elimina filas o modifica
 eventos. Rechaza conexiones administrativas antes de acceder a estados/secretos.
@@ -130,6 +131,50 @@ mensajes externos en errores. Una firma adversa ya enlazada conserva suspensión
 ante timeout y el evento queda reintentable hasta completar reconciliación.
 
 ## Preflight y fase siguiente
+
+### Preparación manual #25
+
+[ADR-0019](../decisions/0019-stripe-test-https-preparation.md),
+[runbook](../operations/stripe-test-trial.md). Ningún componente de app/main importa
+el transporte HTTPS. Solo el ejecutor manual puede componerlo explícitamente.
+HTTPS a api.stripe.com:443, TLS >=1.2, CA incorporadas de Node/hostname verificados,
+DNS IPv4 público sin destinos privados/reservados. No URL base, proxy, CA o DNS
+configurables por el cliente; no redirects. GET account/Session/PaymentIntent/Charge
+y POST checkout/sessions exactos; sin queries, Connect, otros headers o endpoints.
+Timeout total 5 s, cancelación AbortSignal, headers 8 KiB, body 16 KiB y respuesta
+256 KiB medidos durante streaming; sin compresión o errores crudos. Sin retries.
+
+Plan SHA-256 determinista: versión, HEAD, escenario/propietario/cuenta autorizados,
+MXN 4400, origen loopback fijo, operación y presupuesto. Primer create: dos
+solicitudes máximo y un POST con cuerpo/clave servidor exactos; reconcile: cuatro
+GET sobre bindings persistidos, cero POST. Plan no concede permisos por sí mismo.
+Crear requiere escenario sin intento previo: key existente, timeout o crash
+impiden otro POST manual, aun si la reserva expiró; se conserva para revisión.
+El runner no aprovisiona escenarios ni acepta importes/URLs/subject del cliente.
+Un operador local prepara el fixture administrativo antes del plan.
+
+TTY local sin CI/GITHUB_ACTIONS/cloud/production, modo sintético y servicios
+127.0.0.1:56321/56322 obligatorios. Confirmación literal del hash antes de leer
+clave Stripe mediante entrada sin eco. Sin fallback a argv/env/archivos Stripe;
+se rechazan Live, proxies, inspector y configuración TLS insegura. JWT local
+también oculto y verificado por Supabase; DB runtime restringida/RLS actual.
+Para crear/consultar no se requiere inventar un whsec; observe sí lo exige.
+
+Receptor temporal: 127.0.0.1, puerto efímero, POST /stripe-test-events, sin Origin,
+cookies ni compresión; raw body <=64 KiB y firma <=4 KiB, TTL <=10 min y máximo
+20 solicitudes. HMAC antes del parseo/consulta, binding y dedup durable del #24.
+HTTP 200 solo después del evento registrado o replay durable; una observación
+unknown/adversa sin recibo de evento no se confirma. Fallos transitorios = 503,
+mensajes falsos/inválidos = 400, sin detalles. El puerto observe original mantiene
+su DTO; observeRecorded aporta exclusivamente esta señal interna de confirmación.
+No se monta en API ni se abre automáticamente. Futura recepción: relay saliente
+aprobado de Stripe CLI → loopback privado; secreto del relay en memoria por canal
+oculto, sin volcar su banner/logs. Sin configurar CLI, túneles o endpoints ahora.
+Su arranque y presupuesto de consultas de reconciliación requieren otro plan.
+
+scope offline-test se conserva como etiqueta histórica de laboratorio, no como
+afirmación de que un futuro comando manual no hizo red. El reporte del ensayo
+debe distinguir intentos HTTPS reales de fixtures. eligible siempre false.
 
 `pnpm stripe:sandbox:preflight` es inspección offline, siempre
 `readyForExternalCalls:false`. Solo clasifica presencia/formato de
