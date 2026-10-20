@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { test, beforeEach, afterEach, mock } from 'node:test';
+import { randomUUID } from 'node:crypto';
 import { sandbox, OfflineStripe, eventBytes, signStripeFixture } from './stripe-test.fixtures.ts';
 import { StripeCheckoutTestAdapter } from '../src/infrastructure/stripe-test/adapter.ts';
 
@@ -77,4 +78,17 @@ test('returned observations are immutable and replays reconstruct eligible:false
   // Even corrupted test storage must not be copied as a financial authorization.
   Object.assign(stored, { receipt: { ...stored.receipt, eligible: true } });
   assert.equal((await s.adapter.observe(s.actor, s.input, body, signature)).eligible, false);
+});
+
+test('unauthorized scopes never consult the secret manager and inherited intent IDs are rejected', async () => {
+  const s = sandbox();
+  let secretReads = 0;
+  const adapter = new StripeCheckoutTestAdapter({ ...s.options, secrets: async () => {
+    secretReads++; return s.options.secrets();
+  } });
+  await assert.rejects(adapter.create({ subjectId: randomUUID() }, s.input), { code: 'NOT_FOUND' });
+  const inherited = Object.assign(Object.create({ intentId: s.fixture.intentId }), { amountMinor: 1 });
+  await assert.rejects(adapter.create(s.actor, inherited), { code: 'INVALID_COMMAND' });
+  assert.equal(secretReads, 0);
+  assert.equal(s.remote.requests.length, 0);
 });

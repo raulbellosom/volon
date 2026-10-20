@@ -13,7 +13,8 @@ import { bindStripeTestEvent, readStripeTestState } from './reconcile.ts';
 const hash = (value: string) => createHash('sha256').update(value).digest('hex');
 function intentReference(actor: PaymentActor, value: unknown): string {
   if (!actor || !uuid.test(actor.subjectId)) throw new CheckoutTestFailure('NOT_FOUND');
-  if (!record(value) || Object.keys(value).length !== 1 || typeof value.intentId !== 'string' || !uuid.test(value.intentId))
+  if (!record(value) || Object.keys(value).length !== 1 || !Object.hasOwn(value, 'intentId')
+    || typeof value.intentId !== 'string' || !uuid.test(value.intentId))
     throw new CheckoutTestFailure('INVALID_COMMAND');
   return value.intentId;
 }
@@ -52,7 +53,6 @@ export class StripeCheckoutTestAdapter implements SandboxCheckoutPort {
   private async run(actor: PaymentActor, input: unknown, work: (fixture: CheckoutSandboxFixture, secrets: StripeTestSecrets) => Promise<CheckoutTestObservation>) {
     const id = intentReference(actor, input);
     try {
-      const secrets = validateStripeTestSecrets(await this.options.secrets());
       const result = await this.options.store.run(actor, id, async (fixture) => {
         // Commit an uncertain reservation even when a submitted request later fails validation.
         try {
@@ -60,6 +60,7 @@ export class StripeCheckoutTestAdapter implements SandboxCheckoutPort {
             || !Number.isSafeInteger(fixture.amountMinor) || fixture.amountMinor < 1000 || fixture.amountMinor > 99999999)
             throw new CheckoutTestFailure('INVALID_COMMAND');
           if (fixture.submission && fixture.submission.key !== this.key(id)) mismatch();
+          const secrets = validateStripeTestSecrets(await this.options.secrets());
           return { ok: true as const, value: await work(fixture, secrets) };
         } catch (error) {
           return { ok: false as const, code: error instanceof CheckoutTestFailure ? error.code : 'INFRASTRUCTURE_UNAVAILABLE' as const };
