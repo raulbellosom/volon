@@ -19,10 +19,13 @@ export interface MenuProps<T extends object> extends Omit<AriaMenuProps<T>, 'cla
   className?: string;
 }
 
-/** Action list opened from a button (place both inside `MenuTrigger`). */
+/**
+ * Action list opened from a button (place both inside `MenuTrigger`). Never wider than the screen
+ * minus a small margin, so long descriptions wrap instead of pushing the page sideways.
+ */
 export function Menu<T extends object>({ placement = 'bottom end', className, ...props }: MenuProps<T>) {
   return (
-    <Popover placement={placement} className="min-w-56">
+    <Popover placement={placement} className="min-w-56 max-w-[min(22rem,calc(100vw-1.5rem))]">
       <AriaMenu {...props} className={withStyles(className, () => 'max-h-[inherit] overflow-auto outline-none')} />
     </Popover>
   );
@@ -55,7 +58,7 @@ export function MenuItem({ children, icon, description, shortcut, tone = 'defaul
       {icon && <span aria-hidden="true" className={cx('flex [&_svg]:size-5', tone === 'default' && 'text-text-secondary')}>{icon}</span>}
       <span className="flex min-w-0 flex-1 flex-col">
         <Text slot="label" className="truncate">{children}</Text>
-        {description && <Text slot="description" className="truncate text-sm text-text-secondary">{description}</Text>}
+        {description && <Text slot="description" className="text-sm break-words text-text-secondary">{description}</Text>}
       </span>
       {shortcut && <kbd className="font-sans text-xs text-text-secondary">{shortcut}</kbd>}
     </AriaMenuItem>

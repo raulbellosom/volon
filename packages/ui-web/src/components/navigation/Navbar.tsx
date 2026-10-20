@@ -27,7 +27,7 @@ export interface NavbarProps {
 }
 
 const DESKTOP_LINK = cx(
-  'relative flex h-10 items-center gap-2 rounded-full px-3.5 text-sm font-semibold text-text-secondary outline-none',
+  'relative flex h-10 items-center gap-2 whitespace-nowrap rounded-full px-3.5 text-sm font-semibold text-text-secondary outline-none',
   'transition-colors duration-(--duration-fast) data-hovered:bg-surface-hover data-hovered:text-text-primary',
   'data-focus-visible:focus-ring aria-[current=page]:text-text-primary [&_svg]:size-4.5',
   "aria-[current=page]:after:absolute aria-[current=page]:after:inset-x-3.5 aria-[current=page]:after:-bottom-[9px] aria-[current=page]:after:h-[3px] aria-[current=page]:after:rounded-full aria-[current=page]:after:bg-action-primary aria-[current=page]:after:content-['']",
