@@ -2,7 +2,7 @@ import { CheckoutTestFailure } from '../../modules/payments/checkout-sandbox.por
 export const STRIPE_TEST_API_VERSION = '2026-09-30.endive';
 export const testApiKeyPattern = /^sk_test_[A-Za-z0-9_]{3,200}$/;
 export const testWebhookSecretPattern = /^whsec_[A-Za-z0-9_]{3,200}$/;
-export interface StripeTestSecrets { readonly apiKey: string; readonly webhookSecret: string }
+export interface StripeTestSecrets { readonly apiKey: string; readonly webhookSecret?: string }
 export interface StripeTestConfig {
   readonly environment: 'offline-test';
   readonly accountId: string;
@@ -25,7 +25,7 @@ export function validateStripeTestConfig(config: StripeTestConfig) {
 }
 export function validateStripeTestSecrets(secrets: StripeTestSecrets): StripeTestSecrets {
   if (!secrets || typeof secrets.apiKey !== 'string' || !testApiKeyPattern.test(secrets.apiKey)
-    || typeof secrets.webhookSecret !== 'string' || !testWebhookSecretPattern.test(secrets.webhookSecret))
+    || (secrets.webhookSecret !== undefined && (typeof secrets.webhookSecret !== 'string' || !testWebhookSecretPattern.test(secrets.webhookSecret))))
     throw new CheckoutTestFailure('CONFIGURATION_INVALID');
-  return { apiKey: secrets.apiKey, webhookSecret: secrets.webhookSecret };
+  return { apiKey: secrets.apiKey, ...(secrets.webhookSecret === undefined ? {} : { webhookSecret: secrets.webhookSecret }) };
 }

@@ -1,4 +1,3 @@
-import { createHash } from 'node:crypto';
 import type { PaymentActor } from '../../modules/payments/payment.contract.ts';
 import { uuid } from '../../modules/payments/payment.contract.ts';
 import { CheckoutTestFailure, type CheckoutSandboxFixture, type CheckoutSandboxStore,
@@ -9,8 +8,8 @@ import { denyStripeTransport, StripeTestHttp, type StripeTestTransport } from '.
 import { session, mismatch } from './objects.ts';
 import { snapshotWebhook, verifyStripeTestEvent } from './signature.ts';
 import { bindStripeTestEvent, readStripeTestState } from './reconcile.ts';
+import { stripeTestHash as hash, stripeSessionKey, stripeSessionParameters } from './checkout-parameters.ts';
 
-const hash = (value: string) => createHash('sha256').update(value).digest('hex');
 function intentReference(actor: PaymentActor, value: unknown): string {
   if (!actor || !uuid.test(actor.subjectId)) throw new CheckoutTestFailure('NOT_FOUND');
   if (!record(value) || Object.keys(value).length !== 1 || !Object.hasOwn(value, 'intentId')
@@ -21,14 +20,6 @@ function intentReference(actor: PaymentActor, value: unknown): string {
 function observation(fixture: CheckoutSandboxFixture, state: CheckoutTestObservation['state'], duplicate = false): CheckoutTestObservation {
   return Object.freeze({ scope: 'offline-test', intentId: fixture.intentId, sessionId: fixture.submission?.sessionId ?? null,
     state: fixture.adverse ?? state, eligible: false, duplicate });
-}
-function parameters(fixture: CheckoutSandboxFixture, config: StripeTestConfig) {
-  return new URLSearchParams({ mode: 'payment', 'payment_method_types[0]': 'card', client_reference_id: fixture.intentId,
-    'metadata[intentId]': fixture.intentId, 'payment_intent_data[metadata][intentId]': fixture.intentId,
-    'payment_intent_data[capture_method]': 'automatic', 'line_items[0][quantity]': '1',
-    'line_items[0][price_data][currency]': 'mxn', 'line_items[0][price_data][unit_amount]': String(fixture.amountMinor),
-    'line_items[0][price_data][product_data][name]': 'Servicio logístico de prueba',
-    success_url: config.returnOrigin + '/stripe-test/success', cancel_url: config.returnOrigin + '/stripe-test/cancel' });
 }
 interface StripeTestOptions {
   readonly config: StripeTestConfig;
@@ -80,10 +71,10 @@ export class StripeCheckoutTestAdapter implements SandboxCheckoutPort {
       throw new CheckoutTestFailure('INFRASTRUCTURE_UNAVAILABLE');
     }
   }
-  private key(intentId: string) { return 'stripe-test-session-' + hash(this.config.accountId + ':' + intentId); }
+  private key(intentId: string) { return stripeSessionKey(this.config.accountId, intentId); }
   async create(actor: PaymentActor, input: unknown) {
     return this.run(actor, input, async (fixture, secrets, checkpoint) => {
-      const form = parameters(fixture, this.config);
+      const form = stripeSessionParameters(fixture.intentId, fixture.amountMinor, this.config.returnOrigin);
       const digest = hash(STRIPE_TEST_API_VERSION + ':' + this.config.accountId + ':' + form.toString());
       if (fixture.submission && fixture.submission.hash !== digest) throw new CheckoutTestFailure('IDEMPOTENCY_CONFLICT');
       const now = this.clock();
@@ -120,12 +111,19 @@ export class StripeCheckoutTestAdapter implements SandboxCheckoutPort {
     });
   }
   async observe(actor: PaymentActor, input: unknown, body: Uint8Array, signature: string) {
+    return (await this.observeRecorded(actor, input, body, signature)).receipt;
+  }
+  /** Private ingress must not acknowledge a webhook until its event receipt is committed. */
+  async observeRecorded(actor: PaymentActor, input: unknown, body: Uint8Array, signature: string) {
     const original = snapshotWebhook(body);
-    return this.run(actor, input, async (fixture, secrets, checkpoint) => {
+    let recorded = false;
+    const receipt = await this.run(actor, input, async (fixture, secrets, checkpoint) => {
+      if (!secrets.webhookSecret) throw new CheckoutTestFailure('CONFIGURATION_INVALID');
       const event = verifyStripeTestEvent(original, signature, secrets.webhookSecret, this.clock());
       const previous = fixture.events.get(event.id);
       if (previous) {
         if (previous.digest !== event.digest) throw new CheckoutTestFailure('REPLAY_CONFLICT');
+        recorded = true;
         return observation(fixture, previous.receipt.state, true);
       }
       if (!fixture.submission?.sessionId) throw new CheckoutTestFailure('EVENT_REJECTED');
@@ -144,11 +142,13 @@ export class StripeCheckoutTestAdapter implements SandboxCheckoutPort {
         if (needsBinding) bindStripeTestEvent(event, fixture);
         const receipt = observation(fixture, state);
         fixture.events.set(event.id, { digest: event.digest, receipt });
+        recorded = true;
         return receipt;
       } catch (error) {
         if (error instanceof CheckoutTestFailure && error.code === 'REQUEST_UNKNOWN') return observation(fixture, 'unknown');
         throw error;
       }
     });
+    return { receipt, recorded };
   }
 }
