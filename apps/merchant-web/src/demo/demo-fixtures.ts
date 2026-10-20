@@ -24,6 +24,8 @@ export const demoMe: MeResponse = {
   memberships: [
     { merchant: { merchantId: DEMO_MERCHANT_ID, name: 'Comercio demo' }, branch: { branchId: 'branch_demo_centro', name: 'Sucursal demo Centro' } },
     { merchant: { merchantId: DEMO_MERCHANT_ID, name: 'Comercio demo' }, branch: { branchId: 'branch_demo_marina', name: 'Sucursal demo Marina' } },
+    // Deliberately long name: keeps narrow layouts honest (header, menus, branch picker).
+    { merchant: { merchantId: DEMO_MERCHANT_ID, name: 'Comercio demo' }, branch: { branchId: 'branch_demo_plaza', name: 'Sucursal demo Plaza Comercial Marina Vallarta Norte' } },
   ],
 };
 
