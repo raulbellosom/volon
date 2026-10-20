@@ -29,6 +29,9 @@ Este dossier especifica *cómo* deben mantenerse las invariantes y contratos. Pa
 
 ## Cómo leer los contratos
 
+[Stripe Checkout offline](stripe-checkout-test.md) define el adaptador aislado #23;
+no constituye evidencia financiera operativa ni integración al portal.
+
 La [base financiera del servicio logístico](service-payments.md) define el corte
 interno #20; no confirma pagos operativos ni habilita despacho.
 

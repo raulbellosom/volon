@@ -55,6 +55,10 @@ Separado: `pending_confirmation`, `confirmed`, `preparing`, `ready`, `fulfilled`
 
 ## Payment (según PSP)
 
+El [adaptador Stripe offline #23](stripe-checkout-test.md) devuelve observaciones
+captured_test/refunded/disputed de sandbox, todas eligible:false; no transiciones
+de Payment/Delivery operativos ni conversión de fixtures en evidencia real.
+
 El corte #20 implementa únicamente ServicePaymentIntent pending/version 1 e
 intento not_submitted inmutables. Los estados de evidencias pertenecen a casos
 aislados del [laboratorio financiero](service-payments.md); confirmed allí no

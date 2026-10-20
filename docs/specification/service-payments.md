@@ -81,6 +81,9 @@ Sin HTTP, publisher, reembolsos automáticos ni conexión al flujo comercial.
 
 ## Puerto futuro PSP: contrato, sin implementación
 
+El corte [#23](stripe-checkout-test.md) implementa un adaptador de sandbox offline
+mediante un puerto distinto; nunca produce VerifiedProviderEvidence operativa.
+
 El puerto tipado separa creación idempotente, verificación criptográfica del
 mensaje crudo y consulta autenticada de reconciliación. Evidencia debe identificar
 proveedor/cuenta, pago y evento únicos dentro de ese ámbito; digest del mensaje,

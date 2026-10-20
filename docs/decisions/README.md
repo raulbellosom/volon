@@ -25,6 +25,9 @@ Los ADR registran **propuestas** y aceptación explícita. Estado inicial de tod
 
 ## Plantilla de nuevas decisiones
 
+- [ADR-0017 — Stripe Checkout offline](0017-stripe-checkout-offline.md): transporte
+  inyectado, firma y reconciliación de prueba; sin red ni gate positivo.
+
 - [ADR-0016 — Base financiera](0016-financial-foundation.md): preparación pendiente
   y evidencias aisladas; sin PSP ni desbloqueo de despacho.
 
