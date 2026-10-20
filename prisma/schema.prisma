@@ -136,9 +136,69 @@ model Branch {
   deliveries  Delivery[]
   privateLocations PrivateLocationEnvelope[]
   paymentLabCases PaymentEvidenceLabCase[]
+  stripeSandboxScenarios StripeSandboxScenario[]
 
   @@unique([id, merchantId])
   @@index([merchantId])
+  @@schema("app")
+}
+
+model StripeSandboxScenario {
+  id String @id @db.Uuid
+  subjectId String @db.Uuid
+  branchId String
+  merchantId String
+  accountId String
+  purpose String @default("offline-test")
+  amountMinor Int
+  currency String @default("MXN")
+  enabled Boolean @default(true)
+  createdAt DateTime @default(dbgenerated("clock_timestamp()")) @db.Timestamptz(3)
+  branch Branch @relation(fields: [branchId, merchantId], references: [id, merchantId], onDelete: Restrict, onUpdate: NoAction)
+  submission StripeSandboxSubmission?
+
+  @@unique([id, accountId])
+  @@index([branchId, merchantId])
+  @@schema("app")
+}
+
+model StripeSandboxSubmission {
+  scenarioId String @id @db.Uuid
+  accountId String
+  key String? @unique
+  hash String? @db.Char(64)
+  startedAt DateTime? @db.Timestamptz(3)
+  sessionId String?
+  paymentId String?
+  chargeId String?
+  state String @default("pending")
+  adverse String?
+  leaseToken String? @db.Uuid
+  leaseUntil DateTime? @db.Timestamptz(3)
+  version Int @default(1)
+  changedAt DateTime @default(dbgenerated("clock_timestamp()")) @db.Timestamptz(3)
+  scenario StripeSandboxScenario @relation(fields: [scenarioId, accountId], references: [id, accountId], onDelete: Restrict, onUpdate: NoAction)
+  events StripeSandboxEvent[]
+
+  @@unique([scenarioId, accountId])
+  @@unique([accountId, sessionId])
+  @@unique([accountId, paymentId])
+  @@unique([accountId, chargeId])
+  @@schema("app")
+}
+
+model StripeSandboxEvent {
+  accountId String
+  eventId String
+  scenarioId String @db.Uuid
+  digest String @db.Char(64)
+  state String
+  version Int
+  receivedAt DateTime @default(dbgenerated("clock_timestamp()")) @db.Timestamptz(3)
+  submission StripeSandboxSubmission @relation(fields: [scenarioId, accountId], references: [scenarioId, accountId], onDelete: Restrict, onUpdate: NoAction)
+
+  @@id([accountId, eventId])
+  @@index([scenarioId])
   @@schema("app")
 }
 

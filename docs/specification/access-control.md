@@ -121,3 +121,12 @@ La existencia de perfil Courier no concede permisos de comercio, entregas,
 flotas ni PrivateLocationEnvelope. Si un subject tiene además Membership válida,
 solo conserva esos permisos previos independientes: no se crean por ser Courier.
 Acceso a un ID Courier ajeno no existe como endpoint; campos extra se rechazan.
+## Persistencia Stripe sandbox #24
+
+El [contrato Stripe offline](stripe-checkout-test.md) añade escenarios asignados
+explícitamente a un subject y sucursal. FORCE RLS exige propietario, escenario,
+membresía, sucursal y comercio habilitados en cada reserva, lectura y confirmación.
+Compartir comercio/sucursal no concede propiedad del escenario. Contexto transaccional
+offline-test-v1, rol delivery_api restringido; sin grants para anon/authenticated.
+Los administradores aprovisionan únicamente fixtures locales, pero sus conexiones
+son rechazadas en el camino de operaciones de usuario. No habilita permisos PSP.

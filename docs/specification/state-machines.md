@@ -78,3 +78,11 @@ dispatching. La siguiente lista sigue siendo diseño futuro dependiente de PSP.
 - Dos ofertas aceptadas a la vez; llega un rechazo tras aceptación; expira mientras se confirma.
 - Entrega marcada doble; llega GPS tardío tras entrega; repartidor deshabilitado con entrega activa.
 - Cancelación posterior a recogida; reversión de pagos independientes; transición desde estado terminal.
+## Persistencia de laboratorio Stripe #24
+
+La [reserva/CAS](stripe-checkout-test.md) es un protocolo técnico independiente de
+Payment y Delivery: pending sin envío, lease activo, unknown tras interrupción,
+binding persistido y reconciliación de prueba. REQUEST_BUSY exige backoff explícito;
+VERSION_CONFLICT impide confirmar con lease vencido/reemplazado. Refunded/disputed
+son pegajosos en PostgreSQL. Ninguna transición cambia estados operativos o
+FinancialEligibility. Detalles y límites en el contrato propietario.

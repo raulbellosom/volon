@@ -1,4 +1,4 @@
-# Stripe Checkout — contrato offline #23
+# Stripe Checkout — contrato offline #23 / persistencia #24
 
 Estado: código de sandbox aislado autorizado por el fundador el 2026-10-19;
 **cero llamadas externas**, sin credenciales ni cobros en este incremento.
@@ -28,9 +28,46 @@ El puerto de almacén carga exclusivamente fixtures aislados del servidor: prop�
 explícito, intentId sin FK a Delivery, importe MXN entero de 1,000–99,999,999 centavos,
 binding inmutable de sesión/PaymentIntent/charge, comando y eventos. No se reutiliza
 ServicePaymentAttempt.not_submitted para representar envío. Solo existen almacenes
-transaccionales en memoria dentro de tests, con rollback y serialización por fixture.
-Sin almacén durable no se autoriza sandbox remoto. Sus mutex no son locks SQL;
-una futura implementación no debe sostener transacciones DB durante llamadas PSP.
+en memoria dentro de tests en #23. Ese almacén se sustituye en #24 por el protocolo descrito abajo.
+La persistencia no autoriza sandbox remoto.
+
+## Persistencia aislada #24
+
+[ADR-0018](../decisions/0018-stripe-sandbox-persistence.md). Tres tablas nuevas:
+`StripeSandboxScenario` (UUID opaco, owner subject, merchant/branch, cuenta de
+fixture, MXN sintético, enabled, purpose offline-test), `StripeSandboxSubmission`
+(PK/FK escenario/cuenta, key/hash inmutables al primer envío, startedAt, binding
+Session/PI/Charge únicos por cuenta, state, adverse, leaseToken/leaseUntil,
+version/changedAt servidor) y `StripeSandboxEvent` (cuenta/eventId único, FK al
+escenario, digest, state del recibo, version, receivedAt). Sin FK a Delivery.
+Los escenarios se aprovisionan únicamente con fixtures administrativos locales.
+
+Todas FORCE RLS: contexto stripe-sandbox-v1, subject propietario exacto y Branch
+visible por membresía vigente/comercio/sucursal habilitados; escenario habilitado.
+El rol runtime restringido no crea ni cambia escenarios, elimina filas o modifica
+eventos. Rechaza conexiones administrativas antes de acceder a estados/secretos.
+La revocación impide replay, reserva y confirmación; una reserva previa no concede
+derechos futuros. Sin contexto, registros o permisos se deniega.
+
+Puerto sin callbacks: `reserve(actor,id,account)` devuelve snapshot+token+versión;
+`save(actor,reservation,release)` confirma mediante CAS. Reserva transaccional
+breve → checkpoint de key/hash → transporte simulado SIN transacción/lock SQL →
+confirmación atómica. Lease 30 s, máximo 60 s; vencido o reemplazado devuelve
+VERSION_CONFLICT; activo en otro trabajador devuelve REQUEST_BUSY (reintento
+explícito con backoff, sin espera del proveedor dentro de SQL). Fechas de primer
+envío, recepción y cambios proceden de PostgreSQL. Estado inicial pending;
+reserva interrumpida con key existente se recupera como unknown. Un binding
+existente evita nuevo POST; sin binding se conserva la clave y el límite de 23 h.
+La exclusión de leases no promete exactamente un HTTP tras crash: se exige la
+misma idempotencia del proveedor simulado para una sola sesión lógica.
+
+Checkpoint de adverso firmado ya enlazado antes del await de proveedor;
+refund/disputa son monotónicos en SQL. Eventos finales se insertan con la
+proyección en una sola transacción; no se consumen al fallar binding/consulta.
+Replay requiere firma fresca válida, mismo digest y autorización actual; el
+recibo conserva adversos posteriores. No se guardan mensajes libres, JSON de
+proveedor, cuerpos ni secretos. Máximo 1,000 eventos por escenario de laboratorio;
+superarlo falla cerrado. Ninguna tabla ni observación habilita elegibilidad.
 
 POST `/v1/checkout/sessions`: mode=payment, tarjeta, captura automática, MXN y una
 línea de logística de cantidad 1. Importe sale del fixture autorizado. Correlación
@@ -102,19 +139,25 @@ live/production/configuración inválida falla. No crea cuenta, claves, túneles
 
 Faltan: autorización separada de llamadas de prueba y presupuesto/casos exactos,
 cuenta Test y aceptación comercial, gestor seguro de secretos del entorno,
-almacén durable para reserva/IDs/eventos, transporte HTTPS limitado y auditado,
+revisión humana de la persistencia #24, transporte HTTPS limitado y auditado,
 estrategia privada de recepción/replay de webhooks, revisión de PII y retención.
-Diseño de siguiente migración **sin aplicarla**: agregado sandbox separado con
-scope cuenta/ambiente, importe/origen servidor, clave/hash/fecha antes de POST,
-lease con recuperación y binding session/PI/charge únicos; eventos append-only por
-cuenta/event.id/digest con transacción CAS. No modificar recibos históricos ni
-permitir conectar fixtures a Delivery o al gate. HTTP remoto y elegibilidad real
+La migración aditiva #24 materializa el protocolo de persistencia anterior.
+No modifica recibos históricos ni permite conectar fixtures a Delivery o al gate. HTTP remoto y elegibilidad real
 requieren contratos y autorización nuevos; aprobar Stripe Test no los autoriza.
 
 Pruebas posteriores controladas: tarjeta de prueba exitosa, rechazo/3DS, async,
 expiración, timeout/replay, cuerpo alterado, duplicados/desorden, cuenta/moneda/
 importe erróneos y devolución/disputa con consulta. Ninguna prueba de este corte
-acredita un pago Stripe real, persistencia de replay tras reinicio ni ACC-014 comercial.
+acredita un pago Stripe real ni ACC-014 comercial. #24 prueba replay PostgreSQL tras
+reinicio de proceso; no restaura backups ni demuestra semántica de un PSP real.
+
+Reproducir localmente con fixtures sintéticos: `pnpm local:up`,
+`node scripts/local/check-clean-migrations.mjs`, `pnpm check`,
+`pnpm test:integration`, `pnpm stripe:sandbox:preflight`.
+Las pruebas stripe-persistence/recovery/storage-security verifican Auth local,
+20 operaciones concurrentes, SIGKILL tras POST simulado, lease vencido, CAS tardío,
+fallos SQL, pérdida de acuse después de commit, replay y revocación. No configurar
+STRIPE_SANDBOX_* para estas pruebas; solo utilizan valores artificiales en memoria.
 
 Fuentes oficiales consultadas 2026-10-19: [versión estable](https://github.com/stripe/stripe-node/blob/v23.0.0/src/apiVersion.ts),
 [crear Session](https://docs.stripe.com/api/checkout/sessions/create), [firma/replay](https://docs.stripe.com/events/set-up-events),

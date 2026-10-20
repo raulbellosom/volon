@@ -25,6 +25,9 @@ Los ADR registran **propuestas** y aceptación explícita. Estado inicial de tod
 
 ## Plantilla de nuevas decisiones
 
+- [ADR-0018 — Persistencia Stripe sandbox](0018-stripe-sandbox-persistence.md):
+  reservas/CAS fuera de esperas del proveedor, FORCE RLS y eventos inmutables.
+
 - [ADR-0017 — Stripe Checkout offline](0017-stripe-checkout-offline.md): transporte
   inyectado, firma y reconciliación de prueba; sin red ni gate positivo.
 

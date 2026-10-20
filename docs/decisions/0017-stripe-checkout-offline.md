@@ -3,6 +3,10 @@
 Fecha: 2026-10-19. Aceptado únicamente para código/pruebas offline del #23 por
 instrucción del fundador. Stripe es candidato aprobado para sandbox, no producción.
 
+La persistencia efímera descrita aquí fue sustituida por
+[ADR-0018](0018-stripe-sandbox-persistence.md) en #24. Se conservan las fronteras
+offline y el contrato financiero negativo.
+
 El contrato genérico VerifiedProviderEvidence no debe recibir firmas de fixtures.
 Se introduce SandboxCheckoutPort con resultados offline-test/eligible:false y un
 adaptador Stripe desacoplado. Transporte por defecto deniega, sin fetch/SDK de red;
