@@ -31,7 +31,8 @@
     "courier:web": "pnpm --filter @delivery/courier-mobile web",
     "courier:export": "pnpm --filter @delivery/courier-mobile export:android && pnpm --filter @delivery/courier-mobile export:web",
     "courier:local-smoke": "node --experimental-strip-types apps/courier-mobile/scripts/local-smoke.mts",
-    "gallery:geometry": "pnpm --filter @delivery/ui-web gallery:geometry"
+    "gallery:geometry": "pnpm --filter @delivery/ui-web gallery:geometry",
+    "merchant:geometry": "pnpm --filter @delivery/merchant-web geometry:shell"
   },
   "devDependencies": {
     "@prisma/client": "7.10.1",

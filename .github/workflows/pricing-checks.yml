@@ -33,6 +33,10 @@ jobs:
           GEOMETRY_BROWSER_CHANNEL: chrome
       - name: Build merchant web (production bundle without demo fixtures)
         run: pnpm run merchant:build
+      - name: merchant-web shell geometry in a real browser (320–1280px, zoom 200%, menus)
+        run: pnpm run merchant:geometry
+        env:
+          GEOMETRY_BROWSER_CHANNEL: chrome
       - name: Export courier mobile demo bundles (Android Hermes + web, no device)
         run: pnpm run courier:export
         env:

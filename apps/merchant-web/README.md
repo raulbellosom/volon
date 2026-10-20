@@ -10,7 +10,7 @@ Desde la raíz del repositorio, tras `pnpm install`:
 | Backend local | `pnpm local:up` y luego `pnpm merchant` | API real en `127.0.0.1:3100` y Supabase Auth local mediante el proxy de Vite. Entrar con `merchant-a@example.test`; la contraseña es `SYNTHETIC_USER_PASSWORD` de `.env.local` (no se versiona). |
 | Demostración | `pnpm merchant:demo` | Datos sintéticos en memoria y una franja visible de «Modo demostración». No contacta al servidor. Cuentas: `comercio@demo.test` (cualquier contraseña), `sin-acceso@demo.test` (403) y `sin-sucursales@demo.test` (sin sucursal). |
 
-Ambos abren `http://127.0.0.1:5173`. Pruebas: `pnpm --filter @delivery/merchant-web test` (también corren en `pnpm check`). Build de producción verificado: `pnpm merchant:build` (falla si el bundle trae datos demo o secretos locales).
+Ambos abren `http://127.0.0.1:5173`. Geometría del encabezado en navegador real: `pnpm merchant:geometry` (levanta el demo, mide 320–1280 px, ambos temas, zoom 200% y sucursal con nombre largo, con menús abiertos y cerrados; usa `GEOMETRY_BROWSER_CHANNEL=msedge` si no tienes Chrome). Pruebas: `pnpm --filter @delivery/merchant-web test` (también corren en `pnpm check`). Build de producción verificado: `pnpm merchant:build` (falla si el bundle trae datos demo o secretos locales).
 
 ## Rutas
 | Ruta | Pantalla | Endpoint |
