@@ -1,6 +1,6 @@
 import { randomUUID, createHmac } from 'node:crypto';
 import type { PaymentActor } from '../src/modules/payments/payment.contract.ts';
-import { CheckoutTestFailure, type CheckoutSandboxFixture, type CheckoutSandboxStore } from '../src/modules/payments/checkout-sandbox.port.ts';
+import { CheckoutTestFailure, type CheckoutSandboxFixture, type CheckoutSandboxStore, type CheckoutSandboxReservation } from '../src/modules/payments/checkout-sandbox.port.ts';
 import { StripeCheckoutTestAdapter } from '../src/infrastructure/stripe-test/adapter.ts';
 import { STRIPE_TEST_API_VERSION } from '../src/infrastructure/stripe-test/config.ts';
 import type { StripeTestRequest, StripeTestTransport } from '../src/infrastructure/stripe-test/http.ts';
@@ -9,10 +9,10 @@ import type { StripeTestRequest, StripeTestTransport } from '../src/infrastructu
 export const fixtureSecrets = { apiKey: 'sk_test_offline_fixture', webhookSecret: 'whsec_offline_fixture' };
 export class MemoryCheckoutFixtures implements CheckoutSandboxStore {
   readonly rows = new Map<string, { subjects: Set<string>; enabled: boolean; fixture: CheckoutSandboxFixture }>();
-  private readonly gates = new Map<string, Promise<void>>();
+  private readonly leases = new Map<string, string>();
   add(actor: PaymentActor, amountMinor = 4400): CheckoutSandboxFixture {
     const fixture: CheckoutSandboxFixture = { purpose: 'isolated-payment-fixture', intentId: randomUUID(), amountMinor,
-      currency: 'MXN', submission: null, adverse: null, events: new Map() };
+      currency: 'MXN', submission: null, adverse: null, state: 'pending', events: new Map() };
     this.rows.set(fixture.intentId, { subjects: new Set([actor.subjectId]), enabled: true, fixture });
     return fixture;
   }
@@ -21,37 +21,37 @@ export class MemoryCheckoutFixtures implements CheckoutSandboxStore {
     if (!row) throw new Error('Missing fixture');
     return row;
   }
-  async run<T>(actor: PaymentActor, id: string, work: (fixture: CheckoutSandboxFixture) => Promise<T>): Promise<T> {
-    const previous = this.gates.get(id) ?? Promise.resolve();
-    let release = () => {};
-    const gate = new Promise<void>((resolve) => { release = resolve; });
-    this.gates.set(id, gate);
-    await previous;
-    try {
-      const row = this.rows.get(id);
-      if (!row || !row.enabled || !row.subjects.has(actor.subjectId)) throw new CheckoutTestFailure('NOT_FOUND');
-      const copy = structuredClone(row.fixture);
-      const result = await work(copy);
-      if (!row.enabled || !row.subjects.has(actor.subjectId)) throw new CheckoutTestFailure('NOT_FOUND');
-      for (const [otherId, other] of this.rows) {
-        if (otherId === id) continue;
-        for (const key of ['sessionId', 'paymentId', 'chargeId'] as const)
-          if (copy.submission?.[key] && copy.submission[key] === other.fixture.submission?.[key])
-            throw new CheckoutTestFailure('IDEMPOTENCY_CONFLICT');
-        for (const eventId of copy.events.keys())
-          if (other.fixture.events.has(eventId)) throw new CheckoutTestFailure('REPLAY_CONFLICT');
-      }
-      row.fixture = copy;
-      return result;
-    } finally {
-      release();
-      if (this.gates.get(id) === gate) this.gates.delete(id);
+  async reserve(actor: PaymentActor, id: string): Promise<CheckoutSandboxReservation> {
+    const row = this.get(id);
+    if (!row.enabled || !row.subjects.has(actor.subjectId)) throw new CheckoutTestFailure('NOT_FOUND');
+    if (this.leases.has(id)) throw new CheckoutTestFailure('REQUEST_BUSY');
+    const token = randomUUID();
+    this.leases.set(id, token);
+    return { token, version: 1, fixture: structuredClone(row.fixture) };
+  }
+  async save(actor: PaymentActor, lease: CheckoutSandboxReservation, release: boolean) {
+    const copy = lease.fixture;
+    const id = copy.intentId;
+    const row = this.get(id);
+    if (!row.enabled || !row.subjects.has(actor.subjectId)) throw new CheckoutTestFailure('NOT_FOUND');
+    if (this.leases.get(id) !== lease.token) throw new CheckoutTestFailure('VERSION_CONFLICT');
+    for (const [otherId, other] of this.rows) {
+      if (otherId === id) continue;
+      for (const key of ['sessionId', 'paymentId', 'chargeId'] as const)
+        if (copy.submission?.[key] && copy.submission[key] === other.fixture.submission?.[key])
+          throw new CheckoutTestFailure('IDEMPOTENCY_CONFLICT');
+      for (const eventId of copy.events.keys())
+        if (other.fixture.events.has(eventId)) throw new CheckoutTestFailure('REPLAY_CONFLICT');
     }
+    row.fixture = structuredClone(copy);
+    lease.version++;
+    if (release) this.leases.delete(id);
   }
 }
 /** Schema-based subsets of official Session/PaymentIntent/Charge objects, never real PSP responses. */
 export class OfflineStripe {
   readonly requests: StripeTestRequest[] = [];
+  readonly sessions = new Map<string, { body: string; id: string }>();
   readonly account: Record<string, unknown> = { id: 'acct_offline', object: 'account' };
   readonly checkout: Record<string, unknown>;
   readonly intent: Record<string, unknown>;
@@ -82,6 +82,13 @@ export class OfflineStripe {
   }
   readonly transport: StripeTestTransport = async (request) => {
     this.requests.push(request);
+    if (request.method === 'POST') {
+      const key = request.headers['Idempotency-Key'];
+      if (!key || !request.body) throw new Error('Missing synthetic idempotency');
+      const previous = this.sessions.get(key);
+      if (previous && previous.body !== request.body) throw new Error('Synthetic idempotency conflict');
+      if (!previous) this.sessions.set(key, { body: request.body, id: this.sessionId });
+    }
     const intercepted = this.intercept?.(request);
     if (intercepted) return intercepted;
     const path = new URL(request.url).pathname;

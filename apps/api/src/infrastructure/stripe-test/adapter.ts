@@ -38,7 +38,7 @@ interface StripeTestOptions {
   readonly clock?: () => number;
   readonly timeoutMs?: number;
 }
-/** No network implementation, DB adapter, public route or operational evidence conversion. */
+/** No network implementation, public route or operational evidence conversion. */
 export class StripeCheckoutTestAdapter implements SandboxCheckoutPort {
   private readonly options: StripeTestOptions;
   private readonly config: StripeTestConfig;
@@ -50,24 +50,31 @@ export class StripeCheckoutTestAdapter implements SandboxCheckoutPort {
     this.http = new StripeTestHttp(options.transport ?? denyStripeTransport, options.timeoutMs);
     this.clock = options.clock ?? Date.now;
   }
-  private async run(actor: PaymentActor, input: unknown, work: (fixture: CheckoutSandboxFixture, secrets: StripeTestSecrets) => Promise<CheckoutTestObservation>) {
+  private async run(actor: PaymentActor, input: unknown, work: (fixture: CheckoutSandboxFixture, secrets: StripeTestSecrets,
+    checkpoint: () => Promise<void>) => Promise<CheckoutTestObservation>) {
     const id = intentReference(actor, input);
     try {
-      const result = await this.options.store.run(actor, id, async (fixture) => {
-        // Commit an uncertain reservation even when a submitted request later fails validation.
-        try {
-          if (fixture.purpose !== 'isolated-payment-fixture' || fixture.intentId !== id || fixture.currency !== 'MXN'
-            || !Number.isSafeInteger(fixture.amountMinor) || fixture.amountMinor < 1000 || fixture.amountMinor > 99999999)
-            throw new CheckoutTestFailure('INVALID_COMMAND');
-          if (fixture.submission && fixture.submission.key !== this.key(id)) mismatch();
-          const secrets = validateStripeTestSecrets(await this.options.secrets());
-          return { ok: true as const, value: await work(fixture, secrets) };
-        } catch (error) {
-          return { ok: false as const, code: error instanceof CheckoutTestFailure ? error.code : 'INFRASTRUCTURE_UNAVAILABLE' as const };
-        }
-      });
-      if (!result.ok) throw new CheckoutTestFailure(result.code);
-      return result.value;
+      const reservation = await this.options.store.reserve(actor, id, this.config.accountId);
+      const fixture = reservation.fixture;
+      let result: CheckoutTestObservation | undefined;
+      let failure: CheckoutTestFailure['code'] | undefined;
+      try {
+        if (fixture.purpose !== 'isolated-payment-fixture' || fixture.intentId !== id || fixture.currency !== 'MXN'
+          || !Number.isSafeInteger(fixture.amountMinor) || fixture.amountMinor < 1000 || fixture.amountMinor > 99999999)
+          throw new CheckoutTestFailure('INVALID_COMMAND');
+        if (fixture.submission && fixture.submission.key !== this.key(id)) mismatch();
+        const secrets = validateStripeTestSecrets(await this.options.secrets());
+        result = await work(fixture, secrets, () => this.options.store.save(actor, reservation, false));
+        fixture.state = result.state;
+      } catch (error) {
+        failure = error instanceof CheckoutTestFailure ? error.code : 'INFRASTRUCTURE_UNAVAILABLE';
+        fixture.state = fixture.adverse ?? 'unknown';
+      }
+      // Provider work above has completed; storage reauthorizes and fences expired workers.
+      await this.options.store.save(actor, reservation, true);
+      if (failure) throw new CheckoutTestFailure(failure);
+      if (!result) throw new CheckoutTestFailure('INFRASTRUCTURE_UNAVAILABLE');
+      return result;
     } catch (error) {
       if (error instanceof CheckoutTestFailure) throw error;
       throw new CheckoutTestFailure('INFRASTRUCTURE_UNAVAILABLE');
@@ -75,7 +82,7 @@ export class StripeCheckoutTestAdapter implements SandboxCheckoutPort {
   }
   private key(intentId: string) { return 'stripe-test-session-' + hash(this.config.accountId + ':' + intentId); }
   async create(actor: PaymentActor, input: unknown) {
-    return this.run(actor, input, async (fixture, secrets) => {
+    return this.run(actor, input, async (fixture, secrets, checkpoint) => {
       const form = parameters(fixture, this.config);
       const digest = hash(STRIPE_TEST_API_VERSION + ':' + this.config.accountId + ':' + form.toString());
       if (fixture.submission && fixture.submission.hash !== digest) throw new CheckoutTestFailure('IDEMPOTENCY_CONFLICT');
@@ -85,9 +92,12 @@ export class StripeCheckoutTestAdapter implements SandboxCheckoutPort {
         throw new CheckoutTestFailure('RETRY_WINDOW_EXPIRED');
       fixture.submission ??= { key: this.key(fixture.intentId), hash: digest, startedAt: now,
         sessionId: null, paymentId: null, chargeId: null };
+      // Durable reservation MUST precede every possible POST. No SQL remains open after this await.
+      await checkpoint();
       try {
         await this.http.account(secrets.apiKey, this.config.accountId);
-        if (fixture.submission.sessionId) return observation(fixture, 'pending');
+        if (fixture.submission.sessionId) return observation(fixture, fixture.state);
+        await checkpoint(); // Reauthorize immediately before submission, including expiry/retry-window checks.
         const checkout = session(await this.http.request(secrets.apiKey, '/v1/checkout/sessions', form, fixture.submission.key), fixture);
         fixture.submission.sessionId = checkout.id;
         fixture.submission.paymentId = checkout.paymentId;
@@ -111,7 +121,7 @@ export class StripeCheckoutTestAdapter implements SandboxCheckoutPort {
   }
   async observe(actor: PaymentActor, input: unknown, body: Uint8Array, signature: string) {
     const original = snapshotWebhook(body);
-    return this.run(actor, input, async (fixture, secrets) => {
+    return this.run(actor, input, async (fixture, secrets, checkpoint) => {
       const event = verifyStripeTestEvent(original, signature, secrets.webhookSecret, this.clock());
       const previous = fixture.events.get(event.id);
       if (previous) {
@@ -124,7 +134,10 @@ export class StripeCheckoutTestAdapter implements SandboxCheckoutPort {
         || (event.object.object === 'payment_intent' && !binding.paymentId)
         || (['charge', 'dispute'].includes(String(event.object.object)) && !binding.chargeId);
       // A signed adverse event for an already bound charge stays blocking on timeout.
-      if (!needsBinding) bindStripeTestEvent(event, fixture);
+      if (!needsBinding) {
+        bindStripeTestEvent(event, fixture);
+        if (fixture.adverse) await checkpoint();
+      }
       try {
         await this.http.account(secrets.apiKey, this.config.accountId);
         const state = await readStripeTestState(this.http, secrets.apiKey, fixture);

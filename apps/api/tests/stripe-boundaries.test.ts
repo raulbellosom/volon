@@ -22,7 +22,7 @@ test('amount limits and provider response size/type bounds fail before financial
 test('secret manager or store failure exposes no secret, account or infrastructure error detail', async () => {
   const s = sandbox();
   for (const overrides of [{ secrets: async () => { throw new Error('private secret'); } },
-    { store: { run: async () => { throw new Error('postgres://private'); } } }])
+    { store: { reserve: async () => { throw new Error('postgres://private'); }, save: async () => {} } }])
     await assert.rejects(new StripeCheckoutTestAdapter({ ...s.options, ...overrides }).create(s.actor, s.input),
       { message: 'INFRASTRUCTURE_UNAVAILABLE' });
 });
@@ -35,7 +35,7 @@ test('revocation during transport prevents returning a newly created Session rec
     return Promise.resolve({ status: 200, body: Buffer.from(JSON.stringify(s.remote.checkout)) });
   };
   await assert.rejects(s.adapter.create(s.actor, s.input), { code: 'NOT_FOUND' });
-  assert.equal(s.store.get(s.fixture.intentId).fixture.submission, null);
+  assert.ok(s.store.get(s.fixture.intentId).fixture.submission);
 });
 
 test('one provider event ID cannot be rebound to a second independently authorized fixture', async () => {

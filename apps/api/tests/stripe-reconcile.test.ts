@@ -131,5 +131,6 @@ test('global external bindings prevent another fixture from reusing a Session, e
   const remote = new OfflineStripe(other);
   const adapter = new StripeCheckoutTestAdapter({ ...s.options, transport: remote.transport });
   await assert.rejects(adapter.create(s.actor, { intentId: other.intentId }), { code: 'IDEMPOTENCY_CONFLICT' });
-  assert.equal(s.store.get(other.intentId).fixture.submission, null);
+  assert.equal(s.store.get(other.intentId).fixture.submission?.sessionId, null);
+  assert.ok(s.store.get(other.intentId).fixture.submission?.key);
 });

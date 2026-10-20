@@ -68,8 +68,10 @@ test('duplicate signed events are ignored atomically; changed payload under same
   s.remote.paid();
   const body = eventBytes('checkout.session.completed', s.remote.checkout, s.time.now);
   const signature = signStripeFixture(body, s.time.now);
-  const result = await Promise.all(Array.from({ length: 12 }, () => s.adapter.observe(s.actor, s.input, body, signature)));
-  assert.equal(result.filter((row) => row.duplicate).length, 11);
+  const result = await Promise.allSettled(Array.from({ length: 20 }, () => s.adapter.observe(s.actor, s.input, body, signature)));
+  assert.equal(result.filter((row) => row.status === 'fulfilled').length, 1);
+  for (const row of result) if (row.status === 'rejected') assert.equal(row.reason.code, 'REQUEST_BUSY');
+  assert.equal((await s.adapter.observe(s.actor, s.input, body, signature)).duplicate, true);
   assert.equal(s.store.get(s.fixture.intentId).fixture.events.size, 1);
   const count = s.remote.requests.length;
   await s.adapter.observe(s.actor, s.input, body, signature);

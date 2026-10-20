@@ -19,7 +19,7 @@ export interface SandboxCheckoutPort {
 export interface SandboxSubmission {
   readonly key: string;
   readonly hash: string;
-  readonly startedAt: number;
+  startedAt: number;
   sessionId: string | null;
   paymentId: string | null;
   chargeId: string | null;
@@ -31,17 +31,23 @@ export interface CheckoutSandboxFixture {
   readonly currency: 'MXN';
   submission: SandboxSubmission | null;
   adverse: 'refunded' | 'disputed' | null;
+  state: CheckoutTestState;
   readonly events: Map<string, { readonly digest: string; readonly receipt: CheckoutTestObservation }>;
 }
-/** Must reauthorize on every call, serialize by fixture and enforce global external-ID/event uniqueness.
- * Concrete stores exist ONLY in tests.
- * Future SQL persistence requires a reservation/lease protocol, not network under DB locks. */
+export interface CheckoutSandboxReservation {
+  readonly token: string;
+  version: number;
+  readonly fixture: CheckoutSandboxFixture;
+}
+/** Each method is a short storage operation. No provider callback can enter a transaction. */
 export interface CheckoutSandboxStore {
-  run<T>(actor: PaymentActor, intentId: string, work: (fixture: CheckoutSandboxFixture) => Promise<T>): Promise<T>;
+  reserve(actor: PaymentActor, intentId: string, accountId: string): Promise<CheckoutSandboxReservation>;
+  save(actor: PaymentActor, reservation: CheckoutSandboxReservation, release: boolean): Promise<void>;
 }
 export class CheckoutTestFailure extends Error {
   readonly code: 'INVALID_COMMAND' | 'CONFIGURATION_INVALID' | 'NOT_FOUND' | 'IDEMPOTENCY_CONFLICT'
     | 'RETRY_WINDOW_EXPIRED' | 'INVALID_SIGNATURE' | 'EVENT_REJECTED' | 'REPLAY_CONFLICT'
-    | 'PROVIDER_REJECTED' | 'RESPONSE_MISMATCH' | 'REQUEST_UNKNOWN' | 'TRANSPORT_DISABLED' | 'INFRASTRUCTURE_UNAVAILABLE';
+    | 'PROVIDER_REJECTED' | 'RESPONSE_MISMATCH' | 'REQUEST_UNKNOWN' | 'TRANSPORT_DISABLED' | 'INFRASTRUCTURE_UNAVAILABLE'
+    | 'REQUEST_BUSY' | 'VERSION_CONFLICT';
   constructor(code: CheckoutTestFailure['code']) { super(code); this.code = code; }
 }

@@ -37,8 +37,10 @@ test('Stripe test creates exact hosted Session from authorized server money, nev
 
 test('concurrent creates/retries produce one session and stable server key; configuration drift cannot charge again', async () => {
   const s = sandbox();
-  const results = await Promise.all(Array.from({ length: 16 }, () => s.adapter.create(s.actor, s.input)));
-  for (const result of results) assert.deepEqual(result, results[0]);
+  const results = await Promise.allSettled(Array.from({ length: 20 }, () => s.adapter.create(s.actor, s.input)));
+  assert.equal(results.filter((r) => r.status === 'fulfilled').length, 1);
+  for (const r of results) if (r.status === 'rejected') assert.equal(r.reason.code, 'REQUEST_BUSY');
+  assert.equal((await s.adapter.create(s.actor, s.input)).sessionId, 'cs_test_offline');
   assert.equal(s.remote.requests.filter((request) => request.method === 'POST').length, 1);
   const changed = new StripeCheckoutTestAdapter({ ...s.options, config: { ...s.options.config, returnOrigin: 'http://localhost:9999' } });
   await assert.rejects(changed.create(s.actor, s.input), { code: 'IDEMPOTENCY_CONFLICT' });
