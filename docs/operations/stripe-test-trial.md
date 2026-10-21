@@ -3,20 +3,52 @@
 Issue #25 / ADR-0019. Solo prepara código; ninguna solicitud Stripe fue ejecutada.
 No portal, Delivery, dinero real ni despacho. Conekta/Openpay siguen alternativas.
 
-## Cuenta y claves: trabajo posterior del fundador
+## Cuenta y claves locales (#26)
 
 1. Entrar personalmente al Dashboard oficial, crear/seleccionar un sandbox dedicado
    y comprobar visualmente el entorno de prueba y su accountId. No activar Live.
-2. Revisar [claves](https://docs.stripe.com/keys) y
-   [sandbox](https://docs.stripe.com/sandboxes): Stripe recomienda RAK. El adaptador
-   heredado acepta solo sk_test, no rk_test; aprobar explícitamente su alcance
-   en sandbox aislado o implementar/revisar RAK antes del ensayo. No usar sk_live.
-3. Mantener la clave en un gestor privado del fundador. El ejecutor la solicita
-   directamente en una terminal local sin eco; nunca pegarla en chat, Issue,
-   comando, .env, archivo versionado, captura o log. No hay picker Stripe de Codex
-   integrado. Si la terminal está grabándose/compartida, detenerse.
+2. El sandbox ya fue creado por el fundador. Se aceptan `rk_test_` (preferida)
+   y `sk_test_`; se rechazan absolutamente claves Live. Revisar los permisos abajo.
+3. Guardar `STRIPE_SANDBOX_ACCOUNT_ID` y `STRIPE_SANDBOX_API_KEY` exclusivamente
+   en `.env.local` privado, ignorado por Git y con acceso limitado al operador.
+   No exportar variables Stripe al proceso: el runner rechaza esa ambigüedad.
+   Nunca pegar valores en chat, Issue, argv, captura, log ni archivo versionado.
+   Si la terminal está grabándose/compartida, detenerse.
 4. La clave se mantiene en memoria durante el comando; no se garantiza borrado
    físico de strings, memoria, swap o clipboard. Revisar custodia antes de usarla.
+
+`STRIPE_SANDBOX_WEBHOOK_SECRET` y `STRIPE_SANDBOX_PUBLISHABLE_KEY` son opcionales:
+omitirlas si no existen; no dejar asignaciones vacías. Si están presentes se
+validan `whsec_` y `pk_test_`. Publishable queda reservada, sin uso ni frontend.
+Solo el runner interactivo lee el archivo tras comprobar TTY y barreras locales;
+no instala secretos en process.env. Los dos preflights no leen `.env.local`.
+`--plan` valida archivo y cuenta contra PostgreSQL bajo Auth/RLS, sin Stripe.
+
+### Permisos de la clave restringida
+
+Revisar por recurso en el sandbox; el prefijo no demuestra permisos efectivos.
+
+| Ruta | Permiso por revisar en Dashboard |
+| --- | --- |
+| GET /v1/account | Account / Account information: Read; si aparece bajo Connect, solo lectura de cuenta propia |
+| POST Checkout Session y GET Session | Checkout Sessions: Write, incluyendo lectura |
+| GET PaymentIntent | PaymentIntents: Read |
+| GET Charge | Charges: Read |
+
+El POST utiliza `price_data.product_data` inline: revisar también Products y
+Prices si Stripe exige esos permisos para la creación implícita. La documentación
+general de RAK no enumera todas las dependencias de ese POST. No se afirma que
+la clave concreta tenga acceso: no se leyó ni probó contra Stripe. Si falta un
+permiso, detener y revisar el mínimo adicional antes de aprobar otro plan;
+no conceder Write global ni sustituir por sk_test automáticamente.
+Las rutas actuales no requieren Write de PaymentIntents/Charges, Customers,
+Refunds, Disputes, Transfers, Payouts ni Webhook endpoints. No hay GET Dispute.
+Un 401/403 produce `PROVIDER_REJECTED` sin mensaje externo ni retry; fallar GET
+Account impide POST. No hacer probes adicionales fuera del presupuesto.
+
+Fuentes oficiales revisadas 2026-10-20: [claves](https://docs.stripe.com/keys),
+[RAK](https://docs.stripe.com/keys/restricted-api-keys),
+[crear Session](https://docs.stripe.com/api/checkout/sessions/create).
 
 ## Preparación local sin Stripe
 
@@ -57,7 +89,8 @@ pnpm stripe:sandbox:trial --reconcile UUID_DEL_ESCENARIO SHA256_DEL_PLAN
 ```
 
 Create exige teclear `AUTORIZO STRIPE TEST SHA256_DEL_PLAN` en entrada oculta;
-después solicita sk_test sin eco. GET /v1/account debe coincidir antes del POST.
+la clave procede de `.env.local`. GET /v1/account debe coincidir con archivo,
+plan y escenario antes del POST. No se compone transporte antes de confirmar.
 Se valida livemode=false en objetos, importe/moneda/binding y clave idempotente.
 No abre Checkout ni devuelve URL tokenizada. El regreso del navegador no acredita pago.
 Reconcile tiene plan separado, cuatro GET máximo y necesita Session ya enlazada.
@@ -75,8 +108,22 @@ reenviar eventos al puerto local una vez aprobado. Su whsec es distinto del de
 un endpoint Dashboard; no intercambiarlos. Capturarlo por canal privado sin
 banner/log, cargarlo en memoria y verificar HMAC antes de JSON. No instalar,
 autenticar ni ejecutar Stripe CLI/túneles en este incremento.
-El relay deberá entregar eventos snapshot con api_version `2026-09-30.endive`;
-otra versión se rechaza, sin relajar validadores para hacer pasar el ensayo.
+La API fija sigue siendo `2026-09-30.endive`, verificada en
+[stripe-node v23.0.0](https://github.com/stripe/stripe-node/blob/v23.0.0/src/apiVersion.ts)
+y la [referencia oficial](https://docs.stripe.com/api/versioning). No se configura
+desde env. La versión de cuenta, el header `Stripe-Version` del runner y la versión
+del destino son independientes: el header no cambia los eventos Snapshot.
+`2022-11-15` visto en Dashboard no acredita compatibilidad y se rechaza.
+
+En una fase aprobada por separado, configurar destino **Snapshot**, cuenta propia
+del sandbox sin Connect/organización, `api_version=2026-09-30.endive` y solo los
+tipos de la allowlist del contrato. Si Dashboard no ofrece esa versión, detener:
+revisar sandbox/Workbench y configuración explícita por API con aprobación aparte.
+No actualizar globalmente la cuenta ni elegir otra versión como sustituto.
+No crear destino ahora. Un relay privado también deberá demostrar la versión
+exacta en un evento firmado; no asumir que hereda el header del runner.
+HMAC y `event.api_version` siguen obligatorios; versiones diferentes y Thin events
+se rechazan antes de consultas. [Versionado Snapshot](https://docs.stripe.com/webhooks/versioning).
 Ver [CLI](https://docs.stripe.com/cli) y
 [firmas](https://docs.stripe.com/webhooks/signature). No hay comando de listener
 remoto habilitado: requiere aprobación de TTL, tipos y presupuesto GET separado.

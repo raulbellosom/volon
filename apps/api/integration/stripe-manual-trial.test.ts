@@ -6,6 +6,7 @@ import { durable, admin, db, identity, createPostgresCheckoutSandboxStore, Strip
 import { firstStripeTrialStore, loadStripeTrialPlan } from '../src/infrastructure/stripe-test/trial-service.ts';
 import { tlsProvider } from './stripe-tls-fixtures.ts';
 import { startPrivateStripeTestReceiver } from '../src/infrastructure/stripe-test/private-receiver.ts';
+import { assertStripeTrialAccount } from '../../../scripts/local/stripe-trial-environment.ts';
 const originalFetch = globalThis.fetch;
 beforeEach(() => { mock.method(globalThis, 'fetch', localOnlyFetch(originalFetch)); });
 afterEach(() => mock.restoreAll());
@@ -15,6 +16,8 @@ const expiry = () => new Date(Date.now() + 60000).toISOString();
 test('manual plan is authorized by real local Auth/RLS, fixed to MXN 44 and refuses administrative or foreign actors', async () => {
   const s = await durable();
   const plan = await loadStripeTrialPlan(db, s.actor, s.scenario.id, 'create', revision, expiry());
+  assertStripeTrialAccount(s.scenario.accountId, plan);
+  assert.throws(() => assertStripeTrialAccount('acct_different_file', plan), { code: 'CONFIGURATION_INVALID' });
   assert.equal(plan.amountMinor, 4400); assert.equal(plan.maxSessions, 1); assert.equal(plan.maxRequests, 2);
   await assert.rejects(loadStripeTrialPlan(db, await identity('b'), s.scenario.id, 'create', revision, expiry()), { code: 'NOT_FOUND' });
   await assert.rejects(loadStripeTrialPlan(admin, s.actor, s.scenario.id, 'create', revision, expiry()), { code: 'INFRASTRUCTURE_UNAVAILABLE' });
@@ -30,7 +33,7 @@ test('controlled TLS + PostgreSQL: one initial Session and authenticated GET rec
   const server = await tlsProvider(s.remote);
   try {
     const adapter = new StripeCheckoutTestAdapter({ ...s.options, store: firstStripeTrialStore(db),
-      secrets: async () => ({ apiKey: 'sk_test_offline_fixture' }), transport: server.transport(plan) });
+      secrets: async () => ({ apiKey: 'rk_test_offline_fixture' }), transport: server.transport(plan) });
     const receipt = await adapter.create(s.actor, s.input);
     assert.equal(receipt.eligible, false); assert.equal(server.count(), 2); assert.equal(s.remote.sessions.size, 1);
     await assert.rejects(adapter.create(s.actor, s.input), { code: 'REQUEST_UNKNOWN' });

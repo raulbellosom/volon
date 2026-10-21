@@ -92,7 +92,7 @@ tolerancia simétrica ±300 s de reloj servidor y hasta 8 firmas para rotación.
 parsear JSON antes de verificar. Encabezado máximo 4 KiB; timestamp único. Rechazar
 livemode=true, API version distinta, eventos/contexto Connect y tipos inesperados.
 El secreto de endpoint es exclusivo de la cuenta configurada; GET autenticado de
-`/v1/account` verifica el scope antes de solicitudes de sesión/pago. Rechazar sk_live,
+`/v1/account` verifica el scope antes de solicitudes de sesión/pago. Solo rk_test/sk_test; rechazar Live,
 configuración production y cuentas distintas; no imprimir claves, firmas o cuerpos.
 
 Allowlist: checkout.session.completed/async_payment_succeeded/async_payment_failed/
@@ -154,11 +154,19 @@ El runner no aprovisiona escenarios ni acepta importes/URLs/subject del cliente.
 Un operador local prepara el fixture administrativo antes del plan.
 
 TTY local sin CI/GITHUB_ACTIONS/cloud/production, modo sintético y servicios
-127.0.0.1:56321/56322 obligatorios. Confirmación literal del hash antes de leer
-clave Stripe mediante entrada sin eco. Sin fallback a argv/env/archivos Stripe;
+127.0.0.1:56321/56322 obligatorios. Extensión #26: cuenta/clave exclusivamente de
+`.env.local` privado tras barrera TTY/local, sin exportarlas a process.env. Cuenta
+del archivo debe coincidir con escenario/plan bajo RLS al planear y ejecutar.
+Confirmación literal del hash antes de componer transporte; JWT/hash sin eco.
+Sin fallback a argv ni variables Stripe heredadas;
 se rechazan Live, proxies, inspector y configuración TLS insegura. JWT local
 también oculto y verificado por Supabase; DB runtime restringida/RLS actual.
 Para crear/consultar no se requiere inventar un whsec; observe sí lo exige.
+Publishable pk_test opcional, validada pero sin uso. Opcionales ausentes se omiten;
+vacíos/Live fallan. Preflight no lee el archivo, incluso en CI. Futuros destinos
+Snapshot deben fijar api_version=2026-09-30.endive independientemente de la cuenta;
+2022-11-15 y Thin events se rechazan. Permisos, configuración y fuentes oficiales
+revisadas 2026-10-20 en el runbook propietario.
 
 Receptor temporal: 127.0.0.1, puerto efímero, POST /stripe-test-events, sin Origin,
 cookies ni compresión; raw body <=64 KiB y firma <=4 KiB, TTL <=10 min y máximo
