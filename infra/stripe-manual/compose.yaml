@@ -1,0 +1,76 @@
+name: delivery-stripe-manual
+services:
+  db:
+    image: public.ecr.aws/supabase/postgres:17.11.0.004
+    user: root
+    entrypoint: [bash, /manual/postgres.sh]
+    environment:
+      MANUAL_DB_PASSWORD: ${MANUAL_DB_PASSWORD:?Private configuration required}
+    volumes:
+      - data:/var/lib/postgresql/manual
+      - ./postgres.sh:/manual/postgres.sh:ro
+    ports: ["127.0.0.1:57322:5432"]
+    networks: [manual]
+    labels:
+      delivery.purpose: manual-stripe-test-v1
+      delivery.instance: ${MANUAL_INSTANCE_ID:?Private configuration required}
+    healthcheck:
+      test: [CMD, pg_isready, -h, "127.0.0.1", -U, postgres]
+      interval: 2s
+      timeout: 3s
+      retries: 60
+  auth:
+    image: public.ecr.aws/supabase/gotrue:v2.197.0
+    environment:
+      GOTRUE_API_HOST: 0.0.0.0
+      GOTRUE_API_PORT: "9999"
+      API_EXTERNAL_URL: http://127.0.0.1:57321
+      GOTRUE_SITE_URL: http://127.0.0.1:5173
+      GOTRUE_DB_DRIVER: postgres
+      GOTRUE_DB_DATABASE_URL: postgres://supabase_auth_admin:${MANUAL_AUTH_DB_PASSWORD}@db:5432/postgres?search_path=auth
+      GOTRUE_JWT_SECRET: ${MANUAL_JWT_SECRET:?Private configuration required}
+      GOTRUE_JWT_AUD: authenticated
+      GOTRUE_JWT_ADMIN_ROLES: service_role
+      GOTRUE_JWT_EXP: "3600"
+      GOTRUE_DISABLE_SIGNUP: "true"
+      GOTRUE_EXTERNAL_EMAIL_ENABLED: "true"
+      GOTRUE_MAILER_AUTOCONFIRM: "true"
+      GOTRUE_LOG_LEVEL: error
+    networks: [manual]
+    labels:
+      delivery.purpose: manual-stripe-test-v1
+      delivery.instance: ${MANUAL_INSTANCE_ID:?Private configuration required}
+    depends_on:
+      db:
+        condition: service_healthy
+  gateway:
+    image: public.ecr.aws/supabase/kong:2.8.1
+    environment:
+      KONG_DATABASE: "off"
+      KONG_DECLARATIVE_CONFIG: /manual/kong.yml
+      KONG_PROXY_LISTEN: 0.0.0.0:8000
+      KONG_ADMIN_LISTEN: "off"
+      KONG_LOG_LEVEL: error
+      KONG_PROXY_ACCESS_LOG: "off"
+    volumes: ["./kong.yml:/manual/kong.yml:ro"]
+    ports: ["127.0.0.1:57321:8000"]
+    networks: [manual]
+    labels:
+      delivery.purpose: manual-stripe-test-v1
+      delivery.instance: ${MANUAL_INSTANCE_ID:?Private configuration required}
+    depends_on: [auth]
+volumes:
+  data:
+    name: delivery-stripe-manual-db
+    labels:
+      delivery.purpose: manual-stripe-test-v1
+      delivery.instance: ${MANUAL_INSTANCE_ID:?Private configuration required}
+networks:
+  manual:
+    name: delivery-stripe-manual
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.host_binding_ipv4: 127.0.0.1
+    labels:
+      delivery.purpose: manual-stripe-test-v1
+      delivery.instance: ${MANUAL_INSTANCE_ID:?Private configuration required}

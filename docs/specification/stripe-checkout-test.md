@@ -232,3 +232,23 @@ Fuentes oficiales consultadas 2026-10-19: [versión estable](https://github.com/
 [idempotencia](https://docs.stripe.com/api/idempotent_requests), [Session](https://docs.stripe.com/api/checkout/sessions/object),
 [PaymentIntent](https://docs.stripe.com/api/payment_intents/object), [Charge](https://docs.stripe.com/api/charges/object),
 [Dispute](https://docs.stripe.com/api/disputes/object). Retirar el adaptador conserva datos y denegación operativa.
+
+
+## Instancia manual aislada (#26, ADR-0020)
+
+El runner y la fixture manual aceptan exclusivamente 127.0.0.1:57321/57322,
+`manual-stripe-test-v1` y UUID de instancia. Configuraci?n privada expl?cita desde
+`.env.stripe-manual.local`, sin process.env ni credenciales en contenedores.
+HTTPS valida metadatos no secretos y comprueba Docker/marcador por solicitud;
+el plan sigue fijando HEAD/cuenta/hash/ventana/presupuesto y aprobaci?n independiente.
+La configuraci?n hist?rica 56321/56322 se admite solo para inspecci?n de lectura.
+
+Contrato operativo local fuera de migraciones compartidas: singleton
+`local_control.Environment` con `instanceId` UUID ?nico, `purpose` fijo,
+`accountId`, `systemIdentifier`, `createdAt`. Lo crea solo el aprovisionador sobre
+el volumen manual nuevo y vac?o. Sin permisos de escritura runtime; SELECT bajo
+FORCE RLS. No es evento financiero ni evidencia PSP. Procedencia privada vincula
+ese marcador con recursos Docker y huella del historial previo; discrepancias
+bloquean sin remediaci?n autom?tica. No modifica tablas ni RLS de negocio.
+Integraciones rechazan configuraci?n manual antes de crear clientes; CI siempre
+usa su propio stack desechable sin secretos Stripe. Procedimiento en el runbook.

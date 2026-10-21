@@ -47,3 +47,6 @@ para pruebas locales/sintéticas, no para operación comercial.
 
 - [ADR-0015 — Folios de Delivery](0015-delivery-public-reference.md): referencia
   humana inmutable 1:1, con backfill y búsqueda autenticada; incremento #19.
+
+- [ADR-0020 ? Instancia Stripe manual aislada](0020-isolated-manual-stripe-instance.md):
+  aprovisionamiento local aprobado, procedencia privada y preservaci?n hist?rica; cero Stripe.
