@@ -1,6 +1,9 @@
-# Primer ensayo Stripe Test — preparado, ejecución todavía no autorizada
+# Ensayo Stripe Test — HTTP 400, recuperación pendiente
 
-Issue #25 / ADR-0019. Solo prepara código; ninguna solicitud Stripe fue ejecutada.
+Issues #25/#26 / ADR-0019. El fundador reporta el primer POST rechazado con HTTP 400.
+Este corte corrige el payload y propone recuperación: cero solicitudes Stripe
+durante la corrección. Los comandos generales son referencia; no repetir create
+ni fixture ni crear escenarios alternativos mientras siga el bloqueo descrito abajo.
 No portal, Delivery, dinero real ni despacho. Conekta/Openpay siguen alternativas.
 
 ## Cuenta y claves locales (#26)
@@ -194,6 +197,65 @@ El plan se guarda en `.local/stripe-manual/plan.json`, sin secretos, con vigenci
 máxima de una hora. Volver a planificar sobrescribe solo ese documento público.
 
 ## Comandos preparados, NO ejecutar todavía
+
+**Bloqueo vigente tras HTTP 400 (#26):** el fundador reportó
+`invalid_request_error`, parámetro `payment_method_types`. Se eliminó el selector
+del payload conforme a [métodos dinámicos](https://docs.stripe.com/payments/payment-methods/dynamic-payment-methods)
+y la [guía oficial del error](https://support.stripe.com/questions/fix-the-payment-method-types-error).
+No se añade `allowed_payment_method_types`: este ensayo solo crea una Session,
+sin abrir/completar Checkout. Si después se exige solo tarjeta, evaluar esa
+allowlist con soporte explícito para la versión fija y aprobación de un nuevo plan.
+No se cambia la configuración del Dashboard ni se asume aceptación del nuevo POST.
+
+El hash de envío cambia al omitir el campo; el de plan cambia con el nuevo HEAD.
+Hay vectores SHA-256 completamente artificiales en `stripe-checkout-parameters.test.ts`,
+incluidos cuerpo anterior/nuevo y rechazo del cuerpo anterior por el presupuesto.
+No recalcular ni reemplazar el hash guardado en PostgreSQL. El algoritmo de clave
+existente permanece intacto: cambiar solo el código no convierte la clave histórica
+en una clave nueva. No repetir `--create`, ni fixture `--create`, ni generar un
+escenario alternativo. HISTORY_BLOCKED y el bloqueo de plan con submission siguen.
+No se conectó a la base manual ni se ejecutaron comandos de ensayo para esta corrección.
+Las integraciones de CI usan su propia base desechable sin credenciales Stripe.
+
+### Propuesta de recuperación auditable — NO implementada ni autorizada
+
+1. Conservar íntegros escenario, submission HTTP 400, key, hash, timestamps, estado,
+   leases/versiones y eventos. No cerrar ni reclasificar la fila original; el adapter
+   conserva estados conservadores. El HTTP 400 informado no acredita por sí solo
+   ausencia de una Session o de otro envío incierto.
+2. Revisar en lectura el intento y evidencia oficial vinculada a ese request:
+   cuenta/versión, error/param, ausencia de bindings y otros POST/unknown. Cualquier
+   consulta externa requerirá autorización aparte. Si hay incertidumbre, detener
+   y seguir investigación/recuperación del intento original; no habilitar otro.
+3. Tras aprobación de contrato y migración **aditiva**, registrar una decisión de
+   recuperación inmutable en una tabla nueva: referencia al intento original,
+   evidencia privada y su digest, clasificación revisada, operador, fecha servidor,
+   HEAD y compromisos de los hashes anterior/nuevo. La decisión no modifica el
+   intento ni declara pago/reembolso. No publicar claves, hashes de idempotencia,
+   tokens ni identificadores sensibles en Issue/logs.
+4. Crear un intento sucesor con UUID propio, enlazado al **mismo escenario** y a
+   esa decisión, en almacenamiento nuevo; conservar la relación histórica 1:1
+   Scenario/Submission actual. Su key única incluirá la identidad del nuevo intento,
+   con digest nuevo e inmutable de los bytes exactos. Nunca reutilizar la key vieja,
+   incluso si Stripe no retuvo el error o pasaron 24 horas. No crear otra fixture.
+5. Una transacción local con lock de sucursal y consumo único de decisión mediante
+   registro append-only debe impedir sucesores concurrentes o decisiones repetidas.
+   Comprobar todos los intentos anteriores: solo el rechazo concreto revisado puede
+   admitir un sucesor; cualquier binding/unknown diferente bloquea. El comando
+   histórico mantiene HISTORY_BLOCKED; una futura interfaz explícita de recuperación
+   necesitará sus propios gates auditados, sin flag de bypass ni permisos productivos.
+6. Nuevo contrato/plan versionado fijará UUID de decisión e intento, cuenta,
+   escenario MXN 4400, payload/digest exacto, nueva key, HEAD, SHA-256, ventana <=1h,
+   máximo 2 requests/1 POST/1 Session. Revisión y aprobación humana independientes
+   **antes de cualquier acceso Stripe**. Auth/RLS, instancia verificada, TTY local,
+   no CI/cloud, límites, cero retry automático y recuperación desconocida conservados.
+
+Primero aprobar diseño y alcance de escrituras; después implementar/probar la
+herramienta y migración aditivas en instancia desechable. Solo con otra autorización
+aplicar las escrituras locales revisadas, verificar preservación antes/después y
+preparar el plan sucesor. Su ejecución externa tendrá aprobación adicional.
+Hoy no existen esas tablas, migraciones ni comandos de recuperación; nada está
+desbloqueado por esta propuesta. Ver [idempotencia oficial](https://docs.stripe.com/api/idempotent_requests).
 
 ```bash
 pnpm stripe:sandbox:trial --create UUID_DEL_ESCENARIO SHA256_DEL_PLAN

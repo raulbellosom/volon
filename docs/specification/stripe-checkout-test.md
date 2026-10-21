@@ -85,9 +85,23 @@ recibo conserva adversos posteriores. No se guardan mensajes libres, JSON de
 proveedor, cuerpos ni secretos. Máximo 1,000 eventos por escenario de laboratorio;
 superarlo falla cerrado. Ninguna tabla ni observación habilita elegibilidad.
 
-POST `/v1/checkout/sessions`: mode=payment, tarjeta, captura automática, MXN y una
+POST `/v1/checkout/sessions`: mode=payment, métodos dinámicos, captura automática, MXN y una
 línea de logística de cantidad 1. Importe sale del fixture autorizado. Correlación
 client_reference_id/metadata informativa; nunca se localiza binding mediante metadata.
+Se omiten `payment_method_types` y `allowed_payment_method_types`; Stripe selecciona
+los métodos elegibles de la configuración del sandbox. Este corte solo propone
+crear una sesión, sin abrir/completar Checkout ni autorizar métodos de pago nuevos.
+Una futura restricción explícita a tarjetas requerirá revisar la versión/soporte
+de `allowed_payment_method_types` y aprobar un payload/plan nuevo, sin fallback.
+El digest de envío sigue SHA-256(API-version + ':' + account + ':' + form-encoded).
+Eliminar el selector cambia ese digest; no actualiza hashes, claves o intentos
+persistidos. El algoritmo de idempotencia existente no se modifica para sortearlos.
+Tras el HTTP 400 reportado en #26, una recuperación con payload diferente requiere
+un contrato aditivo de decisión e intento sucesor inmutables, enlazados al escenario
+y al intento original; key nueva por intento y plan versionado independiente.
+Es solo propuesta: no hay migración, nuevo estado/enum, tablas ni gate de recuperación
+implementados. Conserva HISTORY_BLOCKED y el almacenamiento histórico actual.
+Procedimiento y aprobaciones previas en el [runbook](../operations/stripe-test-trial.md).
 Clave idempotente estable por cuenta/fixture, hash de parámetros/URLs reservado antes
 del envío. Replay devuelve la misma sesión, cambio de parámetros falla. Timeout
 conserva reserva y retorna unknown sin retry automático; retry explícito conserva
