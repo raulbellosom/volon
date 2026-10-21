@@ -1,11 +1,12 @@
 // Child process used only by recovery integration tests. No external transport.
 import { createDatabase } from '../src/infrastructure/database.ts';
+import { loadOfflineIntegrationEnvironment } from './integration-environment.ts';
 import { createPostgresCheckoutSandboxStore } from '../src/infrastructure/stripe-test/postgres-store.ts';
 import { StripeCheckoutTestAdapter } from '../src/infrastructure/stripe-test/adapter.ts';
 import { OfflineStripe, fixtureSecrets } from '../tests/stripe-test.fixtures.ts';
 import type { CheckoutSandboxFixture } from '../src/modules/payments/checkout-sandbox.port.ts';
 
-process.loadEnvFile('.env.local');
+loadOfflineIntegrationEnvironment();
 const [subjectId, id, suffix] = process.argv.slice(2);
 if (!subjectId || !id || !suffix || !process.env.DATABASE_URL || process.env.LOCAL_SYNTHETIC_MODE !== 'true') process.exit(1);
 globalThis.fetch = async () => { throw new Error('External network forbidden'); };

@@ -19,7 +19,7 @@
     "local:quote": "node --experimental-strip-types scripts/local/quote.ts",
     "local:status": "node scripts/local/operations.mjs status",
     "local:stop": "node scripts/local/operations.mjs stop",
-    "test:integration": "node --experimental-strip-types --test --test-concurrency=1 apps/api/integration/*.test.ts",
+    "test:integration": "node --experimental-strip-types scripts/local/test-integration.ts",
     "gallery": "pnpm --filter @delivery/ui-web gallery",
     "typecheck:ui": "pnpm --filter @delivery/ui-web typecheck && pnpm --filter @delivery/merchant-web typecheck && pnpm --filter @delivery/courier-mobile typecheck",
     "gallery:build": "pnpm --filter @delivery/ui-web gallery:build",
@@ -33,6 +33,7 @@
     "courier:local-smoke": "node --experimental-strip-types apps/courier-mobile/scripts/local-smoke.mts",
     "gallery:geometry": "pnpm --filter @delivery/ui-web gallery:geometry",
     "merchant:geometry": "pnpm --filter @delivery/merchant-web geometry:shell",
+    "stripe:sandbox:history": "node --experimental-strip-types scripts/local/stripe-history.ts",
     "stripe:sandbox:fixture": "node --experimental-strip-types scripts/local/stripe-fixture.ts",
     "stripe:sandbox:preflight": "node --experimental-strip-types scripts/local/stripe-preflight.ts",
     "stripe:sandbox:trial": "node --experimental-strip-types scripts/local/stripe-trial.ts"

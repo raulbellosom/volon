@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { after, test } from 'node:test';
 import { once } from 'node:events';
 import { randomUUID } from 'node:crypto';
+import { loadOfflineIntegrationEnvironment } from './integration-environment.ts';
 import { createDatabase, withSubject, assertRuntimeRole } from '../src/infrastructure/database.ts';
 import { createQuoteRepository } from '../src/infrastructure/quote.repository.ts';
 import { createSupabaseAuthenticator } from '../src/infrastructure/supabase-auth.adapter.ts';
@@ -11,7 +12,7 @@ import { QuoteFailure } from '../src/modules/pricing/quote.service.ts';
 import { createApi } from '../src/app.ts';
 import { createHttpServer } from '../src/http/server.ts';
 
-process.loadEnvFile('.env.local');
+loadOfflineIntegrationEnvironment();
 function required(key: string): string {
   const value = process.env[key];
   if (!value) throw new Error(`Missing ${key}`);

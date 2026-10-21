@@ -1,9 +1,10 @@
 import assert from 'node:assert/strict';
 import { after } from 'node:test';
 import { randomUUID } from 'node:crypto';
+import { loadOfflineIntegrationEnvironment } from './integration-environment.ts';
 import { createDatabase } from '../src/infrastructure/database.ts';
 
-process.loadEnvFile('.env.local');
+loadOfflineIntegrationEnvironment();
 export function required(key: string): string {
   const value = process.env[key];
   if (!value) throw new Error(`Missing ${key}`);
