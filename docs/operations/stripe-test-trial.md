@@ -41,8 +41,10 @@ general de RAK no enumera todas las dependencias de ese POST. No se afirma que
 la clave concreta tenga acceso: no se leyó ni probó contra Stripe. Si falta un
 permiso, detener y revisar el mínimo adicional antes de aprobar otro plan;
 no conceder Write global ni sustituir por sk_test automáticamente.
-Las rutas actuales no requieren Write de PaymentIntents/Charges, Customers,
-Refunds, Disputes, Transfers, Payouts ni Webhook endpoints. No hay GET Dispute.
+No hay escrituras directas a PaymentIntents/Charges, Customers, Refunds, Disputes,
+Transfers, Payouts ni Webhook endpoints, ni GET Dispute. Eso no demuestra ausencia
+de dependencias transitivas: revisar las que Dashboard asocie a Checkout Sessions
+Write, incluyendo PaymentIntents/Charges y Products/Prices, antes del ensayo.
 Un 401/403 produce `PROVIDER_REJECTED` sin mensaje externo ni retry; fallar GET
 Account impide POST. No hacer probes adicionales fuera del presupuesto.
 
