@@ -51,6 +51,12 @@ incompatibles o cualquier submission/historial bloquean, incluso tras cambiar
 cuenta/importe/propietario; sin reset, borrado o nueva fixture de evasión.
 No modifica RLS, tablas, enums, endpoints ni elegibilidad. Configuración, salida y
 comandos Git Bash en el [runbook](../operations/stripe-test-trial.md).
+Diagnóstico #26: `stripe:sandbox:history --inspect` agrega escenarios/submissions/
+eventos sin exponer identificadores, claves o hashes, bajo SQL READ ONLY y snapshot
+repetible. No clasifica procedencia como certificada: esta no existe en el esquema.
+Integraciones automatizadas rechazan configuración manual STRIPE_SANDBOX_* antes
+de conexiones; el aislamiento físico permanente sigue propuesto y requiere revisión.
+Ninguna etiqueta del reporte excluye filas del bloqueo ni autoriza remediación.
 
 Todas FORCE RLS: contexto offline-test-v1, subject propietario exacto y Branch
 visible por membresía vigente/comercio/sucursal habilitados; escenario habilitado.

@@ -97,6 +97,12 @@ Para una migración nueva: revisar primero especificación/ADR, generar SQL con 
 
 ## Detener y recuperar
 
+Las integraciones automatizadas rechazan cualquier `STRIPE_SANDBOX_*` en archivo
+o proceso antes de abrir conexiones. No retirar esas variables para usar el mismo
+stack del ensayo manual: ejecutar en una instancia desechable separada (CI ya
+provisiona la suya). El [diagnóstico Stripe](stripe-test-trial.md) es de solo
+lectura y explica el historial compartido y la separación permanente propuesta.
+
 ```sh
 pnpm local:stop
 pnpm local:up

@@ -43,3 +43,14 @@ incompatibles bloquean sin reemplazo. No se usan credenciales Stripe ni HTTP.
 El bloqueo coordina invocaciones de la herramienta; SQL administrativo ajeno que
 ignore el protocolo no queda contenido por un nuevo índice. No es frontera contra
 un propietario local hostil. Retiro: dejar de invocarla y conservar historia.
+
+Diagnóstico #26 posterior a #27: los fixtures durables de integración compartían
+sucursal A/B con el ensayo, y el esquema no persiste procedencia de transporte.
+La inspección agregada oficial es READ ONLY; reconocer etiquetas/bindings de
+tests no certifica procedencia ni permite omitir historia. Barrera preventiva de
+integraciones: rechazar un stack con configuración STRIPE_SANDBOX_* antes de
+abrir clientes. Propuesta aún no aplicada: separación física de instancias/BD y
+volúmenes para automatización y ensayo manual; preservación del stack histórico,
+revisión humana de incertidumbre y permiso previo a cualquier escritura remedial.
+No cambiar contratos de planes para aceptar escenarios arbitrarios ni modificar
+tablas, índices, permisos, registros o elegibilidad durante este diagnóstico.

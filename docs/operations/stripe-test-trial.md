@@ -54,6 +54,62 @@ Fuentes oficiales revisadas 2026-10-20: [claves](https://docs.stripe.com/keys),
 
 ## Preparación local sin Stripe
 
+### Diagnosticar HISTORY_BLOCKED sin cambiar historial (#26)
+
+Desde Git Bash: `pnpm stripe:sandbox:history --inspect`.
+Comparte únicamente el reporte agregado. Usa las mismas barreras locales y archivo
+ignorado del aprovisionador, sin consumir API key ni bearer y sin requerir TTY.
+La transacción `REPEATABLE READ` + `READ ONLY` solo consulta las tres tablas de
+laboratorio de la sucursal A. El JSON no incluye UUID, cuenta, subject, IDs de
+Stripe, fechas, claves, hashes o payloads: muestra clases de cuenta, estados de
+submission/eventos, totales y cantidades con cada binding/checkpoint presente.
+Los errores están sanitizados y `stripeRequestsByInspection=0` es exclusivo de
+esta inspección, no una afirmación sobre ejecuciones históricas.
+
+`SUBMISSION_EXISTS_EVEN_WITHOUT_KEY` explica HISTORY_BLOCKED; múltiples escenarios
+también impedirían crear otro. #27 inspecciona solo dos filas para decidir el
+primer error; el diagnóstico examina todo el scope para no ocultar el resto.
+Ni etiquetas de cuenta offline, ni UUID con forma de fixture, ni `captured_test`
+demuestran por sí solos ausencia de red: la BD no registra transporte/procedencia.
+El checkpoint de key/hash ocurre antes del GET Account, así que tampoco demuestra
+un POST. Cuentas configuradas o desconocidas requieren revisión conservadora;
+no se excluyen filas ni se rebaja el bloqueo al reconocer una etiqueta.
+
+Origen en código: `stripe-persistence-fixtures.ts:durable` reutiliza Auth/tenant
+A/B y persiste escenarios en sus sucursales con `OfflineStripe` inyectado. Las
+pruebas TLS usan un servidor loopback; las de recuperación simulan interrupciones.
+Esto conservó historia para verificar durabilidad, pero compartió el namespace
+del futuro ensayo. #23 usa memoria; #24–#26 prueban persistencia y dejan filas;
+#27 detecta historia preexistente y sus nuevos casos usan ramas aisladas.
+
+Prevención inmediata: `pnpm test:integration`, sus fixtures centrales y el worker
+de recuperación rechazan cualquier `STRIPE_SANDBOX_*` en archivo o proceso antes
+de cargar credenciales/crear clientes. No quitar variables para saltar esta
+barrera sobre la misma BD. No cambia ni limpia historia ya existente.
+
+### Propuesta permanente — pendiente de aprobación, no aplicada
+
+Separar **bases/volúmenes y configuración** de automatización desechable y ensayo
+manual. Cada ejecución automática debe tener su propia instancia, sin claves
+Stripe, con fixture IDs A/B válidos exclusivamente allí. No ampliar el allowlist
+del plan manual para aceptar namespaces de pruebas. CI ya provisiona un stack
+fresco en su runner; la barrera de configuración es defensa adicional, no prueba
+de procedencia de filas ni aislamiento físico por sí sola.
+
+Para el bloqueo actual: conservar íntegro el stack como evidencia; revisar el
+reporte, configuración de cuenta y declaración de cero ensayos autorizados. Si
+queda cualquier intento potencial de la cuenta configurada/desconocida, mantener
+el bloqueo y seguir recuperación #26. Solo después de revisión humana y permiso
+explícito, preparar una instancia manual dedicada desde cero, con volumen y
+puertos aprobados, seed sintético y trazabilidad del entorno desde su creación.
+Esto requiere cambios de configuración/contratos locales y escrituras nuevas:
+**no se ejecuta como parte del diagnóstico**, ni constituye permiso para crear
+otra fixture que sustituya un intento incierto. No mover, borrar, renombrar o
+reescribir los registros históricos. La primera Session conservará su aprobación
+separada de HEAD/hash/ventana, presupuesto e idempotencia.
+
+### Aprovisionamiento normal (solo en un stack revisado sin bloqueo)
+
 Issue #27: herramienta oficial del repositorio, sin descargas, here-doc, stdin ni
 PowerShell. Desde Windows Git Bash, con Docker activo y el checkout actualizado:
 
