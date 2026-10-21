@@ -1,7 +1,7 @@
 import { execFileSync } from 'node:child_process';
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { createDatabase } from '../../apps/api/src/infrastructure/database.ts';
-import { createSupabaseAuthenticator } from '../../apps/api/src/infrastructure/supabase-auth.adapter.ts';
+import { authenticateStripeSyntheticUser } from './stripe-synthetic-auth.ts';
 import { CheckoutTestFailure } from '../../apps/api/src/modules/payments/checkout-sandbox.port.ts';
 import { uuid } from '../../apps/api/src/modules/payments/payment.contract.ts';
 import { assertLocalStripeTerminal } from '../../apps/api/src/infrastructure/stripe-test/https-policy.ts';
@@ -37,11 +37,9 @@ async function main() {
   if (!uuid.test(id)) throw new CheckoutTestFailure('INVALID_COMMAND');
   const local = await loadStripeTrialEnvironment(process.env, !!process.stdin.isTTY && !!process.stdout.isTTY);
   const revision = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
-  const bearer = await readHiddenStripeValue('Bearer de Supabase local');
   await manualStatus();
-  const authenticate = createSupabaseAuthenticator(local.services.authOrigin, local.publishableKey);
-  const actor = await authenticate(new Request('http://127.0.0.1/stripe-trial', { headers: { authorization: 'Bearer ' + bearer } }));
-  if (!actor) throw new CheckoutTestFailure('NOT_FOUND');
+  const actor = await authenticateStripeSyntheticUser(local);
+  await manualStatus(actor.subjectId);
   const db = createDatabase(local.databaseUrl);
   try {
     if (preview) {
@@ -72,8 +70,8 @@ async function main() {
       returnOrigin: plan.returnOrigin }, store: operation === 'create' ? firstStripeTrialStore(db) : createPostgresCheckoutSandboxStore(db),
       secrets: async () => local.secrets, transport: connection.transport });
     // Reverify identity after interactive delays, before any Stripe request; RLS reauthorizes each storage phase.
-    const fresh = await authenticate(new Request('http://127.0.0.1/stripe-trial', { headers: { authorization: 'Bearer ' + bearer } }));
-    if (!fresh || fresh.subjectId !== actor.subjectId) throw new CheckoutTestFailure('NOT_FOUND');
+    await manualStatus(actor.subjectId);
+    const fresh = await authenticateStripeSyntheticUser(local, actor.subjectId);
     try {
       console.log(JSON.stringify({ execution: 'manual-stripe-test', observation: await executeStripeTrial(plan, fresh, adapter) }));
     } finally {

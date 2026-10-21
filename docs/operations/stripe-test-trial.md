@@ -178,7 +178,15 @@ pnpm stripe:sandbox:trial --preflight
 pnpm stripe:sandbox:trial --plan create UUID_DEL_ESCENARIO
 ```
 
-Plan pide el bearer de la nueva Auth local sin eco y verifica Auth/RLS; hace cero consultas Stripe.
+Plan inicia sesión automáticamente como `merchant-a@example.test` mediante el
+[flujo oficial de contraseña](https://supabase.com/docs/guides/auth/passwords)
+de Supabase Auth en 127.0.0.1:57321. Lee exclusivamente
+`SYNTHETIC_USER_PASSWORD` y `SUPABASE_PUBLISHABLE_KEY` del archivo privado manual;
+no requiere obtener ni pegar un Bearer. El token queda solo en memoria y se valida
+con el autenticador existente, la identidad provisionada y las políticas RLS.
+No se persiste/exporta la sesión ni se conserva su refresh token. Fallos de Auth,
+credenciales ausentes o identidad ajena bloquean con errores sanitizados.
+No sigue redirecciones ni reintenta. Hace cero consultas Stripe.
 Devuelve JSON público mínimo y SHA-256. No es autorización. Revisar HEAD, cuenta,
 escenario, MXN 44.00, dos requests máximo, un POST, cero checkout completado,
 cero tarjetas, cero reintentos y vencimiento de la aprobación operacional.
@@ -194,6 +202,8 @@ pnpm stripe:sandbox:trial --reconcile UUID_DEL_ESCENARIO SHA256_DEL_PLAN
 ```
 
 Create exige teclear `AUTORIZO STRIPE TEST SHA256_DEL_PLAN` en entrada oculta;
+después repite el login local y exige el mismo subject antes de cualquier solicitud
+Stripe. El login automático no sustituye la aprobación independiente del plan.
 la clave procede de `.env.stripe-manual.local`. GET /v1/account debe coincidir con archivo,
 plan y escenario antes del POST. No se compone transporte antes de confirmar.
 Se valida livemode=false en objetos, importe/moneda/binding y clave idempotente.

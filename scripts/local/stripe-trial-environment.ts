@@ -27,10 +27,13 @@ export async function loadStripeTrialEnvironment(
     stripeSandboxPreflight(file);
     const accountId = file.STRIPE_SANDBOX_ACCOUNT_ID;
     const apiKey = file.STRIPE_SANDBOX_API_KEY;
-    if (!accountId || !apiKey) throw new CheckoutTestFailure('CONFIGURATION_INVALID');
+    const syntheticPassword = file.SYNTHETIC_USER_PASSWORD;
+    const publishableKey = file.SUPABASE_PUBLISHABLE_KEY;
+    if (!accountId || !apiKey || !syntheticPassword || syntheticPassword.length > 1024 || !publishableKey
+      || /[\r\n]/.test(syntheticPassword + publishableKey)) throw new CheckoutTestFailure('CONFIGURATION_INVALID');
     const secrets = validateStripeTestSecrets({ apiKey,
       ...(file.STRIPE_SANDBOX_WEBHOOK_SECRET === undefined ? {} : { webhookSecret: file.STRIPE_SANDBOX_WEBHOOK_SECRET }) });
-    return { accountId, secrets, services, databaseUrl: file.DATABASE_URL ?? '', publishableKey: file.SUPABASE_PUBLISHABLE_KEY ?? '' };
+    return { accountId, secrets, services, databaseUrl: file.DATABASE_URL ?? '', publishableKey, syntheticPassword };
   } catch (error) {
     if (error instanceof CheckoutTestFailure) throw error;
     throw new CheckoutTestFailure('CONFIGURATION_INVALID'); // No parser/filesystem error details.

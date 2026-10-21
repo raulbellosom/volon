@@ -4,7 +4,7 @@ import { readManualSettings, verifyHistoricalPreservation } from './settings.ts'
 import { verifyDockerIdentity, verifyManualDatabase, manualCounts } from './identity.ts';
 import { fail } from './files.ts';
 
-export async function manualStatus() {
+export async function manualStatus(expectedSubjectId?: string) {
   const { file, services, provenance } = readManualSettings();
   if (provenance.phase !== 'ready' || !provenance.emptyVerified || !provenance.systemIdentifier) fail();
   verifyDockerIdentity(services.instanceId);
@@ -18,6 +18,7 @@ export async function manualStatus() {
     await assertRuntimeRole(runtime);
     await verifyManualDatabase(runtime, services.instanceId, provenance.accountId);
     const identity = await db.$transaction((tx) => readStripeFixtureIdentity(tx, 'dry-run'));
+    if (expectedSubjectId !== undefined && identity.subjectId !== expectedSubjectId) fail();
     const counts = await manualCounts(db);
     if (counts.scenarios > 1) fail();
     if (counts.scenarios) {

@@ -252,3 +252,11 @@ ese marcador con recursos Docker y huella del historial previo; discrepancias
 bloquean sin remediación automática. No modifica tablas ni RLS de negocio.
 Integraciones rechazan configuración manual antes de crear clientes; CI siempre
 usa su propio stack desechable sin secretos Stripe. Procedimiento en el runbook.
+
+El ejecutor manual autentica `merchant-a@example.test` mediante password grant
+local con credenciales del archivo privado manual. Valida access token con el
+autenticador existente y exige el subject provisionado antes de cargar el plan
+bajo RLS. Token/refresh token nunca se persisten, exportan ni muestran. Tras la
+aprobación humana repite el login, exige el mismo subject y conserva todas las
+validaciones de plan/transporte. Errores de Auth sanitizados, sin redirects ni
+reintentos. No hay input manual de Bearer ni cambios de permisos o elegibilidad.

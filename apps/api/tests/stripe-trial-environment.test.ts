@@ -8,7 +8,8 @@ import { wireRequest } from './stripe-https.fixtures.ts';
 import { stripeSandboxPreflight } from '../src/infrastructure/stripe-test/preflight.ts';
 
 const services = 'LOCAL_ENVIRONMENT_KIND=manual-stripe-test-v1\nLOCAL_STRIPE_INSTANCE_ID=11111111-1111-4111-8111-111111111111\nLOCAL_SYNTHETIC_MODE=true\nSUPABASE_URL=http://127.0.0.1:57321\n'
-  + 'DATABASE_URL=postgresql://delivery_api:synthetic@127.0.0.1:57322/postgres?schema=app\n';
+  + 'DATABASE_URL=postgresql://delivery_api:synthetic@127.0.0.1:57322/postgres?schema=app\n'
+  + 'SYNTHETIC_USER_PASSWORD=synthetic_private_password\nSUPABASE_PUBLISHABLE_KEY=synthetic_private_local_key\n';
 const file = services + 'STRIPE_SANDBOX_ACCOUNT_ID=acct_offline\nSTRIPE_SANDBOX_API_KEY=rk_test_synthetic_only\n';
 
 test('local file requires both account and Test key, with no required webhook or publishable key', async () => {
@@ -19,7 +20,10 @@ test('local file requires both account and Test key, with no required webhook or
     assertStripeTrialAccount(local.accountId, { accountId: 'acct_offline' });
     assert.throws(() => assertStripeTrialAccount(local.accountId, { accountId: 'acct_foreign' }), { code: 'CONFIGURATION_INVALID' });
   }
-  for (const contents of [services, file.replace('STRIPE_SANDBOX_ACCOUNT_ID=acct_offline\n', ''),
+  for (const contents of [services, file.replace('SYNTHETIC_USER_PASSWORD=synthetic_private_password\n', ''),
+    file.replace('SUPABASE_PUBLISHABLE_KEY=synthetic_private_local_key\n', ''),
+    file.replace('SYNTHETIC_USER_PASSWORD=synthetic_private_password', 'SYNTHETIC_USER_PASSWORD='),
+    file.replace('STRIPE_SANDBOX_ACCOUNT_ID=acct_offline\n', ''),
     file.replace('STRIPE_SANDBOX_API_KEY=rk_test_synthetic_only\n', ''), file.replace('acct_offline', ''),
     file.replace('rk_test_synthetic_only', ''), file + 'STRIPE_SANDBOX_WEBHOOK_SECRET=\n'])
     await assert.rejects(loadStripeTrialEnvironment({}, true, async () => contents), { code: 'CONFIGURATION_INVALID' });
