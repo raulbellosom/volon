@@ -12,14 +12,16 @@ import { createApprovedStripeTestTransport } from '../../apps/api/src/infrastruc
 import { StripeCheckoutTestAdapter } from '../../apps/api/src/infrastructure/stripe-test/adapter.ts';
 import { loadStripeTrialEnvironment, assertStripeTrialAccount } from './stripe-trial-environment.ts';
 import { readHiddenStripeValue } from './stripe-hidden-input.ts';
+import { verifyDockerIdentity, verifyManualDatabase } from './stripe-manual/identity.ts';
+import { manualStatus } from './stripe-manual/status.ts';
 
-const file = '.local/stripe-trial-plan.json'; // Only public plan, never credentials or event bodies.
+const file = '.local/stripe-manual/plan.json'; // Only public plan, never credentials or event bodies.
 async function main() {
   const args = process.argv.slice(2);
   if (args.length === 0 || (args.length === 1 && args[0] === '--preflight')) {
     console.log(JSON.stringify({ readyForExternalCalls: false, operationalEligibility: false, networkCalls: 0,
       requires: ['Terminal local y Auth sintética', 'Fixture MXN 44.00 y plan/hash revisados',
-        'Aprobación independiente de llamadas Test', 'Cuenta y clave Test en .env.local privado; nunca en chat'] }));
+        'Aprobación independiente de llamadas Test', 'Cuenta y clave Test en .env.stripe-manual.local privado; nunca en chat'] }));
     return;
   }
   assertLocalStripeTerminal(process.env, !!process.stdin.isTTY && !!process.stdout.isTTY);
@@ -36,7 +38,8 @@ async function main() {
   const local = await loadStripeTrialEnvironment(process.env, !!process.stdin.isTTY && !!process.stdout.isTTY);
   const revision = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
   const bearer = await readHiddenStripeValue('Bearer de Supabase local');
-  const authenticate = createSupabaseAuthenticator('http://127.0.0.1:56321', local.publishableKey);
+  await manualStatus();
+  const authenticate = createSupabaseAuthenticator(local.services.authOrigin, local.publishableKey);
   const actor = await authenticate(new Request('http://127.0.0.1/stripe-trial', { headers: { authorization: 'Bearer ' + bearer } }));
   if (!actor) throw new CheckoutTestFailure('NOT_FOUND');
   const db = createDatabase(local.databaseUrl);
@@ -44,7 +47,7 @@ async function main() {
     if (preview) {
       const plan = await loadStripeTrialPlan(db, actor, id, operation, revision, new Date(Date.now() + 3600000).toISOString());
       assertStripeTrialAccount(local.accountId, plan);
-      await mkdir('.local', { recursive: true });
+      await mkdir('.local/stripe-manual', { recursive: true });
       await writeFile(file, JSON.stringify(plan, null, 2) + '\n', { mode: 0o600 });
       console.log(JSON.stringify({ plan, sha256: stripeTrialDigest(plan), readyForExternalCalls: false, stripeRequests: 0 }));
       return;
@@ -61,7 +64,10 @@ async function main() {
     // No transport is composed before explicit approval; no SQL lock spans the prompt.
     const confirmation = await readHiddenStripeValue('Confirmación AUTORIZO STRIPE TEST y SHA-256');
     assertStripeTrialApproval(plan, confirmation);
-    const connection = createApprovedStripeTestTransport(plan, confirmation);
+    const connection = createApprovedStripeTestTransport(plan, confirmation, local.services, async () => {
+      verifyDockerIdentity(local.services.instanceId);
+      await verifyManualDatabase(db, local.services.instanceId, plan.accountId);
+    });
     const adapter = new StripeCheckoutTestAdapter({ config: { environment: 'offline-test', accountId: plan.accountId,
       returnOrigin: plan.returnOrigin }, store: operation === 'create' ? firstStripeTrialStore(db) : createPostgresCheckoutSandboxStore(db),
       secrets: async () => local.secrets, transport: connection.transport });

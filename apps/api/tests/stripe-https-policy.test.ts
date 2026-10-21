@@ -1,3 +1,4 @@
+import { manualStripeServices } from '../src/infrastructure/stripe-test/local-services.ts';
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { assertLocalStripeTerminal, assertLocalStripeServices, publicStripeIpv4, validateStripeWireRequest,
@@ -73,14 +74,14 @@ test('manual guard blocks unattended, production, cloud, proxies and TLS/debug o
     'NODE_OPTIONS','NODE_TLS_REJECT_UNAUTHORIZED','NODE_EXTRA_CA_CERTS','HTTP_PROXY','https_proxy','ALL_PROXY'])
     assert.throws(() => assertLocalStripeTerminal({ [key]: 'false' }, true), { code: 'TRANSPORT_DISABLED' });
   assert.throws(() => assertLocalStripeTerminal({ NODE_ENV: 'production' }, true), { code: 'TRANSPORT_DISABLED' });
-  const env = { LOCAL_SYNTHETIC_MODE: 'true', SUPABASE_URL: 'http://127.0.0.1:56321',
-    DATABASE_URL: 'postgresql://delivery_api:synthetic@127.0.0.1:56322/postgres?schema=app' };
+  const env = { LOCAL_ENVIRONMENT_KIND: 'manual-stripe-test-v1', LOCAL_STRIPE_INSTANCE_ID: '11111111-1111-4111-8111-111111111111', LOCAL_SYNTHETIC_MODE: 'true', SUPABASE_URL: 'http://127.0.0.1:57321',
+    DATABASE_URL: 'postgresql://delivery_api:synthetic@127.0.0.1:57322/postgres?schema=app' };
   assertLocalStripeServices(env);
   for (const change of [{ LOCAL_SYNTHETIC_MODE: 'false' }, { SUPABASE_URL: 'https://foreign.example.test' },
     { DATABASE_URL: env.DATABASE_URL.replace('delivery_api:', 'postgres:') }, { DATABASE_URL: env.DATABASE_URL.replace('127.0.0.1','10.0.0.1') }])
     assert.throws(() => assertLocalStripeServices({ ...env, ...change }), { code: 'TRANSPORT_DISABLED' });
   // Tests never mint approval or invoke the real resolver. A non-TTY process cannot compose real networking.
-  assert.throws(() => createApprovedStripeTestTransport(trialPlan(), 'forged'), { code: 'TRANSPORT_DISABLED' });
+  assert.throws(() => createApprovedStripeTestTransport(trialPlan(), 'forged', manualStripeServices(env), async () => {}), { code: 'TRANSPORT_DISABLED' });
 });
 
 test('strict canonical plans, hash confirmation and one-hour expiry cannot be forged or widened', () => {

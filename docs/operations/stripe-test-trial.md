@@ -10,7 +10,9 @@ No portal, Delivery, dinero real ni despacho. Conekta/Openpay siguen alternativa
 2. El sandbox ya fue creado por el fundador. Se aceptan `rk_test_` (preferida)
    y `sk_test_`; se rechazan absolutamente claves Live. Revisar los permisos abajo.
 3. Guardar `STRIPE_SANDBOX_ACCOUNT_ID` y `STRIPE_SANDBOX_API_KEY` exclusivamente
-   en `.env.local` privado, ignorado por Git y con acceso limitado al operador.
+   en `.env.stripe-manual.local` privado, ignorado por Git y con acceso limitado al operador.
+   El primer aprovisionamiento copia internamente los valores ya existentes de `.env.local`,
+   que conserva intacto como configuraci?n del stack hist?rico en cuarentena.
    No exportar variables Stripe al proceso: el runner rechaza esa ambigüedad.
    Nunca pegar valores en chat, Issue, argv, captura, log ni archivo versionado.
    Si la terminal está grabándose/compartida, detenerse.
@@ -21,7 +23,7 @@ No portal, Delivery, dinero real ni despacho. Conekta/Openpay siguen alternativa
 omitirlas si no existen; no dejar asignaciones vacías. Si están presentes se
 validan `whsec_` y `pk_test_`. Publishable queda reservada, sin uso ni frontend.
 Solo el runner interactivo consume la clave tras comprobar TTY y barreras locales;
-no instala secretos en process.env. Los dos preflights no leen `.env.local`.
+no instala secretos en process.env. Los dos preflights no leen archivos privados.
 `--plan` valida archivo y cuenta contra PostgreSQL bajo Auth/RLS, sin Stripe.
 
 ### Permisos de la clave restringida
@@ -87,48 +89,62 @@ de recuperación rechazan cualquier `STRIPE_SANDBOX_*` en archivo o proceso ante
 de cargar credenciales/crear clientes. No quitar variables para saltar esta
 barrera sobre la misma BD. No cambia ni limpia historia ya existente.
 
-### Propuesta permanente — pendiente de aprobación, no aplicada
+### Instancia manual dedicada ? remediaci?n aprobada y aplicada (#26)
 
-Separar **bases/volúmenes y configuración** de automatización desechable y ensayo
-manual. Cada ejecución automática debe tener su propia instancia, sin claves
-Stripe, con fixture IDs A/B válidos exclusivamente allí. No ampliar el allowlist
-del plan manual para aceptar namespaces de pruebas. CI ya provisiona un stack
-fresco en su runner; la barrera de configuración es defensa adicional, no prueba
-de procedencia de filas ni aislamiento físico por sí sola.
+ADR-0020: autorizaci?n del fundador del 2026-10-21 exclusivamente para preparar
+una instancia nueva. La instalaci?n hist?rica queda en cuarentena, sin migraciones,
+seed, resets ni integraciones adicionales. Sus 148 escenarios, 127 submissions y
+51 eventos se conservan; una huella privada de las tres tablas completas comprueba
+que no cambiaron. Esta autorizaci?n no sustituye recuperaci?n de intentos inciertos.
 
-Para el bloqueo actual: conservar íntegro el stack como evidencia; revisar el
-reporte, configuración de cuenta y declaración de cero ensayos autorizados. Si
-queda cualquier intento potencial de la cuenta configurada/desconocida, mantener
-el bloqueo y seguir recuperación #26. Solo después de revisión humana y permiso
-explícito, preparar una instancia manual dedicada desde cero, con volumen y
-puertos aprobados, seed sintético y trazabilidad del entorno desde su creación.
-Esto requiere cambios de configuración/contratos locales y escrituras nuevas:
-**no se ejecuta como parte del diagnóstico**, ni constituye permiso para crear
-otra fixture que sustituya un intento incierto. No mover, borrar, renombrar o
-reescribir los registros históricos. La primera Session conservará su aprobación
-separada de HEAD/hash/ventana, presupuesto e idempotencia.
-
-### Aprovisionamiento normal (solo en un stack revisado sin bloqueo)
-
-Issue #27: herramienta oficial del repositorio, sin descargas, here-doc, stdin ni
-PowerShell. Desde Windows Git Bash, con Docker activo y el checkout actualizado:
+Docker Desktop debe estar activo. Desde **Windows Git Bash**, sin exportar claves,
+DB URLs ni variables Docker/Stripe y sin usar `source` sobre archivos privados:
 
 ```bash
 cd /d/RacoonDevs/volon
-pnpm local:up
-pnpm stripe:sandbox:fixture --dry-run
-pnpm stripe:sandbox:fixture --create
+git pull --ff-only origin main
+pnpm stripe:sandbox:manual:up
+pnpm stripe:sandbox:manual:status
 ```
 
-Si el stack ya está provisionado, bastan las dos líneas `stripe:sandbox:fixture`.
-`.env.local` debe estar ignorado y no versionado. La herramienta solo consume
-`STRIPE_SANDBOX_ACCOUNT_ID`, `MIGRATION_DATABASE_URL`, `SUPABASE_URL` y
-`LOCAL_SYNTHETIC_MODE`: no solicita, valida, usa ni exporta la API key, ni necesita
-password del usuario, bearer o publishable key. El parser lee el archivo privado
-sin cargarlo en process.env y descarta los demás campos. Rechaza variables
-heredadas que entren en conflicto, CI/cloud/production, TLS/proxy inseguros y DB
-distinta de `postgresql://postgres:…@127.0.0.1:56322/postgres?schema=app`, con
-Supabase `http://127.0.0.1:56321` y modo sintético explícito. No requiere TTY.
+`manual:up` crea solo el proyecto/red `delivery-stripe-manual`, volumen
+`delivery-stripe-manual-db`, PostgreSQL 57322 y gateway Supabase Auth 57321,
+ambos publicados exclusivamente en 127.0.0.1. El stack antiguo 56321/56322 no se
+arranca, detiene, migra ni reemplaza. Colisiones de puertos/nombres, cuenta distinta,
+procedencia ausente o historial inesperado bloquean. No elegir otros puertos.
+Bridge dedicado con default loopback; no promete aislamiento de tr?fico saliente.
+No hay API Delivery ni contenedores que reciban credenciales Stripe.
+
+El primer `up` crea configuraci?n privada, contrase?as aleatorias, migraciones y
+Auth/comercio/sucursal sint?ticos **solo en la base nueva**. Verifica 0/0/0 antes
+del seed. `.env.stripe-manual.local` contiene la configuraci?n manual;
+`.local/stripe-manual/docker.env` contiene solo credenciales locales Docker/Auth;
+`provenance.json` privado vincula instancia, cuenta, identificador del cl?ster y
+huella hist?rica. Los tres deben mantenerse juntos, ignorados por Git; no copiarlos,
+mostrarlos, compartirlos, versionarlos ni exportarlos. Nunca ejecutar `down -v`.
+
+El `status` compara Docker, puertos, red, volumen, marcador PostgreSQL, rol runtime,
+identidad habilitada y preservaci?n hist?rica. Reporta solo agregados y banderas.
+Ante diferencias detenerse, conservar datos y revisar #26. No reparar editando el
+marcador. Integraciones autom?ticas se ejecutan en checkout/stack desechables sin
+estos archivos ni variables Stripe; CI provisiona su propia instancia. El wrapper
+rechaza tanto variables Stripe/marker como la presencia del archivo manual antes
+de conectar. Nunca ejecutar `pnpm local:up`, seed o integraciones sobre esta instancia.
+
+Comandos oficiales de fixture, exclusivamente para la instancia manual validada:
+
+```bash
+pnpm stripe:sandbox:fixture --dry-run
+pnpm stripe:sandbox:fixture --create
+pnpm stripe:sandbox:manual:status
+```
+
+Ya se ejecutaron una vez en la instancia aprobada: 0/0/0 antes; despu?s 1 escenario,
+0 submissions y 0 eventos. Cero solicitudes Stripe. Si no hay intentos posteriores,
+repetir fixture reutiliza el mismo escenario; nunca crea otro para sortear historial.
+No requiere TTY, bearer ni clave Stripe para operar sobre la base; los archivos
+se parsean privadamente sin exportaci?n ni impresi?n. Puertos hist?ricos se
+rechazan para fixture/runner; el inspector hist?rico contin?a leyendo `.env.local`.
 
 El aprovisionador usa el rol administrativo local `postgres` con bypass RLS y
 permisos comprobados; no aumenta privilegios del rol `delivery_api`. Consulta en
@@ -151,7 +167,7 @@ Los escenarios se bloquean durante create/reuse contra inserciones concurrentes
 de submission. Dry-run es una inspección, no garantiza una ejecución posterior.
 Esto también puede bloquear un stack usado antes por otras integraciones: pedir
 revisión del #26, sin borrar datos ni crear otra sucursal para saltar el bloqueo.
-No hay migraciones, limpieza, reinicio de intentos, llamadas Stripe ni secretos
+La fixture no hace migraciones, limpieza, reinicio de intentos, llamadas Stripe ni secretos
 en la salida. El ejecutor de planes/pagos sigue usando su rol runtime restringido.
 
 Copiar solo el `ESCENARIO_UUID` devuelto al siguiente comando de Git Bash:
@@ -162,11 +178,11 @@ pnpm stripe:sandbox:trial --preflight
 pnpm stripe:sandbox:trial --plan create UUID_DEL_ESCENARIO
 ```
 
-Plan pide el bearer local sin eco y verifica Auth/RLS; hace cero consultas Stripe.
+Plan pide el bearer de la nueva Auth local sin eco y verifica Auth/RLS; hace cero consultas Stripe.
 Devuelve JSON público mínimo y SHA-256. No es autorización. Revisar HEAD, cuenta,
 escenario, MXN 44.00, dos requests máximo, un POST, cero checkout completado,
 cero tarjetas, cero reintentos y vencimiento de la aprobación operacional.
-El plan se guarda en `.local/stripe-trial-plan.json`, sin secretos, con vigencia
+El plan se guarda en `.local/stripe-manual/plan.json`, sin secretos, con vigencia
 máxima de una hora. Volver a planificar sobrescribe solo ese documento público.
 
 ## Comandos preparados, NO ejecutar todavía
@@ -178,7 +194,7 @@ pnpm stripe:sandbox:trial --reconcile UUID_DEL_ESCENARIO SHA256_DEL_PLAN
 ```
 
 Create exige teclear `AUTORIZO STRIPE TEST SHA256_DEL_PLAN` en entrada oculta;
-la clave procede de `.env.local`. GET /v1/account debe coincidir con archivo,
+la clave procede de `.env.stripe-manual.local`. GET /v1/account debe coincidir con archivo,
 plan y escenario antes del POST. No se compone transporte antes de confirmar.
 Se valida livemode=false en objetos, importe/moneda/binding y clave idempotente.
 No abre Checkout ni devuelve URL tokenizada. El regreso del navegador no acredita pago.

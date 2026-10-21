@@ -7,8 +7,8 @@ import { validateStripeWireRequest } from '../src/infrastructure/stripe-test/htt
 import { wireRequest } from './stripe-https.fixtures.ts';
 import { stripeSandboxPreflight } from '../src/infrastructure/stripe-test/preflight.ts';
 
-const services = 'LOCAL_SYNTHETIC_MODE=true\nSUPABASE_URL=http://127.0.0.1:56321\n'
-  + 'DATABASE_URL=postgresql://delivery_api:synthetic@127.0.0.1:56322/postgres?schema=app\n';
+const services = 'LOCAL_ENVIRONMENT_KIND=manual-stripe-test-v1\nLOCAL_STRIPE_INSTANCE_ID=11111111-1111-4111-8111-111111111111\nLOCAL_SYNTHETIC_MODE=true\nSUPABASE_URL=http://127.0.0.1:57321\n'
+  + 'DATABASE_URL=postgresql://delivery_api:synthetic@127.0.0.1:57322/postgres?schema=app\n';
 const file = services + 'STRIPE_SANDBOX_ACCOUNT_ID=acct_offline\nSTRIPE_SANDBOX_API_KEY=rk_test_synthetic_only\n';
 
 test('local file requires both account and Test key, with no required webhook or publishable key', async () => {

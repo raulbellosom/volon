@@ -3,6 +3,7 @@ import { CheckoutTestFailure } from '../../modules/payments/checkout-sandbox.por
 import { STRIPE_TEST_API_VERSION, testApiKeyPattern } from './config.ts';
 import { stripeSessionKey, stripeSessionParameters } from './checkout-parameters.ts';
 import type { StripeTestRequest } from './http.ts';
+import { manualStripeServices } from './local-services.ts';
 
 export interface StripeHttpsScope {
   readonly operation: 'create' | 'reconcile';
@@ -29,14 +30,7 @@ export function assertLocalStripeTerminal(env: Readonly<Record<string, string | 
   if (Object.keys(env).some((key) => forbidden.test(key) && env[key] !== undefined)) transportDenied();
 }
 export function assertLocalStripeServices(env: Readonly<Record<string, string | undefined>>) {
-  try {
-    const auth = new URL(env.SUPABASE_URL ?? '');
-    const db = new URL(env.DATABASE_URL ?? '');
-    if (env.LOCAL_SYNTHETIC_MODE !== 'true' || auth.href !== 'http://127.0.0.1:56321/'
-      || db.protocol !== 'postgresql:' || db.hostname !== '127.0.0.1' || db.port !== '56322'
-      || db.pathname !== '/postgres' || db.username !== 'delivery_api' || !db.password || db.hash
-      || db.searchParams.get('schema') !== 'app' || [...db.searchParams.keys()].some((k) => k !== 'schema')) transportDenied();
-  } catch { transportDenied(); }
+  try { manualStripeServices(env); } catch { transportDenied(); }
 }
 export function publicStripeIpv4(address: string): boolean {
   if (isIP(address) !== 4) return false;

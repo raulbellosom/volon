@@ -2,15 +2,18 @@ import { request } from 'node:https';
 import { lookup } from 'node:dns/promises';
 import { CheckoutTestFailure } from '../../modules/payments/checkout-sandbox.port.ts';
 import type { StripeTestTransport } from './http.ts';
-import { assertLocalStripeTerminal, assertLocalStripeServices, createStripeRequestBudget, publicStripeIpv4,
+import { assertLocalStripeTerminal, createStripeRequestBudget, publicStripeIpv4,
   transportDenied, snapshotStripeWireRequest } from './https-policy.ts';
 import { boundedStripeHttps } from './https-wire.ts';
 import { assertStripeTrialApproval, validateStripeTrialPlan, type StripeTrialPlan } from './trial-plan.ts';
+import { validateStripeLocalServices, type StripeLocalServices } from './local-services.ts';
 
 /** Never imported by app/main. No injectable endpoint, CA, proxy, resolver or networking default. */
-export function createApprovedStripeTestTransport(value: StripeTrialPlan, confirmation: string) {
+export function createApprovedStripeTestTransport(value: StripeTrialPlan, confirmation: string,
+  local: StripeLocalServices, verifyInstance: () => Promise<void>) {
   assertLocalStripeTerminal(process.env, !!process.stdin.isTTY && !!process.stdout.isTTY);
-  assertLocalStripeServices(process.env);
+  const services = validateStripeLocalServices(local);
+  if (typeof verifyInstance !== 'function') transportDenied();
   if (process.execArgv.some((a) => a !== '--experimental-strip-types')) transportDenied();
   const plan = validateStripeTrialPlan(value);
   assertStripeTrialApproval(plan, confirmation);
@@ -19,7 +22,8 @@ export function createApprovedStripeTestTransport(value: StripeTrialPlan, confir
   const transport: StripeTestTransport = async (value) => {
     // Approval and process guards are checked per request, not only at composition time.
     assertLocalStripeTerminal(process.env, !!process.stdin.isTTY && !!process.stdout.isTTY);
-    assertLocalStripeServices(process.env);
+    validateStripeLocalServices(services);
+    await verifyInstance();
     assertStripeTrialApproval(plan, confirmation);
     const message = snapshotStripeWireRequest(value);
     consume(message);
