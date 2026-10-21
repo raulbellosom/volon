@@ -20,7 +20,8 @@ test('Stripe test creates exact hosted Session from authorized server money, nev
   assert.equal(params.get('line_items[0][price_data][currency]'), 'mxn');
   assert.equal(params.get('line_items[0][quantity]'), '1');
   assert.equal(params.get('mode'), 'payment');
-  assert.equal(params.get('payment_method_types[0]'), 'card');
+  assert.equal(params.has('payment_method_types[0]'), false);
+  assert.equal(params.has('allowed_payment_method_types[0]'), false);
   assert.equal(params.get('payment_intent_data[capture_method]'), 'automatic');
   assert.equal(params.get('client_reference_id'), s.fixture.intentId);
   assert.equal(params.get('success_url'), 'http://127.0.0.1:5173/stripe-test/success');
