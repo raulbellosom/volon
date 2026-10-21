@@ -20,7 +20,7 @@ No portal, Delivery, dinero real ni despacho. Conekta/Openpay siguen alternativa
 `STRIPE_SANDBOX_WEBHOOK_SECRET` y `STRIPE_SANDBOX_PUBLISHABLE_KEY` son opcionales:
 omitirlas si no existen; no dejar asignaciones vacías. Si están presentes se
 validan `whsec_` y `pk_test_`. Publishable queda reservada, sin uso ni frontend.
-Solo el runner interactivo lee el archivo tras comprobar TTY y barreras locales;
+Solo el runner interactivo consume la clave tras comprobar TTY y barreras locales;
 no instala secretos en process.env. Los dos preflights no leen `.env.local`.
 `--plan` valida archivo y cuenta contra PostgreSQL bajo Auth/RLS, sin Stripe.
 
@@ -54,22 +54,53 @@ Fuentes oficiales revisadas 2026-10-20: [claves](https://docs.stripe.com/keys),
 
 ## Preparación local sin Stripe
 
-`pnpm local:up` prepara Supabase/DB sintéticos. Un operador de migraciones local
-aprovisiona **un** StripeSandboxScenario: UUID nuevo, subject verificado del usuario
-sintético, branch_synthetic_a o b con membresía actual, merchant correspondiente,
-accountId del sandbox revisado, amountMinor=4400, currency=MXN, purpose=offline-test.
-Sin FK a Delivery. El runner no usa rol administrador ni crea escenarios.
-Plantilla para el operador en PostgreSQL local (reemplazar solo IDs no secretos;
-obtener subject sintético con /v1/me autenticado, nunca copiar el bearer al SQL):
+Issue #27: herramienta oficial del repositorio, sin descargas, here-doc, stdin ni
+PowerShell. Desde Windows Git Bash, con Docker activo y el checkout actualizado:
 
-```sql
-INSERT INTO app."StripeSandboxScenario"
-  (id, "subjectId", "branchId", "merchantId", "accountId", "amountMinor")
-VALUES ('UUID_NUEVO'::uuid, 'SUBJECT_LOCAL'::uuid, 'branch_synthetic_a',
-        'merchant_synthetic_a', 'acct_SANDBOX_REVISADO', 4400);
+```bash
+cd /d/RacoonDevs/volon
+pnpm local:up
+pnpm stripe:sandbox:fixture --dry-run
+pnpm stripe:sandbox:fixture --create
 ```
 
-```powershell
+Si el stack ya está provisionado, bastan las dos líneas `stripe:sandbox:fixture`.
+`.env.local` debe estar ignorado y no versionado. La herramienta solo consume
+`STRIPE_SANDBOX_ACCOUNT_ID`, `MIGRATION_DATABASE_URL`, `SUPABASE_URL` y
+`LOCAL_SYNTHETIC_MODE`: no solicita, valida, usa ni exporta la API key, ni necesita
+password del usuario, bearer o publishable key. El parser lee el archivo privado
+sin cargarlo en process.env y descarta los demás campos. Rechaza variables
+heredadas que entren en conflicto, CI/cloud/production, TLS/proxy inseguros y DB
+distinta de `postgresql://postgres:…@127.0.0.1:56322/postgres?schema=app`, con
+Supabase `http://127.0.0.1:56321` y modo sintético explícito. No requiere TTY.
+
+El aprovisionador usa el rol administrativo local `postgres` con bypass RLS y
+permisos comprobados; no aumenta privilegios del rol `delivery_api`. Consulta en
+PostgreSQL la identidad Auth ya provisionada `merchant-a@example.test`,
+`membership_synthetic_a`, `branch_synthetic_a` y `merchant_synthetic_a` habilitados
+y coherentes. No crea usuarios ni altera membresías. Crea solo un escenario
+`offline-test`, 4400 centavos MXN, sin relación con Delivery/ServicePayment.
+
+`--dry-run` usa transacción de solo lectura: sin escenario devuelve
+`RESULTADO=LISTO_PARA_CREAR` y `ESCENARIO_UUID=NO_CREADO`; no reserva un UUID.
+`--create` devuelve `RESULTADO=CREADO` o `REUTILIZADO` y el UUID persistido.
+Ambos muestran únicamente resultado, escenario, `IMPORTE=44.00 MXN` y
+`SOLICITUDES_A_STRIPE=0`; los bloqueos tienen código y explicación sanitizada.
+
+Un bloqueo advisory transaccional por sucursal serializa procesos concurrentes.
+Se revisan todos sus escenarios, incluso deshabilitados o con otra cuenta,
+propietario o importe: cualquier fila de submission (aun sin key), múltiples
+escenarios o datos incompatibles bloquean; nunca se reemplaza ni reinicia historia.
+Los escenarios se bloquean durante create/reuse contra inserciones concurrentes
+de submission. Dry-run es una inspección, no garantiza una ejecución posterior.
+Esto también puede bloquear un stack usado antes por otras integraciones: pedir
+revisión del #26, sin borrar datos ni crear otra sucursal para saltar el bloqueo.
+No hay migraciones, limpieza, reinicio de intentos, llamadas Stripe ni secretos
+en la salida. El ejecutor de planes/pagos sigue usando su rol runtime restringido.
+
+Copiar solo el `ESCENARIO_UUID` devuelto al siguiente comando de Git Bash:
+
+```bash
 pnpm stripe:sandbox:preflight
 pnpm stripe:sandbox:trial --preflight
 pnpm stripe:sandbox:trial --plan create UUID_DEL_ESCENARIO
@@ -84,7 +115,7 @@ máxima de una hora. Volver a planificar sobrescribe solo ese documento público
 
 ## Comandos preparados, NO ejecutar todavía
 
-```powershell
+```bash
 pnpm stripe:sandbox:trial --create UUID_DEL_ESCENARIO SHA256_DEL_PLAN
 pnpm stripe:sandbox:trial --plan reconcile UUID_DEL_ESCENARIO
 pnpm stripe:sandbox:trial --reconcile UUID_DEL_ESCENARIO SHA256_DEL_PLAN
