@@ -12,7 +12,7 @@ No portal, Delivery, dinero real ni despacho. Conekta/Openpay siguen alternativa
 3. Guardar `STRIPE_SANDBOX_ACCOUNT_ID` y `STRIPE_SANDBOX_API_KEY` exclusivamente
    en `.env.stripe-manual.local` privado, ignorado por Git y con acceso limitado al operador.
    El primer aprovisionamiento copia internamente los valores ya existentes de `.env.local`,
-   que conserva intacto como configuraci?n del stack hist?rico en cuarentena.
+   que conserva intacto como configuración del stack histórico en cuarentena.
    No exportar variables Stripe al proceso: el runner rechaza esa ambigüedad.
    Nunca pegar valores en chat, Issue, argv, captura, log ni archivo versionado.
    Si la terminal está grabándose/compartida, detenerse.
@@ -89,13 +89,13 @@ de recuperación rechazan cualquier `STRIPE_SANDBOX_*` en archivo o proceso ante
 de cargar credenciales/crear clientes. No quitar variables para saltar esta
 barrera sobre la misma BD. No cambia ni limpia historia ya existente.
 
-### Instancia manual dedicada ? remediaci?n aprobada y aplicada (#26)
+### Instancia manual dedicada — remediación aprobada y aplicada (#26)
 
-ADR-0020: autorizaci?n del fundador del 2026-10-21 exclusivamente para preparar
-una instancia nueva. La instalaci?n hist?rica queda en cuarentena, sin migraciones,
+ADR-0020: autorización del fundador del 2026-10-21 exclusivamente para preparar
+una instancia nueva. La instalación histórica queda en cuarentena, sin migraciones,
 seed, resets ni integraciones adicionales. Sus 148 escenarios, 127 submissions y
 51 eventos se conservan; una huella privada de las tres tablas completas comprueba
-que no cambiaron. Esta autorizaci?n no sustituye recuperaci?n de intentos inciertos.
+que no cambiaron. Esta autorización no sustituye recuperación de intentos inciertos.
 
 Docker Desktop debe estar activo. Desde **Windows Git Bash**, sin exportar claves,
 DB URLs ni variables Docker/Stripe y sin usar `source` sobre archivos privados:
@@ -112,21 +112,21 @@ pnpm stripe:sandbox:manual:status
 ambos publicados exclusivamente en 127.0.0.1. El stack antiguo 56321/56322 no se
 arranca, detiene, migra ni reemplaza. Colisiones de puertos/nombres, cuenta distinta,
 procedencia ausente o historial inesperado bloquean. No elegir otros puertos.
-Bridge dedicado con default loopback; no promete aislamiento de tr?fico saliente.
+Bridge dedicado con default loopback; no promete aislamiento de tráfico saliente.
 No hay API Delivery ni contenedores que reciban credenciales Stripe.
 
-El primer `up` crea configuraci?n privada, contrase?as aleatorias, migraciones y
-Auth/comercio/sucursal sint?ticos **solo en la base nueva**. Verifica 0/0/0 antes
-del seed. `.env.stripe-manual.local` contiene la configuraci?n manual;
+El primer `up` crea configuración privada, contraseñas aleatorias, migraciones y
+Auth/comercio/sucursal sintéticos **solo en la base nueva**. Verifica 0/0/0 antes
+del seed. `.env.stripe-manual.local` contiene la configuración manual;
 `.local/stripe-manual/docker.env` contiene solo credenciales locales Docker/Auth;
-`provenance.json` privado vincula instancia, cuenta, identificador del cl?ster y
-huella hist?rica. Los tres deben mantenerse juntos, ignorados por Git; no copiarlos,
+`provenance.json` privado vincula instancia, cuenta, identificador del clúster y
+huella histórica. Los tres deben mantenerse juntos, ignorados por Git; no copiarlos,
 mostrarlos, compartirlos, versionarlos ni exportarlos. Nunca ejecutar `down -v`.
 
 El `status` compara Docker, puertos, red, volumen, marcador PostgreSQL, rol runtime,
-identidad habilitada y preservaci?n hist?rica. Reporta solo agregados y banderas.
+identidad habilitada y preservación histórica. Reporta solo agregados y banderas.
 Ante diferencias detenerse, conservar datos y revisar #26. No reparar editando el
-marcador. Integraciones autom?ticas se ejecutan en checkout/stack desechables sin
+marcador. Integraciones automáticas se ejecutan en checkout/stack desechables sin
 estos archivos ni variables Stripe; CI provisiona su propia instancia. El wrapper
 rechaza tanto variables Stripe/marker como la presencia del archivo manual antes
 de conectar. Nunca ejecutar `pnpm local:up`, seed o integraciones sobre esta instancia.
@@ -139,12 +139,12 @@ pnpm stripe:sandbox:fixture --create
 pnpm stripe:sandbox:manual:status
 ```
 
-Ya se ejecutaron una vez en la instancia aprobada: 0/0/0 antes; despu?s 1 escenario,
+Ya se ejecutaron una vez en la instancia aprobada: 0/0/0 antes; después 1 escenario,
 0 submissions y 0 eventos. Cero solicitudes Stripe. Si no hay intentos posteriores,
 repetir fixture reutiliza el mismo escenario; nunca crea otro para sortear historial.
 No requiere TTY, bearer ni clave Stripe para operar sobre la base; los archivos
-se parsean privadamente sin exportaci?n ni impresi?n. Puertos hist?ricos se
-rechazan para fixture/runner; el inspector hist?rico contin?a leyendo `.env.local`.
+se parsean privadamente sin exportación ni impresión. Puertos históricos se
+rechazan para fixture/runner; el inspector histórico continúa leyendo `.env.local`.
 
 El aprovisionador usa el rol administrativo local `postgres` con bypass RLS y
 permisos comprobados; no aumenta privilegios del rol `delivery_api`. Consulta en
