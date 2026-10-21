@@ -33,3 +33,13 @@ rollback, revocación y ausencia de transacciones durante transporte bloqueado.
 No valida Stripe real, restauración de backups ni tratamiento productivo.
 
 Contrato y reproducción: [Stripe sandbox](../specification/stripe-checkout-test.md).
+
+Extensión #27 autorizada solo para preparar el fixture local: herramienta en
+scripts/local, conexión administrativa postgres local y verificación de la
+identidad/membresía existente; sin cambios de grants/RLS ni migraciones. Advisory
+lock transaccional por sucursal y bloqueo de escenario durante create/reuse;
+dry-run SQL read-only. Una submission, incluso vacía, o escenarios múltiples/
+incompatibles bloquean sin reemplazo. No se usan credenciales Stripe ni HTTP.
+El bloqueo coordina invocaciones de la herramienta; SQL administrativo ajeno que
+ignore el protocolo no queda contenido por un nuevo índice. No es frontera contra
+un propietario local hostil. Retiro: dejar de invocarla y conservar historia.

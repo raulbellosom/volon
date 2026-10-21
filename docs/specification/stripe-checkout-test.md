@@ -42,6 +42,15 @@ Session/PI/Charge únicos por cuenta, state, adverse, leaseToken/leaseUntil,
 version/changedAt servidor) y `StripeSandboxEvent` (cuenta/eventId único, FK al
 escenario, digest, state del recibo, version, receivedAt). Sin FK a Delivery.
 Los escenarios se aprovisionan únicamente con fixtures administrativos locales.
+Issue #27 incorpora `pnpm stripe:sandbox:fixture --dry-run|--create`: aprovisionador
+administrativo local separado del runner, identidad Auth/membresía A ya provisionada,
+MXN 4400 offline-test, sin API key ni HTTP. Read-only en dry-run; create/reuse con
+advisory lock transaccional por sucursal y locks de escenario contra submission.
+Un solo escenario exacto habilitado sin submission es reutilizable. Múltiples,
+incompatibles o cualquier submission/historial bloquean, incluso tras cambiar
+cuenta/importe/propietario; sin reset, borrado o nueva fixture de evasión.
+No modifica RLS, tablas, enums, endpoints ni elegibilidad. Configuración, salida y
+comandos Git Bash en el [runbook](../operations/stripe-test-trial.md).
 
 Todas FORCE RLS: contexto offline-test-v1, subject propietario exacto y Branch
 visible por membresía vigente/comercio/sucursal habilitados; escenario habilitado.
