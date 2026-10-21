@@ -86,7 +86,7 @@ test('default transport, live keys, production modes and unsafe return origins f
   const s = sandbox();
   const { transport: _unused, ...withoutTransport } = s.options;
   await assert.rejects(new StripeCheckoutTestAdapter(withoutTransport).create(s.actor, s.input), { code: 'TRANSPORT_DISABLED' });
-  for (const apiKey of ['sk_live_not_allowed', 'rk_test_restricted', '', 'sk_test_secret\r\nInjected'])
+  for (const apiKey of ['sk_live_not_allowed', 'rk_live_not_allowed', '', 'sk_test_secret\r\nInjected'])
     await assert.rejects(new StripeCheckoutTestAdapter({ ...s.options, secrets: async () => ({ ...fixtureSecrets, apiKey }) })
       .create(s.actor, s.input), { code: 'CONFIGURATION_INVALID' });
   for (const returnOrigin of ['https://evil.test', 'http://127.0.0.1', 'http://127.0.0.1:5173/path',

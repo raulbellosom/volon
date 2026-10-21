@@ -21,7 +21,7 @@ test('host, protocol, routes, methods, headers and Live/unknown credentials reje
     { headers: { ...original.headers, 'Stripe-Account': 'acct_foreign' } }, { headers: { ...original.headers, Host: 'evil.test' } },
     { headers: { ...original.headers, 'Stripe-Version': 'old' } }])
     assert.throws(() => validateStripeWireRequest(wireRequest(patch)), { code: 'TRANSPORT_DISABLED' });
-  for (const key of ['sk_live_forbidden','rk_live_forbidden','pk_test_unsupported','rk_test_unsupported','sk_org_unsupported','sk_test_bad\r\nInjected'])
+  for (const key of ['sk_live_forbidden','rk_live_forbidden','pk_test_unsupported','sk_org_unsupported','sk_test_bad\r\nInjected'])
     assert.throws(() => validateStripeWireRequest(wireRequest({ headers: { ...original.headers, Authorization: 'Bearer ' + key } })), { code: 'TRANSPORT_DISABLED' });
   const wrapped = wireRequest();
   Object.assign(wrapped.headers, { Authorization: new String('Bearer sk_test_offline_fixture') });

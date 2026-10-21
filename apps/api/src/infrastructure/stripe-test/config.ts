@@ -1,6 +1,7 @@
 import { CheckoutTestFailure } from '../../modules/payments/checkout-sandbox.port.ts';
 export const STRIPE_TEST_API_VERSION = '2026-09-30.endive';
-export const testApiKeyPattern = /^sk_test_[A-Za-z0-9_]{3,200}$/;
+export const testApiKeyPattern = /^(?:sk|rk)_test_[A-Za-z0-9_]{3,200}$/;
+export const testPublishableKeyPattern = /^pk_test_[A-Za-z0-9_]{3,200}$/;
 export const testWebhookSecretPattern = /^whsec_[A-Za-z0-9_]{3,200}$/;
 export interface StripeTestSecrets { readonly apiKey: string; readonly webhookSecret?: string }
 export interface StripeTestConfig {

@@ -54,7 +54,7 @@ test('live/Connect/foreign accounts, API versions, unexpected event types and pa
   await s.adapter.create(s.actor, s.input);
   const count = s.remote.requests.length;
   for (const patch of [{ livemode: true }, { account: 'acct_foreign' }, { account: 'acct_offline' }, { context: 'acct_foreign' },
-    { api_version: '2020-08-27' }, { type: 'invoice.paid' }, { created: -1 }, { created: s.time.now / 1000 + 301 },
+    { api_version: '2020-08-27' }, { api_version: '2022-11-15' }, { api_version: '2026-10-01.endive' }, { type: 'invoice.paid' }, { created: -1 }, { created: s.time.now / 1000 + 301 },
     { data: { object: { ...s.remote.checkout, livemode: true } } }, { data: { object: { ...s.remote.checkout, object: 'payment_intent' } } }]) {
     const body = eventBytes('checkout.session.completed', s.remote.checkout, s.time.now, patch);
     await assert.rejects(s.adapter.observe(s.actor, s.input, body, signStripeFixture(body, s.time.now)), { code: 'EVENT_REJECTED' });
