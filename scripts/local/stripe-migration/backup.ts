@@ -4,7 +4,7 @@ import { openSync, closeSync, fsyncSync, readFileSync } from 'node:fs';
 import { setTimeout } from 'node:timers/promises';
 import { docker, systemEnvironment } from '../stripe-manual/files.ts';
 import { pgArgs, sql, snapshot, sameEvidence, schemaDigest, type Target, type Evidence } from './database.ts';
-import { blocked } from './manifest.ts';
+import { blocked, auditedProfile } from './manifest.ts';
 import { fileDigest, privatePath } from './private-files.ts';
 import { applyOnlyApproved } from './apply.ts';
 
@@ -62,13 +62,13 @@ export function restoreDatabase(target: Target, directory: string) {
   execFileSync('docker', pgArgs(target, 'pg_restore', ['--exit-on-error', '--create', '-d', 'template1'], false),
     { input: readFileSync(privatePath(`${directory}/postgres.dump`)), stdio: ['pipe', 'pipe', 'pipe'], env: systemEnvironment(), timeout: 180000 });
 }
-export async function testRestore(image: string, directory: string, before: Evidence, schema: string) {
+export async function testRestore(image: string, directory: string, before: Evidence, schema: string, profile = auditedProfile) {
   return disposableCluster(image, (target) => {
     restoreDatabase(target, directory);
     sameEvidence(before, snapshot(target));
     if (schemaDigest(target) !== schema) blocked('RESTORE_SCHEMA_MISMATCH');
     if (sql(target, `SELECT count(*) FROM local_control."Environment"`) !== '1') blocked('RESTORE_MARKER_MISMATCH');
-    const after = applyOnlyApproved({ ...target, user: 'postgres' }, before);
+    const after = applyOnlyApproved({ ...target, user: 'postgres' }, before,profile);
     return { restored: true as const, isolated: true as const, migrationTested: true as const, after };
   });
 }

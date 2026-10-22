@@ -28,11 +28,11 @@ try {
       CREATE SCHEMA auth; CREATE TABLE auth.synthetic_canary(id INTEGER PRIMARY KEY, value TEXT);
       INSERT INTO auth.synthetic_canary VALUES (1,'synthetic only');`, false);
     const names = readdirSync('prisma/migrations',{withFileTypes:true}).filter((e) => e.isDirectory()).map((e) => e.name).sort();
-    for (const name of names.filter((n) => n !== migration)) sql(source, readFileSync(`prisma/migrations/${name}/migration.sql`,'utf8'), false);
+    for (const name of names.filter((n) => n < migration)) sql(source, readFileSync(`prisma/migrations/${name}/migration.sql`,'utf8'), false);
     sql(source, `CREATE TABLE app._prisma_migrations(id VARCHAR(36) PRIMARY KEY,checksum VARCHAR(64) NOT NULL,
       finished_at TIMESTAMPTZ,migration_name VARCHAR(255) NOT NULL,logs TEXT,rolled_back_at TIMESTAMPTZ,
       started_at TIMESTAMPTZ NOT NULL DEFAULT now(),applied_steps_count INTEGER NOT NULL DEFAULT 0);`, false);
-    for (const name of names.filter((n) => n !== migration))
+    for (const name of names.filter((n) => n < migration))
       sql(source, `INSERT INTO app._prisma_migrations(id,checksum,finished_at,migration_name,applied_steps_count)
         VALUES(${literal(randomUUID())},${literal(sha(readFileSync(`prisma/migrations/${name}/migration.sql`)))},now(),${literal(name)},1)`, false);
     const fixture = readFileSync('scripts/local/fixtures/stripe-recovery.sql','utf8').split('UPDATE app.')[0];
@@ -41,7 +41,8 @@ try {
       CREATE SCHEMA local_control;
       CREATE TABLE local_control."Environment"("instanceId" UUID,purpose TEXT,"accountId" TEXT,"systemIdentifier" TEXT);
       INSERT INTO local_control."Environment" SELECT '11111111-1111-4111-8111-111111111111','manual-stripe-test-v1','acct_offline',system_identifier::text FROM pg_control_system();`, false);
-    validateMigrationHistory(migrations(source));
+    // The old command must now reject the additional, independently reviewed manual migration.
+    assert.throws(() => validateMigrationHistory(migrations(source)),/PENDING_MIGRATIONS_MISMATCH/);
     const before = snapshot(source), schema = schemaDigest(source);
     const directory = bundlePath(randomUUID(),'test'); protectDirectory(directory);
     stage = 'private-backup-and-restore';

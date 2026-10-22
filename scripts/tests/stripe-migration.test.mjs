@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { approvedSql, approvedDigest, sha, validateMigrationHistory, migration } from '../local/stripe-migration/manifest.ts';
+import { approvedSql, approvedDigest, sha, validateMigrationHistory, migration, manualRecoveryProfile, migrationProfile } from '../local/stripe-migration/manifest.ts';
 import { sameEvidence, counts, canonicalSchema } from '../local/stripe-migration/database.ts';
 import { validateApproval } from '../local/stripe-migration/procedure.ts';
 import { bundlePath, privatePath } from '../local/stripe-migration/private-files.ts';
@@ -10,6 +10,18 @@ test('migration SQL is the exact approved Git blob, with a pinned digest', () =>
   assert.equal(sha(approvedSql()), approvedDigest);
   assert.throws(() => validateMigrationHistory([]), /PENDING_MIGRATIONS_MISMATCH/);
   assert.throws(() => validateMigrationHistory([{ migration_name:migration, checksum:'0'.repeat(64), finished_at:null, rolled_back_at:null }]), /MIGRATION_HISTORY_MISMATCH/);
+});
+
+test('manual function migration has an independent fixed manifest and cannot reuse the older approval',()=>{
+  assert.equal(sha(approvedSql(manualRecoveryProfile)),manualRecoveryProfile.digest);
+  assert.notEqual(manualRecoveryProfile.digest,approvedDigest);
+  assert.throws(()=>migrationProfile('../../arbitrary.sql'),/MIGRATION_PROFILE_REJECTED/);
+  assert.throws(()=>approvedSql({...manualRecoveryProfile,digest:'0'.repeat(64)}),/MIGRATION_PROFILE_REJECTED/);
+  const head='a'.repeat(40),digest='b'.repeat(64),now=Date.now();
+  const auth={version:1,operation:'apply-single-manual-migration',authorized:true,head,preflightSha256:digest,
+    migrationSha256:approvedDigest,expiresAt:new Date(now+60000).toISOString()};
+  assert.throws(()=>validateApproval(auth,head,digest,now,manualRecoveryProfile),/APPLICATION_NOT_AUTHORIZED/);
+  assert.doesNotThrow(()=>validateApproval({...auth,migrationSha256:manualRecoveryProfile.digest},head,digest,now,manualRecoveryProfile));
 });
 
 test('independent approval binds HEAD, preflight, SQL and a maximum one hour window', () => {
