@@ -287,3 +287,28 @@ bajo RLS. Token/refresh token nunca se persisten, exportan ni muestran. Tras la
 aprobación humana repite el login, exige el mismo subject y conserva todas las
 validaciones de plan/transporte. Errores de Auth sanitizados, sin redirects ni
 reintentos. No hay input manual de Bearer ni cambios de permisos o elegibilidad.
+
+## Migración administrativa manual preparada (#26)
+
+`stripe:sandbox:migration --inspect|--prepare` verifica exclusivamente la manual
+57322: procedencia Docker, volumen/red/puertos, nonce y system_identifier,
+cuenta privada y conexiones administrativas/runtime READ ONLY con RLS vigente.
+No autentica contra Auth ni construye transporte Stripe. Solo puede estar pendiente
+`20261022034450_stripe_sandbox_audited_recovery`; SQL fijado al blob aprobado y
+SHA-256 público, historial Prisma completo y working tree equivalentes salvo CRLF.
+
+Prepare respalda PostgreSQL completo más globals en archivos privados ignorados;
+compara huellas de todas las tablas, secuencias, roles/membresías y large objects.
+Prueba restauración y aplicación solo en contenedor efímero sin red/puertos/montajes.
+Registra HEAD, identidad, schema, huellas/conteos y SHA de archivos en un preflight.
+La fuente debe permanecer idéntica. No genera aprobación ni modifica PostgreSQL manual.
+
+El futuro `--apply UUID_PREFLIGHT SHA256_PREFLIGHT` exige autorización privada
+independiente, HEAD/SQL/preflight exactos, respaldo probado/intacto, vigencia,
+TTY local y confirmación oculta. Revalida instancia y filas después de confirmar.
+Una transacción con locks aplica exclusivamente el blob SQL aprobado e incorpora
+una fila Prisma. Verifica huellas antes/después dentro de esa transacción; aborta
+ante cambios, otra migración o tablas de recuperación no vacías. Marca de intento
+privada impide reintento automático incluso ante pérdida de acuse.
+Recuperación manual y Stripe siguen bloqueados; no siembra RecoveryLab ni decisiones.
+Procedimiento y reversión en el [runbook](../operations/stripe-test-trial.md).
