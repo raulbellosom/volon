@@ -36,6 +36,7 @@
     "stripe:sandbox:manual:up": "node --experimental-strip-types scripts/local/stripe-manual.ts up",
     "stripe:sandbox:manual:status": "node --experimental-strip-types scripts/local/stripe-manual.ts status",
     "stripe:sandbox:recovery": "node --experimental-strip-types scripts/local/stripe-recovery.ts",
+    "stripe:sandbox:manual-recovery": "node --experimental-strip-types scripts/local/stripe-manual-recovery.ts",
     "stripe:sandbox:migration": "node --experimental-strip-types scripts/local/stripe-migration.ts",
     "stripe:sandbox:history": "node --experimental-strip-types scripts/local/stripe-history.ts",
     "stripe:sandbox:fixture": "node --experimental-strip-types scripts/local/stripe-fixture.ts",
