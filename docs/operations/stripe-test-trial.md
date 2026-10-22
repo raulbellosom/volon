@@ -360,6 +360,119 @@ no repetir create ni crear otro fixture para saltar el bloqueo. Si existe bindin
 revisar/autorizar reconcile. Sin binding se necesita investigación y aprobación
 de recuperación con la misma clave antes de 23 h; el runner no la automatiza.
 
+## Preparar la migración manual única — sin aplicarla (#26)
+
+Estado: herramientas probadas en bases desechables. **La preparación no autoriza
+aplicar la migración ni recuperar el intento HTTP 400.** No ejecutar trial,
+fixture, seed, `local:up`, `db:status` ni `prisma migrate deploy` sobre la manual.
+Cerrar otros procesos que puedan escribir en esa base durante preflight/aplicación.
+
+Windows Git Bash, desde la raíz y sin exportar variables privadas:
+
+```bash
+git pull --ff-only origin main
+pnpm stripe:sandbox:migration --inspect
+pnpm stripe:sandbox:migration --prepare
+```
+
+Inspect solo lee la instancia 127.0.0.1:57322 y Docker local. Exige proyecto/red
+`delivery-stripe-manual`, volumen `delivery-stripe-manual-db`, puertos loopback
+57321/57322 y procedencia/nonce/system_identifier/cuenta consistentes. Comprueba
+credenciales administrativas/runtime mediante transacciones TCP READ ONLY, rol
+restringido y marcador bajo RLS. No conecta al stack histórico 56322 ni a Auth/Stripe.
+Espera exactamente 1 Scenario MXN 4400, 1 Submission y 0 Event; no examina ni cambia
+el expediente del error para autorizar una recuperación.
+
+Debe estar pendiente únicamente `20261022034450_stripe_sandbox_audited_recovery`.
+Su SQL público es el blob aprobado en HEAD `a49226790ffe86d5eedbd2f1d26c616eef7665dd`,
+SHA-256 `00fa1a5bb12229b2af01a91b53a07fcfdb5694b3bb65647834cfeb31aa5eb073`.
+Se verifica equivalencia Git/working tree salvo CRLF; la futura ejecución utiliza
+los bytes Git/LF exactos y su checksum. Todos los registros previos de Prisma deben
+estar terminados, sin rollback, duplicados o checksums ajenos al SQL del repositorio.
+
+Prepare requiere checkout limpio. Crea un directorio privado nuevo e ignorado
+`.local/stripe-manual/migration/UUID_PREFLIGHT/`, protegido con ACL de usuario
+actual/SYSTEM en Windows o modo 0700 en POSIX. Contiene `postgres.dump` (custom,
+base completa con Auth, app, local_control, metadatos Prisma, ACL, RLS, funciones,
+secuencias y objetos grandes), `globals.sql` (roles, contraseñas de roles y globals)
+y `preflight.json`. Son **respaldos sensibles**: no abrir en terminal grabada,
+subir a Git/CI, compartir ni convertir en Artifact. No se copian archivos .env ni
+se consultan claves Stripe. Exige que postgres sea la única base no-template y
+que no haya tablespaces personalizados. No es un respaldo físico de WAL,
+configuración del servidor ni archivos Docker; esos archivos privados siguen intactos.
+
+`pg_dump` toma un snapshot consistente; se comparan antes/después y contra la copia
+restaurada las huellas SHA-256 de cada fila completa (multiconjunto ordenado), conteos
+de todas las tablas, estados de secuencias, roles, membresías y objetos grandes.
+También se compara schema/ACL/RLS/funciones con pg_dump schema-only. Solo se
+normalizan el nonce efímero de psql, el grantor bootstrap de membresías internas
+pg_* y la forma AND anidada/plana exacta del CHECK legado `branch_coordinates`
+que PostgreSQL reanaliza al restaurarlo; tipos, límites y demás SQL deben coincidir.
+Cambios concurrentes, otra base o cualquier diferencia bloquean sin reparar datos.
+
+La prueba usa la misma imagen por digest en un contenedor nuevo, sin red, puertos,
+volúmenes ni bind mounts. Initdb crea un administrador de restauración; restaura
+globals y después la base completa con propietarios y privilegios. Solo en ese
+contenedor comprueba también la migración bajo postgres, preservación de filas y
+recuperación manual denegada. El clon se elimina al finalizar; el marcador copiado
+no convierte al clon en una instancia manual válida. La base fuente solo se lee.
+Salida: conteos, digest SQL público, UUID/SHA-256 del preflight, respaldo/restauración
+verificados y cero solicitudes Stripe; nunca cuentas, huellas de filas, keys o tokens.
+
+Para repetir únicamente la restauración en otro contenedor desechable:
+
+```bash
+pnpm stripe:sandbox:migration --verify-backup UUID_PREFLIGHT SHA256_PREFLIGHT
+```
+
+Este comando verifica integridad de los archivos e imagen y no necesita acceder a
+PostgreSQL manual. No restaura sobre el volumen existente. Si se necesita una
+restauración real, detenerse, conservar el volumen y solicitar autorización de un
+plan independiente con destino y downtime concretos. No ejecutar scripts de
+restauración genéricos contra la manual.
+
+### Aplicación futura: requiere autorización expresa después del preflight
+
+Revisar HEAD, UUID/SHA del preflight, cuenta/identidad en privado, respaldo probado,
+1/1/0 y migración/digest anteriores. Tras autorización independiente, preparar en
+ese directorio un `approval.json` privado con `version=1`,
+`operation=apply-single-manual-migration`, `authorized=true`, HEAD exacto,
+`preflightSha256`, `migrationSha256` y `expiresAt` ISO vigente por máximo 1 hora.
+La herramienta **no crea ese archivo**. Preflight máximo 24 horas; cualquier
+cambio de HEAD o identidad/huella/configuración exige un preflight nuevo.
+
+Comando reservado para después de esa autorización, **no ejecutar en este corte**:
+
+```bash
+pnpm stripe:sandbox:migration --apply UUID_PREFLIGHT SHA256_PREFLIGHT
+```
+
+Exige TTY local/no CI/cloud y frase oculta `AUTORIZO MIGRACION LOCAL SHA256_PREFLIGHT`.
+Revalida datos después de confirmar, verifica hashes de ambos respaldos y escribe
+solo una marca privada `application-started.json` antes de contactar con SQL de
+escritura. Esa marca impide repetir una aplicación, incluso si falla o se pierde el
+acuse. No borrarla para reintentar: inspeccionar y revisar autorización nuevamente.
+
+**Escrituras futuras exactas:** una transacción administrativa con advisory lock,
+locks SHARE de tablas existentes y EXCLUSIVE de `app._prisma_migrations`, timeout
+de locks 5 s/statement 90 s. Ejecuta solo el cuerpo del SQL aprobado (sin su BEGIN/
+COMMIT exterior) y añade **1 registro Prisma** con UUID, checksum aprobado,
+nombre exacto, timestamps y applied_steps_count=1. No ejecuta otros directorios.
+Añade schema privado, 3 tablas nuevas, funciones/políticas/triggers/índices/FK del
+blob; no inserta RecoveryLab, Decision o Successor. Las FK agregan dependencias
+referenciales internas al historial, sin cambiar sus filas. Verifica inventario,
+huellas completas de todas las tablas anteriores y metadatos Prisma anteriores
+dentro de la transacción; comprueba tablas nuevas vacías y lab_ready=false antes
+de COMMIT. Conflicto/duplicación/interrupción antes del commit hace rollback.
+
+Después registra `after.json` privado con huellas/conteos y compara preservación;
+resultado financiero esperado **1/1/0**, tablas nuevas **0/0/0**, historial Prisma
+**+1**. Estos son efectos previstos/probados en clones, no estado aplicado manual.
+Error de commit o escritura del informe: detener, conservar respaldo/marca, no
+reintentar ni restaurar automáticamente. Reversión ordinaria: conservar el DDL
+aditivo y mantener recuperación bloqueada; restauración destructiva requerirá
+otra autorización. FinancialEligibility=false, Delivery y despacho sin cambios.
+
 ## Webhook privado, fase posterior
 
 El receptor preparado solo escucha loopback temporal y delega firma/raw bytes al

@@ -62,6 +62,8 @@ jobs:
         run: pnpm local:up
       - name: Additive migrations on a separate empty PostgreSQL cluster
         run: node scripts/local/check-clean-migrations.mjs
+      - name: Private backup, isolated restore and single-migration transaction (synthetic only)
+        run: node --experimental-strip-types scripts/local/check-stripe-migration.ts
       - name: Quotes, Delivery, idempotency, tenant isolation and transaction integration
         run: pnpm test:integration
       - name: Container health
