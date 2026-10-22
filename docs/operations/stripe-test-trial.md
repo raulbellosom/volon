@@ -431,6 +431,12 @@ procesos. Un fallo conserva el expediente parcial y nunca aplica DDL al origen.
 No inferir su causa de la sola presencia de un respaldo parcial ni del antiguo
 `LOCAL_PREFLIGHT_FAILED`, que no identificaba la etapa. No borrar esos expedientes.
 
+En Windows se invocan `whoami.exe` e `icacls.exe` mediante su ruta de System32.
+Git Bash antepone el `whoami` de GNU en PATH: rechaza `/user /fo csv /nh` y antes
+impedía obtener el SID para proteger el directorio. No sustituir esa validación
+por el nombre de usuario ni omitir las ACL; el usuario actual y SYSTEM conservan
+los mismos permisos exclusivos. Véase la [sintaxis oficial de whoami](https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/whoami).
+
 Para repetir únicamente la restauración en otro contenedor desechable:
 
 ```bash

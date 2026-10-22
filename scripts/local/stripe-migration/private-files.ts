@@ -1,6 +1,6 @@
 import { execFileSync } from 'node:child_process';
 import { chmodSync, lstatSync, mkdirSync, readFileSync, realpathSync, writeFileSync } from 'node:fs';
-import { resolve, dirname } from 'node:path';
+import { resolve, dirname, join, win32 } from 'node:path';
 import { systemEnvironment, run } from '../stripe-manual/files.ts';
 import { blocked, sha } from './manifest.ts';
 
@@ -27,9 +27,13 @@ export function protectDirectory(path: string) {
   privatePath(path);
   mkdirSync(path, { recursive: true, mode: 0o700 });
   if (process.platform === 'win32') {
-    const sid = run('whoami', ['/user', '/fo', 'csv', '/nh']).match(/S-1-5-\d+(?:-\d+)+/)?.[0];
+    const windows = process.env.SystemRoot;
+    if (!windows || !win32.isAbsolute(windows) || windows.startsWith('\\\\')) blocked('PRIVATE_ACL_UNAVAILABLE');
+    // Git Bash puts GNU whoami first on PATH; it cannot return a Windows SID.
+    // Resolve both security tools from System32, never from shell PATH.
+    const sid = run(join(windows, 'System32', 'whoami.exe'), ['/user', '/fo', 'csv', '/nh']).match(/S-1-5-\d+(?:-\d+)+/)?.[0];
     if (!sid) blocked('PRIVATE_ACL_UNAVAILABLE');
-    execFileSync('icacls', [resolve(path), '/inheritance:r', '/grant:r', `*${sid}:(OI)(CI)F`, '*S-1-5-18:(OI)(CI)F'],
+    execFileSync(join(windows, 'System32', 'icacls.exe'), [resolve(path), '/inheritance:r', '/grant:r', `*${sid}:(OI)(CI)F`, '*S-1-5-18:(OI)(CI)F'],
       { stdio: 'ignore', env: systemEnvironment() });
   } else chmodSync(path, 0o700);
 }

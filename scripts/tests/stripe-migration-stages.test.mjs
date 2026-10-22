@@ -2,11 +2,12 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
-import { statSync } from 'node:fs';
-import { join } from 'node:path';
+import { statSync, existsSync } from 'node:fs';
+import { join, dirname } from 'node:path';
 import { migrationStep, migrationTask, migrationFailureMessage } from '../local/stripe-migration/stages.ts';
 import { blocked } from '../local/stripe-migration/manifest.ts';
 import { bundlePath, protectDirectory, writeJson } from '../local/stripe-migration/private-files.ts';
+import { run } from '../local/stripe-manual/files.ts';
 
 test('stage errors discard private process details and preserve the innermost failure', async () => {
   const secret = 'PRIVATE_CANARY_password_token_SQL_path';
@@ -43,4 +44,19 @@ test('private Windows/POSIX directories and exclusive writes stay protected', ()
   writeJson(file, { synthetic: true });
   assert.throws(() => migrationStep('PREFLIGHT_WRITE', () => writeJson(file, { replaced: true })),
     (error) => /STAGE=PREFLIGHT_WRITE; LOCAL_STEP_FAILED/.test(migrationFailureMessage(error)));
+});
+
+test('Windows ACL protection works with Git Bash GNU whoami first on PATH', {skip:process.platform !== 'win32'}, (t) => {
+  const gitRoot = dirname(dirname(dirname(run('git', ['--exec-path']).trim())));
+  const gnuDirectory = join(gitRoot, 'usr', 'bin');
+  if (!existsSync(join(gnuDirectory,'whoami.exe'))) { t.skip('Git for Windows GNU tools unavailable'); return; }
+  const original = process.env.PATH;
+  try {
+    process.env.PATH = gnuDirectory + ';' + original;
+    // This reproduces the original preflight failure before the fix.
+    assert.throws(() => run('whoami', ['/user', '/fo', 'csv', '/nh']));
+    const directory = bundlePath(randomUUID(), 'test');
+    assert.doesNotThrow(() => protectDirectory(directory));
+    assert.doesNotThrow(() => writeJson(join(directory,'synthetic.json'), {synthetic:true}));
+  } finally { process.env.PATH = original; }
 });
