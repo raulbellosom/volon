@@ -217,7 +217,70 @@ escenario alternativo. HISTORY_BLOCKED y el bloqueo de plan con submission sigue
 No se conectó a la base manual ni se ejecutaron comandos de ensayo para esta corrección.
 Las integraciones de CI usan su propia base desechable sin credenciales Stripe.
 
-### Propuesta de recuperación auditable — NO implementada ni autorizada
+### Recuperación auditable — implementación offline, aplicación manual NO autorizada
+
+ADR-0021 implementa el diseño siguiente exclusivamente para pruebas desechables.
+La migración `20261022034450_stripe_sandbox_audited_recovery` crea tablas nuevas
+RecoveryLab, RecoveryDecision y Successor bajo el prefijo StripeSandbox, funciones
+privadas y sus restricciones/RLS. No altera columnas, triggers existentes ni permisos
+de Submission; las FK nuevas añaden dependencias referenciales internas,
+ni contiene backfill o migración de intentos existentes. No aplicarla en la manual.
+
+El perfil manual se rechaza tanto en CLI como en PostgreSQL: puertos 57321/57322
+no aceptados por esta herramienta, archivo manual presente bloquea, y el marcador
+`local_control.Environment` impide usar el núcleo de escritura aunque se cambie el
+archivo. El marcador desechable fija UUID y system_identifier real del clúster.
+No editar/quitar marcadores para habilitar datos manuales. No hay flag de override.
+
+En un checkout/base desechables **separados**, sin archivos ni variables Stripe,
+el administrador de pruebas provisiona RecoveryLab con purpose
+`disposable-recovery-v1`, UUID y system_identifier de esa base. Las fixtures de CI
+hacen esto automáticamente. No se incluye un comando que marque bases existentes
+como desechables. `.env.stripe-recovery.local` privado/ignorado debe contener solo
+LOCAL_ENVIRONMENT_KIND=disposable-recovery-v1, LOCAL_SYNTHETIC_MODE=true,
+RECOVERY_LAB_INSTANCE_ID y DATABASE_URL runtime 127.0.0.1:56322/postgres?schema=app,
+SUPABASE_URL=http://127.0.0.1:56321, SUPABASE_PUBLISHABLE_KEY y
+SYNTHETIC_USER_PASSWORD del usuario ya provisionado. Sin URL administrativa ni
+claves Stripe. El CLI verifica la base en lectura antes de autenticar.
+
+Comandos Git Bash oficiales, **solo sobre el laboratorio desechable**:
+
+```bash
+pnpm stripe:sandbox:recovery --inspect UUID_ESCENARIO_ORIGINAL
+pnpm stripe:sandbox:recovery --prepare .local/stripe-recovery/evidence.json
+pnpm stripe:sandbox:recovery --plan UUID_SUCESOR
+```
+
+Inspect usa transacción READ ONLY/REPEATABLE READ; muestra estado agregado,
+cantidades, motivos y necesidad de evidencia, sin claves/hashes/IDs del proveedor.
+Es inspección orientativa, no autorización: prepare vuelve a revisar bajo locks.
+Prepare requiere TTY local, Auth/RLS, expediente revisado y confirmación oculta
+`PREPARAR RECUPERACION OFFLINE SHA256_EXPEDIENTE`. El digest que muestra es el del
+expediente de aprobación, no key/hash de idempotencia. En una transacción añade
+una decisión y un sucesor, consume mediante UNIQUE/relación inmutable y no hace
+UPDATE sobre historia. Repeticiones/concurrencia rechazan; después de perder un
+acuse usar inspect, sin asumir rollback ni volver a crear. Un error entre INSERTs
+revierte ambos. El mismo HEAD del expediente debe fijar el plan.
+
+Expediente privado exacto: version=1, scenarioId, accountId, submissionDigest del registro
+original completo, stripeRequestId, httpStatus=400, errorType=invalid_request_error,
+errorParam=payment_method_types, apiVersion fija, noSessionConfirmed=true,
+noOtherPostConfirmed=true, reviewedBy (subject Auth), reviewedAt ISO <=24h,
+source=stripe-official-error-reviewed, artifactDigest y approvalHead. No otros campos.
+El archivo vecino `stripe-error.json` debe conservar el extracto privado revisado:
+status, accountId, scenarioId, requestId, apiVersion y response.error.type/param.
+Su SHA-256 de bytes debe corresponder a artifactDigest y todos esos datos deben
+coincidir con el expediente. No guardar claves, tokens o headers de autorización
+en ninguno. El extracto y sus hashes nunca se imprimen ni se guardan en el plan.
+La autoría de Stripe requiere revisión humana del error/request oficial: sin acceso
+externo no se acredita criptográficamente. Un booleano o digest aislado no prueba
+ausencia de otros envíos; ante incertidumbre no aprobar ese expediente.
+
+El plan v2 queda en `.local/stripe-recovery/plan-v2.json`, sin key, token, evidencia
+o hash de key. Fija decisión, sucesor, escenario, cuenta, subject, HEAD, digest del
+payload dinámico, MXN 4400, vigencia <=1h, máximo 2 requests/1 Session y
+readyForExternalCalls=false. Salida: SHA-256 del plan y banderas; no habilita Stripe.
+El runner v1 lo rechaza. No existe `--execute`, envío o reconciliación de sucesores.
 
 1. Conservar íntegros escenario, submission HTTP 400, key, hash, timestamps, estado,
    leases/versiones y eventos. No cerrar ni reclasificar la fila original; el adapter
@@ -254,8 +317,28 @@ Primero aprobar diseño y alcance de escrituras; después implementar/probar la
 herramienta y migración aditivas en instancia desechable. Solo con otra autorización
 aplicar las escrituras locales revisadas, verificar preservación antes/después y
 preparar el plan sucesor. Su ejecución externa tendrá aprobación adicional.
-Hoy no existen esas tablas, migraciones ni comandos de recuperación; nada está
-desbloqueado por esta propuesta. Ver [idempotencia oficial](https://docs.stripe.com/api/idempotent_requests).
+El núcleo y tablas solo se prueban en bases desechables; no hay habilitación
+manual ni transporte. Ver [idempotencia oficial](https://docs.stripe.com/api/idempotent_requests).
+
+#### Futuras escrituras locales exactas — requieren otra autorización
+
+1. Autorizar HEAD/digest de la migración y respaldo/revisión privada de la base
+   manual. Aplicar esa única migración aditiva mediante procedimiento administrativo
+   aprobado, sin backfill/UPDATE/DELETE/TRUNCATE históricos. Hoy no se aplica.
+2. Revisar en otro corte la habilitación manual: el binario actual la bloquea.
+   Aprobar su contrato de procedencia y permisos; no reutilizar RecoveryLab ni
+   etiquetar la manual como desechable. No cambiar el guard por edición de datos.
+3. Tras revisar el error/request oficial, estado/bindings/eventos/leases, snapshot
+   completo y demás intentos, autorizar el expediente privado concreto y HEAD.
+   Una transacción añadirá exactamente **1 RecoveryDecision y 1 Successor**,
+   con UUIDs/key nueva generados, digest dinámico calculado, referencias al mismo
+   escenario y timestamps de servidor. Ningún campo de Scenario/Submission/Event,
+   incluidas versiones y leases, recibirá UPDATE; la asociación vive en filas nuevas.
+   Comparar el registro original completo antes/después y verificar conteos +1/+1.
+4. Solo después generar plan v2 privado sin escrituras PostgreSQL. Un ejecutor
+   externo de sucesores y cualquier solicitud Stripe requieren implementación,
+   revisión y aprobación independientes de plan/HEAD/cuenta/SHA-256/límites/ventana.
+   No reutilizar `trial --create` ni crear escenarios alternativos.
 
 ```bash
 pnpm stripe:sandbox:trial --create UUID_DEL_ESCENARIO SHA256_DEL_PLAN

@@ -50,3 +50,7 @@ para pruebas locales/sintéticas, no para operación comercial.
 
 - [ADR-0020 — Instancia Stripe manual aislada](0020-isolated-manual-stripe-instance.md):
   aprovisionamiento local aprobado, procedencia privada y preservación histórica; cero Stripe.
+
+- [ADR-0021 — Recuperación auditable offline](0021-offline-audited-stripe-recovery.md):
+  decisiones/sucesores aditivos e inmutables; implementación y pruebas desechables,
+  sin migraciones o escrituras en la instancia manual ni transporte Stripe.
