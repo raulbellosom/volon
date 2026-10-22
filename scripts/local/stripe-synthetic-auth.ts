@@ -11,10 +11,16 @@ interface SyntheticLogin {
 /** Local password grant only. Tokens never leave this scope; no refresh/storage or provider transport. */
 export async function authenticateStripeSyntheticUser(local: SyntheticLogin, expectedSubjectId?: string) {
   const services = validateStripeLocalServices(local.services);
+  return authenticateLocalSyntheticUser(services.authOrigin,local.publishableKey,local.syntheticPassword,expectedSubjectId);
+}
+/** Shared local-only password grant. The manual Stripe wrapper still requires its own strict profile. */
+export async function authenticateLocalSyntheticUser(origin: string, publishableKey: string, syntheticPassword: string, expectedSubjectId?: string) {
+  if (!['http://127.0.0.1:56321','http://127.0.0.1:57321'].includes(origin)) throw new CheckoutTestFailure('CONFIGURATION_INVALID');
+  const local = { publishableKey, syntheticPassword };
   if (!local.publishableKey || !local.syntheticPassword || local.syntheticPassword.length > 1024)
     throw new CheckoutTestFailure('CONFIGURATION_INVALID');
   try {
-    const response = await fetch(services.authOrigin + '/auth/v1/token?grant_type=password', {
+    const response = await fetch(origin + '/auth/v1/token?grant_type=password', {
       method: 'POST', redirect: 'error', signal: AbortSignal.timeout(5000),
       headers: { 'content-type': 'application/json', apikey: local.publishableKey },
       body: JSON.stringify({ email: 'merchant-a@example.test', password: local.syntheticPassword }),
@@ -28,7 +34,7 @@ export async function authenticateStripeSyntheticUser(local: SyntheticLogin, exp
       || !('user' in session) || !session.user || typeof session.user !== 'object'
       || !('email' in session.user) || session.user.email !== 'merchant-a@example.test'
       || !('id' in session.user) || typeof session.user.id !== 'string') throw new CheckoutTestFailure('NOT_FOUND');
-    const authenticate = createSupabaseAuthenticator(services.authOrigin, local.publishableKey);
+    const authenticate = createSupabaseAuthenticator(origin, local.publishableKey);
     const actor = await authenticate(new Request('http://127.0.0.1/stripe-trial', {
       headers: { authorization: 'Bearer ' + session.access_token },
     }));
