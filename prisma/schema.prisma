@@ -179,6 +179,7 @@ model StripeSandboxSubmission {
   changedAt DateTime @default(dbgenerated("clock_timestamp()")) @db.Timestamptz(3)
   scenario StripeSandboxScenario @relation(fields: [scenarioId, accountId], references: [id, accountId], onDelete: Restrict, onUpdate: NoAction)
   events StripeSandboxEvent[]
+  recovery StripeSandboxRecoveryDecision?
 
   @@unique([scenarioId, accountId])
   @@unique([accountId, sessionId])
@@ -199,6 +200,49 @@ model StripeSandboxEvent {
 
   @@id([accountId, eventId])
   @@index([scenarioId])
+  @@schema("app")
+}
+
+model StripeSandboxRecoveryLab {
+  singleton Boolean @id @default(true)
+  instanceId String @unique @db.Uuid
+  purpose String
+  systemIdentifier String
+  createdAt DateTime @default(dbgenerated("clock_timestamp()")) @db.Timestamptz(3)
+  @@schema("app")
+}
+
+model StripeSandboxRecoveryDecision {
+  id String @id @db.Uuid
+  scenarioId String @unique @db.Uuid
+  accountId String
+  subjectId String @db.Uuid
+  submissionDigest String @db.Char(64)
+  evidenceDigest String @db.Char(64)
+  evidence Json
+  approvalHead String @db.Char(40)
+  createdAt DateTime @default(dbgenerated("clock_timestamp()")) @db.Timestamptz(3)
+  submission StripeSandboxSubmission @relation(fields: [scenarioId, accountId], references: [scenarioId, accountId], onDelete: Restrict, onUpdate: NoAction)
+  successor StripeSandboxSuccessor?
+  @@unique([id, scenarioId, accountId])
+  @@unique([scenarioId, accountId])
+  @@schema("app")
+}
+
+model StripeSandboxSuccessor {
+  id String @id @db.Uuid
+  decisionId String @unique @db.Uuid
+  scenarioId String @unique @db.Uuid
+  accountId String
+  key String @unique
+  payloadDigest String @db.Char(64)
+  payloadVersion String
+  amountMinor Int
+  currency String
+  state String @default("prepared-offline")
+  createdAt DateTime @default(dbgenerated("clock_timestamp()")) @db.Timestamptz(3)
+  decision StripeSandboxRecoveryDecision @relation(fields: [decisionId, scenarioId, accountId], references: [id, scenarioId, accountId], onDelete: Restrict, onUpdate: NoAction)
+  @@unique([decisionId, scenarioId, accountId])
   @@schema("app")
 }
 

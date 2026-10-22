@@ -1,5 +1,17 @@
 # Stripe Checkout — laboratorio #23 / persistencia #24 / preparación HTTPS #25
 
+## Recuperación auditable offline #26
+
+ADR-0021: solo implementación y pruebas desechables. Tablas nuevas RecoveryLab,
+RecoveryDecision y Successor bajo el prefijo StripeSandbox, sin cambiar Submission.
+Decisión inmutable ligada al escenario/submission, evidencia HTTP 400 revisada y
+snapshot completo; UNIQUE escenario y UNIQUE decisión consumida. Sucesor inmutable
+prepared-offline, UUID/key/digest nuevos y MXN 4400. RLS hereda dueño/membresía.
+Creación transaccional privada con locks y comprobación de incertidumbre; sin
+transporte ni autorizaciones productivas. El perfil manual queda bloqueado.
+Plan v2 independiente del runner v1; no habilita `--create` ni HISTORY_BLOCKED.
+Contrato y límites en ADR-0021 y procedimiento propietario en el runbook.
+
 Estado: código de sandbox aislado autorizado por el fundador el 2026-10-19;
 **cero llamadas externas**, sin credenciales ni cobros en este incremento.
 RF-022 / DEC-03 / [Issue #23](https://github.com/raulbellosom/volon/issues/23).
@@ -99,8 +111,9 @@ persistidos. El algoritmo de idempotencia existente no se modifica para sortearl
 Tras el HTTP 400 reportado en #26, una recuperación con payload diferente requiere
 un contrato aditivo de decisión e intento sucesor inmutables, enlazados al escenario
 y al intento original; key nueva por intento y plan versionado independiente.
-Es solo propuesta: no hay migración, nuevo estado/enum, tablas ni gate de recuperación
-implementados. Conserva HISTORY_BLOCKED y el almacenamiento histórico actual.
+ADR-0021 implementa la migración aditiva y el núcleo de preparación exclusivamente
+para instancias desechables; no hay habilitación manual ni ejecutor externo.
+Conserva HISTORY_BLOCKED y el almacenamiento histórico actual.
 Procedimiento y aprobaciones previas en el [runbook](../operations/stripe-test-trial.md).
 Clave idempotente estable por cuenta/fixture, hash de parámetros/URLs reservado antes
 del envío. Replay devuelve la misma sesión, cambio de parámetros falla. Timeout

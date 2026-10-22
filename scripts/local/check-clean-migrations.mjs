@@ -81,6 +81,17 @@ try {
   const unauthenticatedFinance = sql(`SET ROLE delivery_api; SELECT count(*) FROM app."ServicePaymentIntent";`).trim();
   if (!unauthenticatedFinance.endsWith('0')) throw new Error('Unscoped financial data');
   console.log(`${migrations.length} migraciones probadas en PostgreSQL limpio; Courier/DispatchLab/folios/finanzas FORCE RLS; doble exclusión y backfill íntegro, sin pagos inventados; sin tocar el stack existente.`);
+  sql(readFileSync('scripts/local/fixtures/stripe-recovery.sql','utf8'));
+  const original = sql(`SELECT to_jsonb(p)::text FROM app."StripeSandboxSubmission" p WHERE "scenarioId"='22222222-2222-4222-8222-222222222222'`);
+  const preparation = readFileSync('scripts/local/fixtures/stripe-recovery-prepare.sql','utf8');
+  const runtimeSql = (text) => docker(['exec','-i',name,'psql','-h','/tmp','-U','delivery_api','-d','postgres','-v','ON_ERROR_STOP=1','-At'],text);
+  runtimeSql(preparation + '\nROLLBACK;');
+  if (sql('SELECT count(*) FROM app."StripeSandboxRecoveryDecision"').trim() !== '0') throw new Error('Recovery rollback failed');
+  runtimeSql(preparation + '\nCOMMIT;');
+  if (sql('SELECT count(*) FROM app."StripeSandboxSuccessor"').trim() !== '1') throw new Error('Recovery successor missing');
+  if (sql(`SELECT to_jsonb(p)::text FROM app."StripeSandboxSubmission" p WHERE "scenarioId"='22222222-2222-4222-8222-222222222222'`) !== original)
+    throw new Error('Recovery changed historical submission');
+  console.log('Recuperación offline: rollback atómico, sucesor único e historial completo intacto en clúster desechable.');
 } catch (error) {
   mkdirSync('.local', { recursive: true });
   writeFileSync('.local/clean-migrations-error.log', String(error.stderr ?? error.message), { mode: 0o600 });
