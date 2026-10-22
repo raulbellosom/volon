@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { readFileSync, readdirSync } from 'node:fs';
+import { readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { randomUUID } from 'node:crypto';
 import { execFile } from 'node:child_process';
 import { docker, systemEnvironment } from './stripe-manual/files.ts';
@@ -8,6 +8,7 @@ import { sql, snapshot, schemaDigest, sameEvidence, migrations, literal, pgArgs,
 import { protectDirectory, bundlePath } from './stripe-migration/private-files.ts';
 import { migration, sha, validateMigrationHistory } from './stripe-migration/manifest.ts';
 import { applyOnlyApproved, applicationSql } from './stripe-migration/apply.ts';
+import { migrationFailureMessage } from './stripe-migration/stages.ts';
 
 // Entirely synthetic clusters. Never calls manualInstance(), loads private env or publishes ports.
 let stage = 'disposable-cluster';
@@ -50,6 +51,24 @@ try {
     const restored = await testRestore(image,directory,before,schema);
     assert.equal(restored.restored,true);
     sameEvidence(before,snapshot(source));
+    stage = 'sanitized-restore-failures';
+    // Corrupt only new synthetic bundles. Existing backups and the source stay intact.
+    const broken = bundlePath(randomUUID(),'test'); protectDirectory(broken);
+    writeFileSync(`${broken}/globals.sql`, 'SYNTHETIC_INVALID_SQL_PRIVATE_CANARY;', {flag:'wx',mode:0o600});
+    await assert.rejects(() => testRestore(image,broken,before,schema), (error: unknown) => {
+      const message = migrationFailureMessage(error);
+      assert.match(message,/STAGE=RESTORE_GLOBALS; LOCAL_STEP_FAILED/);
+      assert.doesNotMatch(message,/PRIVATE_CANARY|\.sql|postgres:|psql/);
+      return true;
+    });
+    const changed = structuredClone(before);
+    const first = changed.tables[0];
+    if (!first) throw Error('SYNTHETIC_TABLE_MISSING');
+    first.digest = '0'.repeat(64);
+    await assert.rejects(() => testRestore(image,directory,changed,schema), (error: unknown) => {
+      assert.match(migrationFailureMessage(error),/STAGE=RESTORE_FINGERPRINT; DATABASE_FINGERPRINT_MISMATCH_TABLES/);
+      return true;
+    });
     stage = 'rollback-and-history-guard';
     await disposableCluster(image, async (copy) => {
       restoreDatabase(copy,directory);

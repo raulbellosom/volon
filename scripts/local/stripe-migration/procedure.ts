@@ -9,6 +9,7 @@ import { backupDatabase, testRestore } from './backup.ts';
 import { applyOnlyApproved } from './apply.ts';
 import { readHiddenStripeValue } from '../stripe-hidden-input.ts';
 import { guardManualProcess } from '../stripe-manual/files.ts';
+import { migrationStep, migrationTask } from './stages.ts';
 
 interface Preflight {
   profile?: string;
@@ -20,34 +21,39 @@ interface Preflight {
 }
 
 export async function inspect(profile = auditedProfile) {
-  const instance = await manualInstance();
-  validateMigrationHistory(migrations(instance.target),profile);
-  const before = snapshot(instance.target);
+  const instance = await migrationTask('INSTANCE', () => manualInstance());
+  migrationStep('MIGRATION_HISTORY', () => validateMigrationHistory(migrations(instance.target),profile));
+  const before = migrationStep('SOURCE_SNAPSHOT', () => snapshot(instance.target));
   const financial = counts(before);
   if (financial.scenarios !== 1 || financial.submissions !== 1 || financial.events !== 0) blocked('MANUAL_HISTORY_MISMATCH');
-  return { ...instance, before, schema: schemaDigest(instance.target) };
+  return { ...instance, before, schema: migrationStep('SOURCE_SCHEMA', () => schemaDigest(instance.target)) };
 }
 export function sanitized(before: ReturnType<typeof snapshot>, profile = auditedProfile) {
   return { counts: counts(before), pendingMigration: profile.migration, migrationSha256: profile.digest,
     instanceVerified: true, migrationApplied: false, manualRecoveryEnabled: false, stripeRequests: 0 };
 }
 export async function prepare(profile = auditedProfile) {
-  const head = cleanHead(), initial = await inspect(profile), id = randomUUID();
-  protectDirectory(backupRoot);
-  const directory = bundlePath(id);
-  if (existsSync(directory)) blocked('BACKUP_ALREADY_EXISTS');
-  protectDirectory(directory);
+  const head = migrationStep('CHECKOUT', () => cleanHead()), initial = await inspect(profile), id = randomUUID();
+  const directory = migrationStep('PRIVATE_DIRECTORY', () => {
+    protectDirectory(backupRoot);
+    const path = bundlePath(id);
+    if (existsSync(path)) blocked('BACKUP_ALREADY_EXISTS');
+    protectDirectory(path);
+    return path;
+  });
   const archive = backupDatabase(initial.target, directory);
-  sameEvidence(initial.before, snapshot(initial.target));
+  migrationStep('SOURCE_RECHECK', () => sameEvidence(initial.before, snapshot(initial.target)));
   const restore = await testRestore(initial.identity.image, directory, initial.before, initial.schema,profile);
-  const final = await inspect(profile);
-  if (JSON.stringify(initial.identity) !== JSON.stringify(final.identity) || initial.schema !== final.schema || cleanHead() !== head) blocked('INSTANCE_OR_HEAD_CHANGED');
-  sameEvidence(initial.before, final.before);
+  await migrationTask('FINAL_RECHECK', async () => {
+    const final = await inspect(profile);
+    if (JSON.stringify(initial.identity) !== JSON.stringify(final.identity) || initial.schema !== final.schema || cleanHead() !== head) blocked('INSTANCE_OR_HEAD_CHANGED');
+    sameEvidence(initial.before, final.before);
+  });
   const preflight = { version: 1, profile:profile.key, id, head, createdAt: new Date().toISOString(), migration:profile.migration, migrationSha256:profile.digest,
     identity: initial.identity, before: initial.before, schema: initial.schema, archive, restore, sourceUnchanged: true, manualRecoveryEnabled: false, stripeRequests: 0 };
   const path = join(directory, 'preflight.json');
-  writeJson(path, preflight);
-  return { ...sanitized(initial.before,profile), preflightId: id, preflightSha256: fileDigest(path), backupRestored: true,
+  const digest = migrationStep('PREFLIGHT_WRITE', () => { writeJson(path, preflight); return fileDigest(path); });
+  return { ...sanitized(initial.before,profile), preflightId: id, preflightSha256: digest, backupRestored: true,
     sourceUnchanged: true, disposableMigrationTested: true };
 }
 export interface Approval {

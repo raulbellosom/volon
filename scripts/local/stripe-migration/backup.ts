@@ -7,6 +7,7 @@ import { pgArgs, sql, snapshot, sameEvidence, schemaDigest, type Target, type Ev
 import { blocked, auditedProfile } from './manifest.ts';
 import { fileDigest, privatePath } from './private-files.ts';
 import { applyOnlyApproved } from './apply.ts';
+import { migrationStep, migrationTask } from './stages.ts';
 
 function dumpFile(target: Target, command: string, args: string[], path: string) {
   const fd = openSync(privatePath(path), 'wx', 0o600);
@@ -18,9 +19,9 @@ function dumpFile(target: Target, command: string, args: string[], path: string)
 }
 export function backupDatabase(target: Target, directory: string) {
   // stdout goes directly to private files: never decode a custom archive as text.
-  dumpFile(target, 'pg_dumpall', ['--globals-only', '-l', 'postgres'], `${directory}/globals.sql`);
-  dumpFile(target, 'pg_dump', ['-d', 'postgres', '--format=custom'], `${directory}/postgres.dump`);
-  return { database: fileDigest(`${directory}/postgres.dump`), globals: fileDigest(`${directory}/globals.sql`) };
+  migrationStep('BACKUP_GLOBALS', () => dumpFile(target, 'pg_dumpall', ['--globals-only', '-l', 'postgres'], `${directory}/globals.sql`));
+  migrationStep('BACKUP_DATABASE', () => dumpFile(target, 'pg_dump', ['-d', 'postgres', '--format=custom'], `${directory}/postgres.dump`));
+  return migrationStep('BACKUP_DIGEST', () => ({ database: fileDigest(`${directory}/postgres.dump`), globals: fileDigest(`${directory}/globals.sql`) }));
 }
 export function validateDisposable(container: string) {
   const [row] = JSON.parse(docker(['inspect', container]));
@@ -36,9 +37,9 @@ export async function disposableCluster<T>(image: string, task: (target: Target)
   const name = `delivery-migration-restore-${randomUUID()}`;
   let created = false;
   try {
-    docker(['run', '-d', '--rm', '--network', 'none', '--name', name, '--label', 'delivery.test=stripe-migration-restore',
+    migrationStep('DISPOSABLE_START', () => docker(['run', '-d', '--rm', '--network', 'none', '--name', name, '--label', 'delivery.test=stripe-migration-restore',
       '--user', 'postgres', '--entrypoint', 'bash', image, '-c',
-      `initdb -D /tmp/migration-pg --auth=trust -U ${owner} > /tmp/init.log && exec postgres -D /tmp/migration-pg -k /tmp`]);
+      `initdb -D /tmp/migration-pg --auth=trust -U ${owner} > /tmp/init.log && exec postgres -D /tmp/migration-pg -k /tmp`]));
     created = true;
     validateDisposable(name);
     let ready = false;
@@ -49,26 +50,30 @@ export async function disposableCluster<T>(image: string, task: (target: Target)
     if (!ready) blocked('RESTORE_DATABASE_UNAVAILABLE');
     return await task({ container: name, user: owner, socket: '/tmp' });
   } finally {
-    if (created) { validateDisposable(name); docker(['stop', name]); }
+    if (created) migrationStep('DISPOSABLE_CLEANUP', () => { validateDisposable(name); docker(['stop', name]); });
   }
 }
 export function restoreDatabase(target: Target, directory: string) {
   validateDisposable(target.container);
-  execFileSync('docker', pgArgs(target, 'psql', ['-X', '-q', '-d', 'template1', '-v', 'ON_ERROR_STOP=1'], false),
-    { input: readFileSync(privatePath(`${directory}/globals.sql`)), stdio: ['pipe', 'pipe', 'pipe'], env: systemEnvironment(), timeout: 120000 });
+  migrationStep('RESTORE_GLOBALS', () => execFileSync('docker', pgArgs(target, 'psql', ['-X', '-q', '-d', 'template1', '-v', 'ON_ERROR_STOP=1'], false),
+    { input: readFileSync(privatePath(`${directory}/globals.sql`)), stdio: ['pipe', 'pipe', 'pipe'], env: systemEnvironment(), timeout: 120000 }));
   // Only our verified, portless disposable cluster. Never a configurable host/DSN.
-  execFileSync('docker', pgArgs(target, 'psql', ['-X', '-q', '-d', 'template1', '-v', 'ON_ERROR_STOP=1'], false),
-    { input: 'DROP DATABASE postgres;', stdio: ['pipe', 'pipe', 'pipe'], env: systemEnvironment(), timeout: 120000 });
-  execFileSync('docker', pgArgs(target, 'pg_restore', ['--exit-on-error', '--create', '-d', 'template1'], false),
-    { input: readFileSync(privatePath(`${directory}/postgres.dump`)), stdio: ['pipe', 'pipe', 'pipe'], env: systemEnvironment(), timeout: 180000 });
+  migrationStep('RESTORE_DATABASE', () => {
+    execFileSync('docker', pgArgs(target, 'psql', ['-X', '-q', '-d', 'template1', '-v', 'ON_ERROR_STOP=1'], false),
+      { input: 'DROP DATABASE postgres;', stdio: ['pipe', 'pipe', 'pipe'], env: systemEnvironment(), timeout: 120000 });
+    execFileSync('docker', pgArgs(target, 'pg_restore', ['--exit-on-error', '--create', '-d', 'template1'], false),
+      { input: readFileSync(privatePath(`${directory}/postgres.dump`)), stdio: ['pipe', 'pipe', 'pipe'], env: systemEnvironment(), timeout: 180000 });
+  });
 }
 export async function testRestore(image: string, directory: string, before: Evidence, schema: string, profile = auditedProfile) {
-  return disposableCluster(image, (target) => {
+  return migrationTask('DISPOSABLE_START', () => disposableCluster(image, (target) => {
     restoreDatabase(target, directory);
-    sameEvidence(before, snapshot(target));
-    if (schemaDigest(target) !== schema) blocked('RESTORE_SCHEMA_MISMATCH');
-    if (sql(target, `SELECT count(*) FROM local_control."Environment"`) !== '1') blocked('RESTORE_MARKER_MISMATCH');
-    const after = applyOnlyApproved({ ...target, user: 'postgres' }, before,profile);
+    migrationStep('RESTORE_FINGERPRINT', () => sameEvidence(before, snapshot(target)));
+    migrationStep('RESTORE_SCHEMA', () => { if (schemaDigest(target) !== schema) blocked('RESTORE_SCHEMA_MISMATCH'); });
+    migrationStep('RESTORE_MARKER', () => {
+      if (sql(target, `SELECT count(*) FROM local_control."Environment"`) !== '1') blocked('RESTORE_MARKER_MISMATCH');
+    });
+    const after = migrationStep('DISPOSABLE_MIGRATION', () => applyOnlyApproved({ ...target, user: 'postgres' }, before,profile));
     return { restored: true as const, isolated: true as const, migrationTested: true as const, after };
-  });
+  }));
 }

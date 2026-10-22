@@ -421,6 +421,16 @@ no convierte al clon en una instancia manual válida. La base fuente solo se lee
 Salida: conteos, digest SQL público, UUID/SHA-256 del preflight, respaldo/restauración
 verificados y cero solicitudes Stripe; nunca cuentas, huellas de filas, keys o tokens.
 
+Los errores de preparación incluyen una etapa sanitizada `STAGE=...`: `INSTANCE`,
+`PRIVATE_DIRECTORY` (ruta privada/ACL), `BACKUP_GLOBALS`, `BACKUP_DATABASE`,
+`RESTORE_GLOBALS`, `RESTORE_DATABASE`, `RESTORE_FINGERPRINT`, `RESTORE_SCHEMA`,
+`DISPOSABLE_MIGRATION` o `PREFLIGHT_WRITE`, entre otras. Conservan los motivos
+de bloqueo conocidos; las excepciones de infraestructura se reducen a
+`LOCAL_STEP_FAILED`. No imprimen stderr, SQL, rutas privadas ni argumentos de
+procesos. Un fallo conserva el expediente parcial y nunca aplica DDL al origen.
+No inferir su causa de la sola presencia de un respaldo parcial ni del antiguo
+`LOCAL_PREFLIGHT_FAILED`, que no identificaba la etapa. No borrar esos expedientes.
+
 Para repetir únicamente la restauración en otro contenedor desechable:
 
 ```bash

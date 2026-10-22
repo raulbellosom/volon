@@ -1,5 +1,6 @@
 import { inspect, sanitized, prepare, apply, verifyBackup } from './stripe-migration/procedure.ts';
-import { MigrationProcedureFailure, auditedProfile, migrationProfile } from './stripe-migration/manifest.ts';
+import { auditedProfile, migrationProfile } from './stripe-migration/manifest.ts';
+import { migrationFailureMessage } from './stripe-migration/stages.ts';
 
 try {
   let args = process.argv.slice(2);
@@ -14,7 +15,6 @@ try {
   console.log(JSON.stringify(result));
 } catch (error) {
   // Never interpolate PostgreSQL/Docker errors, SQL, paths, environment or archive content.
-  const reason = error instanceof MigrationProcedureFailure ? error.message : 'LOCAL_PREFLIGHT_FAILED';
-  console.error(`MIGRATION_PROCEDURE_BLOCKED (${reason}): detener; no reintentar una aplicación incierta. SOLICITUDES_STRIPE=0`);
+  console.error(migrationFailureMessage(error));
   process.exitCode = 1;
 }
