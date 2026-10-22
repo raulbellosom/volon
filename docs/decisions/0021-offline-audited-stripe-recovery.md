@@ -41,3 +41,32 @@ Prisma dentro de la misma transacción que el DDL y verifica conservación antes
 commit. No se aplica a la manual en este corte, no se habilita recuperación y no
 se crea aprobación privada automáticamente. Cualquier aplicación o restauración
 en la manual requiere nueva autorización expresa; no hay rollback destructivo.
+
+## Evolución: soporte manual independiente, pendiente de activación
+
+El fundador confirmó posteriormente la aplicación autorizada de la migración
+auditada, con 1/1/0 intacto y recuperación aún bloqueada. Se autoriza implementar
+el perfil manual y probarlo exclusivamente en bases desechables. No se ejecutan
+escrituras en PostgreSQL manual ni se modifica la migración aplicada.
+
+Se añaden funciones manual_ready/manual_catalog_digest/manual_prepare en otra
+migración, aún sin aplicar. Conservar la función de laboratorio evita convertir
+la procedencia manual en desechable o abrir un flag de bypass. La lógica SQL
+manual comparte body/estructuras y RLS existentes; las comprobaciones de evidencia
+se repiten deliberadamente en la nueva función de frontera porque la función
+auditada anterior conserva exactamente su contrato y su guard de laboratorio.
+
+Inspección/propuesta no autentican ni escriben PostgreSQL: verifican la identidad
+provisionada y alcance RLS y declaran pendiente la autenticación del operador.
+El password grant oficial crea sesiones Auth; queda reservado para la ejecución
+futura tras archivo de autorización y frase oculta por SHA/HEAD. Se documenta ese
+efecto no financiero y se mantienen tokens en memoria. No se certifica identidad
+del operador ni ausencia de una Session durante una inspección.
+
+La evidencia requiere dos documentos privados distintos y revisión explícita del
+historial, sin inferencias automáticas del HTTP 400. Una propuesta inmutable con
+plazo <=1h fija huellas, catálogo y efectos. La transacción solo añade Decision y
+Successor; la auditoría ampliada vive en el JSON de Decision. No hay otro marcador,
+tabla de autorización, edición histórica o permiso directo de escritura runtime.
+La aprobación humana es una frontera del CLI local; el digest no es firma de Stripe.
+Reversión: conservar funciones/filas y denegar ejecución; nunca reset o borrado.

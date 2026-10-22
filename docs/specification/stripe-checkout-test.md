@@ -312,3 +312,51 @@ ante cambios, otra migración o tablas de recuperación no vacías. Marca de int
 privada impide reintento automático incluso ante pérdida de acuse.
 Recuperación manual y Stripe siguen bloqueados; no siembra RecoveryLab ni decisiones.
 Procedimiento y reversión en el [runbook](../operations/stripe-test-trial.md).
+
+## Recuperación manual local independiente (#26, ADR-0021)
+
+`stripe:sandbox:manual-recovery` conserva la identidad `manual-stripe-test-v1` y
+reutiliza Decision/Successor. La migración histórica auditada no cambia. La nueva
+`20261022055840_stripe_sandbox_manual_recovery` solo agrega tres funciones privadas
+con search_path fijo y EXECUTE a delivery_api: manual_ready, manual_catalog_digest
+y manual_prepare. No cambia las funciones de laboratorio, tablas, marcador,
+columnas, filas, RLS o permisos históricos. Aplicación manual pendiente de aprobación.
+
+Inspect es READ ONLY, sin login: verifica identidad provisionada en auth.users y
+membresías, alcance runtime bajo RLS, procedencia Docker/control/system_identifier,
+cuenta/escenario/sucursal/comercio/importe y metadatos/checksum de migraciones.
+Devuelve bloqueos sanitizados y requisitos de evidencia/autorización. Expone
+operatorAuthenticated=false y no acredita ausencia de sesión por un binding NULL.
+El login oficial crea registros Auth; solo se permite en la futura ejecución aprobada.
+
+Propose también es READ ONLY en PostgreSQL; escribe únicamente archivos privados.
+Reutiliza los 16 campos de RecoveryEvidence y el extracto HTTP oficial coincidente.
+Requiere además revisión independiente de correspondencia del intento y del historial
+de POST/sesiones, ventana que cubra startedAt y llegue a la última hora, actor/cuenta/
+requestId coincidentes, originalAttemptConfirmed/noSessionConfirmed/noOtherPostConfirmed/
+notInferredFromHttp400 explícitos y digest de un segundo documento privado distinto.
+La revisión es humana, no una firma ni consulta automatizada a Stripe. Faltantes,
+contradicciones, bindings/eventos, leases incluso vencidos o checkpoint distinto bloquean.
+
+La propuesta local v1 fija UUID de operación, instancia/huella Docker/configuración,
+escenario/actor/cuenta, HEAD, huellas de expediente/revisión/Submission/catalogo,
+payload corregido, creación/caducidad <=1h, conteos 1/1/0/0/0 y efectos 1 Decision,
+1 Successor, 0 updates históricos y 0 Stripe. Son privados; solo se imprime SHA de
+la propuesta, UUID operativo y resumen. Autorización privada y confirmación oculta
+independientes; una aprobación de migración no autoriza esta operación.
+
+Execute valida todo otra vez, marca el intento local antes del login y autentica
+el usuario sintético solo contra Auth 57321 con token en memoria y subject esperado.
+Revalida perfil/HEAD/plazo después del login. La función SQL bloquea sucursal y
+escenario, lee Submission FOR SHARE y comprueba cuenta/actor/rol, marker físico,
+ausencia de RecoveryLab y conflictos, hash/key del payload rechazado, revisión y
+digest exacto de propuesta. Inserta solo 1 Decision y 1 Successor en la misma
+transacción; UNIQUE impide duplicación. Conserva cada campo original y verifica
+catálogo/índices/constraints/triggers antes/después. La decisión guarda evidencia
+base y manualReview/manualProposal/manualOperationSha256 como auditoría inmutable.
+Sin respuesta o fallo: conservar marca/expediente, detener y no reintentar.
+
+Plan usa el cargador común v2 bajo el contexto manual independiente y READ ONLY.
+No requiere login, no habilita transporte y conserva maxRequests=2/maxSessions=1,
+MXN 4400, <=1h, cuenta/HEAD/decisión/sucesor/payload/SHA y readyForExternalCalls=false.
+El ejecutor v1 y el laboratorio continúan rechazando el intento/perfil manual.
