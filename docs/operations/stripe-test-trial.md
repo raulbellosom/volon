@@ -389,6 +389,8 @@ SHA-256 `00fa1a5bb12229b2af01a91b53a07fcfdb5694b3bb65647834cfeb31aa5eb073`.
 Se verifica equivalencia Git/working tree salvo CRLF; la futura ejecución utiliza
 los bytes Git/LF exactos y su checksum. Todos los registros previos de Prisma deben
 estar terminados, sin rollback, duplicados o checksums ajenos al SQL del repositorio.
+El commit aprobado debe existir en el clon local; un checkout superficial sin
+ese objeto se bloquea. Actions descarga el historial completo para verificarlo.
 
 Prepare requiere checkout limpio. Crea un directorio privado nuevo e ignorado
 `.local/stripe-manual/migration/UUID_PREFLIGHT/`, protegido con ACL de usuario
