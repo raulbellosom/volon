@@ -1,4 +1,4 @@
-import type { PrismaClient } from '@prisma/client';
+import type { PrismaClient, Prisma } from '@prisma/client';
 import type { PaymentActor } from '../../modules/payments/payment.contract.ts';
 import { uuid } from '../../modules/payments/payment.contract.ts';
 import { record } from './config.ts';
@@ -38,7 +38,10 @@ export function assertRecoveryPlan(plan: RecoveryPlan, head: string, now = Date.
   if (!Number.isFinite(now) || head !== valid.revision || remaining <= 0 || remaining > 3600000) rejectRecovery();
 }
 export async function loadRecoveryPlan(db: PrismaClient, actor: PaymentActor, instance: string, successorId: string, head: string, expiresAt: string) {
-  return recoveryTransaction(db,actor,instance,true,async (tx) => {
+  return recoveryTransaction(db,actor,instance,true,(tx) => readRecoveryPlan(tx,actor,instance,successorId,head,expiresAt));
+}
+/** Shared data loading only; callers must establish their independent instance/Auth/RLS context. */
+export async function readRecoveryPlan(tx: Prisma.TransactionClient, actor: PaymentActor, instance: string, successorId: string, head: string, expiresAt: string) {
     const next = await tx.stripeSandboxSuccessor.findUnique({ where: { id: successorId }, include: { decision: true } });
     if (!next || next.state !== 'prepared-offline' || next.decision.approvalHead !== head
       || next.key !== successorKey(next.accountId,next.scenarioId,next.id)) rejectRecovery();
@@ -53,5 +56,4 @@ export async function loadRecoveryPlan(db: PrismaClient, actor: PaymentActor, in
       expiresAt, maxRequests: 2, maxSessions: 1, readyForExternalCalls: false });
     assertRecoveryPlan(plan,head);
     return plan;
-  });
 }
