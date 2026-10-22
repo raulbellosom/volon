@@ -360,3 +360,10 @@ Plan usa el cargador común v2 bajo el contexto manual independiente y READ ONLY
 No requiere login, no habilita transporte y conserva maxRequests=2/maxSessions=1,
 MXN 4400, <=1h, cuenta/HEAD/decisión/sucesor/payload/SHA y readyForExternalCalls=false.
 El ejecutor v1 y el laboratorio continúan rechazando el intento/perfil manual.
+
+El ejecutor administrativo reutilizado admite solo dos manifiestos fijos. El
+default conserva el SQL auditado anterior; `--target manual-recovery` selecciona
+exclusivamente las funciones nuevas con digest y commit de origen fijados. Cada
+preflight/respaldo/autorización queda vinculado a su manifiesto; nombres, rutas,
+hashes o perfiles arbitrarios y aprobaciones cruzadas se rechazan. No aplica
+migraciones pendientes indiscriminadamente ni habilita la operación financiera.

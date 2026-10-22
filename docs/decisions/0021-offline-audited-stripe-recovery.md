@@ -1,7 +1,9 @@
 # ADR-0021 — Recuperación Stripe auditable, implementación offline
 
-Estado: implementación y pruebas aprobadas solo en instancias desechables (#26).
-No autoriza migrar ni escribir en la instancia manual ni acceder a Stripe.
+Estado actual: laboratorio y perfil manual implementados; nueva migración manual
+propuesta y probada solo en desechables (#26). No aplicada ni autorizada en la
+manual en este incremento; sin acceso Stripe. La aplicación previa del esquema
+auditado fue confirmada por el fundador después del corte original descrito abajo.
 
 Se añaden tres tablas sin alterar columnas, triggers existentes o permisos históricos:
 `StripeSandboxRecoveryLab` identifica una base desechable; una decisión inmutable

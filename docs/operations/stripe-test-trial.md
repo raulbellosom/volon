@@ -475,6 +475,187 @@ reintentar ni restaurar automáticamente. Reversión ordinaria: conservar el DDL
 aditivo y mantener recuperación bloqueada; restauración destructiva requerirá
 otra autorización. FinancialEligibility=false, Delivery y despacho sin cambios.
 
+## Recuperación manual auditable — implementación sin aplicación (#26)
+
+Estado confirmado por el fundador: la migración
+`20261022034450_stripe_sandbox_audited_recovery` ya fue aplicada con preservación
+1/1/0. **No repetirla ni editar ese archivo.** La ruta de laboratorio conserva su
+guard y nunca acepta la instancia manual. El ejecutor histórico `trial --create`
+continúa bloqueado para el intento original.
+
+Se incorpora `pnpm stripe:sandbox:manual-recovery`, que verifica exclusivamente
+la instancia original manual 57321/57322, Docker/control/system_identifier,
+volumen/red/puertos, configuración privada, cuenta y pertenencia sintética A.
+No conecta a la instalación histórica ni construye transporte Stripe. TTY local
+obligatoria y prohibición de CI/cloud/variables privadas heredadas conservadas.
+
+### Nueva migración propuesta: autorización independiente pendiente
+
+Archivo: `prisma/migrations/20261022055840_stripe_sandbox_manual_recovery/migration.sql`.
+SHA-256 del SQL Git/LF:
+`e1005213f757ed166ec075853e85df109ef67f5db0ed049082455257aa22cad4`.
+
+Solo CREATE FUNCTION de `stripe_recovery_private.manual_ready`,
+`manual_catalog_digest` y `manual_prepare`, REVOKE PUBLIC y GRANT EXECUTE a
+delivery_api para esas firmas, dentro de BEGIN/COMMIT. No tablas nuevas, semillas,
+modificación de funciones anteriores, columnas, historial o marcador original.
+No hay grants directos de INSERT/UPDATE/DELETE sobre las tablas financieras.
+
+No se aplica en este incremento. El ejecutor administrativo conserva el manifiesto
+anterior como default y añade una selección explícita **solo** para este nuevo
+manifiesto fijo, anclado al commit `bcef53671adf8f26ccda2a29f07efb1debce4115`.
+No acepta nombres/rutas/hash arbitrarios y una aprobación del manifiesto anterior
+no sirve para este. Preparación futura de lectura y respaldo:
+
+```bash
+pnpm stripe:sandbox:migration --target manual-recovery --inspect
+pnpm stripe:sandbox:migration --target manual-recovery --prepare
+```
+
+La siguiente autorización de DDL debe fijar archivo/digest y HEAD, confirmar la
+anterior aplicada y que solo esta nueva esté pendiente, revisar el nuevo respaldo/
+restauración/preflight y preparar approval.json con las reglas ya documentadas.
+Comando reservado para **después** de esa autorización expresa:
+
+```bash
+pnpm stripe:sandbox:migration --target manual-recovery --apply UUID_PREFLIGHT SHA256_PREFLIGHT
+```
+
+Conserva TTY, frase oculta, vencimiento, marca anti-reintento, locks y verificación
+transaccional de todas las tablas/huellas; solo aplica el SQL de este manifiesto.
+No usar migrate deploy ni repetir la migración anterior. Manual-recovery no aplica
+DDL; la aplicación del nuevo manifiesto solo se probó en bases desechables.
+
+Escrituras de esa futura aplicación: tres funciones y sus ACL, más 1 fila de
+bookkeeping Prisma con nombre/checksum exactos en la transacción administrativa.
+Esperado después: Scenario/Submission/Event **1/1/0**, RecoveryLab/Decision/Successor
+**0/0/0**, marcador y todas las huellas anteriores intactos. Tener funciones
+instaladas no autoriza crear el sucesor ni realizar solicitudes Stripe.
+
+### Inspección estrictamente READ ONLY
+
+Desde la raíz, en una terminal local Git Bash privada:
+
+```bash
+git pull --ff-only origin main
+pnpm stripe:sandbox:manual-recovery --inspect
+```
+
+Verifica auth.users provisionado y membresías por SELECT y vuelve a consultar el
+escenario con rol delivery_api y las políticas RLS. **No hace password grant**,
+no crea sesiones Auth ni modifica PostgreSQL. Su salida declara
+operatorAuthenticated=false, sessionAbsenceConfirmed=false y muestra conteos,
+estado y bloqueos técnicos sanitizados. No confundir esa identidad provisionada
+con la autenticación humana requerida para escribir. Puede inspeccionar antes
+de aplicar la nueva migración y reporta MANUAL_FUNCTION_MIGRATION_PENDING.
+
+### Expediente privado obligatorio y propuesta offline
+
+No se ha fabricado evidencia ni expediente real. El error HTTP 400 reportado no
+sustituye el extracto oficial con requestId ni la revisión independiente. Tras
+autorizar/aplicar solamente el DDL nuevo, preparar en una carpeta privada ignorada,
+por ejemplo `.local/stripe-manual/recovery-dossier`, estos archivos:
+
+- `evidence.json`: contrato RecoveryEvidence de 16 campos ya documentado, con
+  requestId oficial, cuenta/escenario/reviewer/HEAD, API fija, snapshot completo de
+  Submission y hash del extracto. No inventar ni cambiar valores para que valide.
+- `stripe-error.json`: extracto privado revisado con status=400, accountId,
+  scenarioId, requestId, apiVersion y response.error.type/param correspondientes.
+  Retirar Authorization, claves, tokens y URLs tokenizadas antes de custodiarlo.
+- `manual-review.json`: contrato de 14 campos: version=1, scenarioId, accountId,
+  stripeRequestId, reviewedBy, reviewedAt, source=stripe-request-and-session-history-reviewed,
+  originalAttemptConfirmed, noSessionConfirmed, noOtherPostConfirmed,
+  notInferredFromHttp400, windowFrom, windowTo, artifactDigest. Las cuatro
+  confirmaciones deben provenir de revisión explícita y ser true; nunca se
+  completan automáticamente por existir el 400 o ser sessionId NULL.
+- `stripe-history-review.txt`: segundo documento privado, exportación/referencia
+  revisada de solicitudes y sesiones de la misma cuenta/ventana; su digest debe
+  coincidir con manual-review y ser distinto del extracto del error. Describe
+  cómo se verificó correspondencia del intento y ausencia de otros POST/sesiones
+  contradictorias. La ventana cubre startedAt y llega a la última hora. Si no puede
+  acreditarse, conservar bloqueo y documentar lo faltante; no enviar consultas Stripe.
+
+Fechas ISO UTC canónicas, actor sintético provisionado y cuenta/escenario exactos.
+La revisión es humana; los digests no constituyen una firma de Stripe. Los hashes
+de filas/keys y los contenidos se mantienen privados y nunca se imprimen.
+
+Comando futuro que **no crea sucesor ni autentica contra Auth**:
+
+```bash
+pnpm stripe:sandbox:manual-recovery --propose .local/stripe-manual/recovery-dossier
+```
+
+Exige nueva migración aplicada y checkout limpio. Todos los accesos PostgreSQL son
+READ ONLY; crea solo `.local/stripe-manual/recovery/UUID_OPERACION/` protegido con
+ACL/modo privado, con proposal.json y dossier-reference.json, sin copiar secretos
+o extractos. Devuelve UUID operativo, SHA-256 de la propuesta canónica y caducidad
+<=1h. Fija HEAD/cuenta/actor/escenario/instancia/configuración física, snapshot,
+catálogo/índices/constraints/triggers/permisos, digests del expediente/revisión y
+payload corregido. Efectos declarados: 1 Decision, 1 Successor, 0 updates históricos,
+0 Stripe; conteos fuente 1/1/0/0/0. No acredita autenticación del operador.
+
+### Otra autorización futura: exactamente una decisión y un sucesor
+
+Revisar expediente, HEAD y SHA de la propuesta, identidad física y cuenta en
+privado, huellas/conteos, plazo y efectos. Esta aprobación es independiente del
+DDL y de cualquier ensayo Stripe. Solo entonces preparar `authorization.json`
+en el directorio operativo, con exactamente: version=1,
+operation=manual-recovery-1-decision-1-successor, operationId, authorized=true,
+head, proposalSha256 y expiresAt ISO vigente <=1h y <=caducidad de la propuesta.
+La herramienta no crea autorizaciones. No hay archivo de aprobación generado
+en este incremento ni permiso para ejecutar el comando siguiente:
+
+```bash
+pnpm stripe:sandbox:manual-recovery --execute UUID_OPERACION SHA256_PROPUESTA
+```
+
+Exige frase oculta `AUTORIZO RECUPERACION LOCAL SHA256_PROPUESTA` y revalida después
+del prompt. Escribe una marca privada operation-started.json **antes del login**.
+Solo tras esa aprobación usa las credenciales existentes del usuario sintético
+en el password grant oficial de Auth local, valida el token en GET /user con el
+autenticador existente y compara subject; token en memoria, sin exportar/persistir.
+Ese login tendrá sus escrituras normales de sesiones Auth en la instancia manual:
+también quedan incluidas en la futura autorización; no ocurren en inspect/propose.
+Revalida perfil/HEAD/caducidad después del login y conserva Auth/RLS.
+
+Una transacción runtime llama a manual_prepare: locks de sucursal/escenario y
+FOR SHARE de Submission/membresías; comprueba marcador físico y rol restringido,
+ausencia de laboratorio, datos sintéticos, evidencia/revisión/propuesta vigentes,
+checkpoint viejo exacto, sin bindings/eventos/leases o decisiones previas.
+Estado unknown solo se admite con ese checkpoint y revisión completos; cualquier
+unknown distinto sigue bloqueado. **Inserta 1 RecoveryDecision y 1 Successor**
+del mismo escenario MXN 4400, con UUID/key nuevos y payloadDigest corregido.
+La decisión guarda base de evidencia más manualReview/manualProposal/SHA de
+operación inmutables. No actualiza ningún campo, versión, lease o timestamp del
+intento anterior. Compara snapshot y catálogo antes/después y exige conteos
+1/1/0/1/1; registra after.json privado con identidad del sucesor y resultado.
+
+UNIQUE/FK, locks y transacción impiden duplicación. Error, pérdida de respuesta o
+commit incierto: conservar expediente/marca, **no reintentar ni borrar la marca**,
+no fabricar after.json y no generar otro escenario. Inspeccionar/revisar antes de
+otra acción. Rollback parcial se prueba solo en bases desechables.
+
+### Plan v2 separado, sin solicitudes externas
+
+Después de una recuperación local aprobada y confirmada:
+
+```bash
+pnpm stripe:sandbox:manual-recovery --plan UUID_OPERACION
+```
+
+Solo READ ONLY y archivo privado plan-v2.json: vincula sucesor/decisión/cuenta/HEAD/
+payload/SHA, MXN 4400, <=1h y presupuesto futuro máximo 2 requests/1 Session,
+readyForExternalCalls=false. No inicia otro login ni acredita autorización externa.
+El ejecutor externo de sucesores no se implementa en este corte; un futuro ensayo
+necesitará nueva revisión y autorización de su plan/HEAD/hash/límites/ventana.
+FinancialEligibility=false, Delivery y despacho permanecen sin cambios.
+
+Pruebas reproducibles sin tocar manual/histórica: `pnpm check` y
+`node --experimental-strip-types scripts/local/check-manual-recovery.mjs`.
+El segundo crea su propio PostgreSQL sin red/puertos/montajes, con evidencia
+marcada artificial; prueba perfiles/actor/cuenta/HEAD/plazos/conflictos, RLS,
+rollback parcial, dos procesos/repetición/lost-ack y preservación completa.
+
 ## Webhook privado, fase posterior
 
 El receptor preparado solo escucha loopback temporal y delega firma/raw bytes al
